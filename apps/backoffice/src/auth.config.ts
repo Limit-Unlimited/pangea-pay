@@ -17,14 +17,14 @@ export const authConfig: NextAuthConfig = {
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      const PUBLIC_PATHS = ["/login", "/forgot-password", "/reset-password"];
+      const PUBLIC_PATHS = ["/login", "/forgot-password", "/reset-password", "/api/auth"];
       const isPublic = PUBLIC_PATHS.some((p) => nextUrl.pathname.startsWith(p));
 
       if (!isLoggedIn && !isPublic) return false;
       return true;
     },
 
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id               = user.id;
         token.tenantId         = (user as any).tenantId;
@@ -34,6 +34,10 @@ export const authConfig: NextAuthConfig = {
         token.mfaEnabled       = (user as any).mfaEnabled;
         token.mfaVerified      = (user as any).mfaVerified;
         token.mustChangePassword = (user as any).mustChangePassword;
+      }
+      if (trigger === "update" && session) {
+        if (session.mustChangePassword !== undefined) token.mustChangePassword = session.mustChangePassword;
+        if (session.status !== undefined) token.status = session.status;
       }
       return token;
     },

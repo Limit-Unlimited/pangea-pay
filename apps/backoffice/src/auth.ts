@@ -130,7 +130,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           status:              user.status,
           mfaEnabled:          user.mfaEnabled,
           mfaVerified,
-          mustChangePassword:  user.status === "pending_activation",
+          mustChangePassword:  ["invited", "pending_activation"].includes(user.status),
           name: `${user.firstName} ${user.lastName}`,
         };
       },

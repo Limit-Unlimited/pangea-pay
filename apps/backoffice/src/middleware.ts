@@ -7,7 +7,7 @@ const { auth } = NextAuth(authConfig);
 export default auth((req) => {
   const { nextUrl } = req;
   const session = req.auth;
-  const PUBLIC_PATHS = ["/login", "/forgot-password", "/reset-password"];
+  const PUBLIC_PATHS = ["/login", "/forgot-password", "/reset-password", "/api/auth"];
   const isPublic = PUBLIC_PATHS.some((p) => nextUrl.pathname.startsWith(p));
 
   if (!session && !isPublic) {

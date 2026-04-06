@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
   }
 
   const passwordHash = await hashPassword(newPassword);
-  const newStatus = user.status === "pending_activation" ? "active" : user.status;
+  const newStatus = ["invited", "pending_activation"].includes(user.status) ? "active" : user.status;
 
   await db.update(users)
     .set({ passwordHash, status: newStatus as any, updatedAt: new Date() })
