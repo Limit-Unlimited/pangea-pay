@@ -285,7 +285,7 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 |---|---|---|---|---|
 | Sprint 0 | Apr 7 – Apr 18 ~~→ Apr 6~~ | Foundation & Infrastructure | Completed | 2026-04-06 |
 | Sprint 1 | Apr 21 – May 2 ~~→ Apr 6~~ | Authentication & Backoffice Shell | Completed | 2026-04-06 |
-| Sprint 2 | Apr 7 – Apr 11 | Global Settings & User/Role Management | Upcoming | — |
+| Sprint 2 | Apr 7 – Apr 11 ~~→ Apr 6~~ | Global Settings & User/Role Management | Completed | 2026-04-06 |
 | Sprint 3 | Apr 14 – Apr 18 | Customer Management & Onboarding Ops | Upcoming | — |
 | Sprint 4 | Apr 22 – Apr 30 | Wallet/Account Management + Web App Onboarding | Upcoming | — |
 | Sprint 5 | May 4 – May 13 | Payments Operations + Web App Core Flows | Upcoming | — |
