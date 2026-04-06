@@ -1,12 +1,89 @@
 # Pangea Pay — MVP Sprint Plan
 
-**Version:** 1.1  
+**Version:** 1.2  
 **Date:** 2026-04-06  
-**Target:** Production-ready MVP by 2026-10-02  
-**Duration:** 26 weeks · 13 sprints · 2 weeks each  
-**Methodology:** Scrum with 2-week sprint cadence  
+**Original Target:** 2026-10-02 (26 weeks)  
+**Revised Target:** 2026-06-26 (realistic) · 2026-06-05 (optimistic)  
+**Duration:** ~12 weeks remaining from 2026-04-07 · sprint length now reflects actual delivery pace  
+**Methodology:** Continuous delivery — sprints sized by feature complexity, not calendar time  
 **Team:** Limit Unlimited Technologies Ltd  
 **Git Author:** capg84
+
+---
+
+## Timeline Revision — v1.2 (2026-04-06)
+
+### What Happened
+
+The original plan was drafted assuming a 6-person human team working at a conventional pace of one 2-week sprint per fortnight. It produced a 26-week (13-sprint) schedule targeting **2026-10-02**.
+
+On the first day of development (2026-04-06), both Sprint 0 and Sprint 1 were completed in approximately 10 hours of total work:
+
+| Sprint | Planned Duration | Actual Duration | Completed |
+|---|---|---|---|
+| Sprint 0 — Foundation & Infrastructure | 2 weeks | ~4 hours | 2026-04-06 |
+| Sprint 1 — Authentication & Backoffice Shell | 2 weeks | ~6 hours | 2026-04-06 |
+
+Four weeks of planned work delivered in a single day.
+
+### Why the Early Sprints Were Faster Than Planned
+
+Sprint 0 and Sprint 1 were disproportionately fast for two reasons:
+
+**1. Infrastructure and scaffolding are AI-native tasks.** Setting up a monorepo, configuring TypeScript, initialising shadcn/ui, wiring NextAuth, and creating database schemas are deterministic, well-documented tasks with clear correct answers. There is no ambiguity, no stakeholder alignment required, and no design iteration — just execution. These tasks compress dramatically when the bottleneck of human context-switching and documentation-reading is removed.
+
+**2. No business logic complexity yet.** Sprint 0 was pure tooling. Sprint 1's authentication logic, while security-sensitive, follows well-established patterns (credentials provider, TOTP, JWT, audit logging). The decisions were architectural, not domain-specific.
+
+### Why the Remaining Sprints Will Take Longer
+
+The complexity profile changes significantly from Sprint 2 onwards. The reasons are structural, not circumstantial:
+
+**Business logic density increases.** Each remaining sprint requires implementing domain-specific rules: pricing engines, double-entry accounting, AML screening workflows, FX quote expiry logic, payment corridor restrictions, reconciliation matching. These are not boilerplate — they require careful modelling against the BRS.
+
+**Screen and component count grows.** Sprint 2 alone covers 14 configuration screens with forms, tables, and audit trails. Sprint 5 covers a full end-to-end payment journey across both Backoffice and Web App simultaneously. The raw volume of UI work increases 4–6× compared to the shell built in Sprint 1.
+
+**Human review gates add real time.** As features become usable — real login, real forms, real payment flows — each sprint requires the product owner to test, validate, and sign off. This is irreducibly human time that does not compress.
+
+**Third-party provider dependencies are a hard external constraint.** Sprint 3 requires a live screening provider sandbox. Sprint 5 requires a working FX rate feed and payout partner connectivity. These require account sign-up, KYC on the business, API credential issuance, and integration testing — none of which are within development control. Provider onboarding typically takes 1–4 weeks per provider.
+
+**Security and financial correctness require iteration.** Double-entry ledger posting, payment idempotency, reconciliation matching, and AML workflows cannot simply be built and shipped. They require testing against realistic scenarios, edge case handling, and review. Sprint 8 (UAT, pen test, go-live) is time-bounded by testing thoroughness, not development speed.
+
+### Revised Complexity and Duration Estimates
+
+| Sprint | Theme | Complexity Driver | Estimated Working Days |
+|---|---|---|---|
+| Sprint 2 | Global Settings & RBAC | 14 config screens, full permission matrix, many tables | 2–3 days |
+| Sprint 3 | Customer Management & Onboarding | Complex profiles, KYC review, live screening integration | 3–4 days |
+| Sprint 4 | Wallet/Account + Web App Onboarding | Multi-currency accounts, full customer registration journey | 3–4 days |
+| Sprint 5 | Payments & FX | End-to-end payment flow, quote engine, limits — highest complexity | 5–7 days |
+| Sprint 6 | Compliance, Treasury & Accounting | Double-entry ledger, AML cases, nostro, safeguarding views | 5–7 days |
+| Sprint 7 | Payment Rail API & Integrations | Public API, webhooks, OpenAPI docs, provider hardening | 4–5 days |
+| Sprint 8 | Security Audit, UAT & Go-Live | Pen test, performance testing, DR runbook — irreducibly human | 7–10 days |
+| **Total remaining** | | | **29–40 working days** |
+
+### Revised Target Dates
+
+| Scenario | Assumption | Target |
+|---|---|---|
+| **Optimistic** | Daily sessions, no provider delays, no major rework | **2026-06-05** |
+| **Realistic** | Some review gaps, provider onboarding causes 1–2 week delay in Sprint 5 | **2026-06-26** |
+| **Conservative** | Provider onboarding slips significantly, Sprint 5/6 require iteration | **2026-07-18** |
+
+The realistic target of **26 June 2026** represents a saving of approximately **14 weeks** (54%) against the original 26-week plan.
+
+### Critical Path Warning — Third-Party Providers
+
+The single biggest risk to the revised timeline is provider onboarding. **This is the critical path item and it must start immediately**, regardless of development progress:
+
+| Provider | Needed By | Action Required |
+|---|---|---|
+| Sanctions / PEP screening provider | Sprint 3 (target Apr 14) | Select provider and begin sign-up this week |
+| FX rate feed | Sprint 5 (target May 6) | Select provider and begin API access request |
+| Payout / banking partner | Sprint 5 (target May 6) | Begin commercial conversation this week |
+| KYC / identity verification | Sprint 4 (target Apr 22) | Select provider and begin sign-up this week |
+| Email provider (production) | Sprint 6 (target May 18) | Low urgency — Mailpit handles dev |
+
+Development will continue against mock adapters in all cases, but **live sandbox testing cannot happen until credentials are in hand**. A 3-week delay in provider onboarding translates directly to a 3-week delay in go-live, regardless of how fast the code is written.
 
 ---
 
@@ -206,15 +283,15 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 
 | Sprint | Dates | Theme | Status | Completed |
 |---|---|---|---|---|
-| Sprint 0 | Apr 7 – Apr 18 | Foundation & Infrastructure | Completed | 2026-04-06 |
-| Sprint 1 | Apr 21 – May 2 | Authentication & Backoffice Shell | Completed | 2026-04-06 |
-| Sprint 2 | May 5 – May 16 | Global Settings & User/Role Management | Upcoming | — |
-| Sprint 3 | May 19 – May 30 | Customer Management & Onboarding Ops | Upcoming | — |
-| Sprint 4 | Jun 2 – Jun 13 | Wallet/Account Management + Web App Onboarding | Upcoming | — |
-| Sprint 5 | Jun 16 – Jun 27 | Payments Operations + Web App Core Flows | Upcoming | — |
-| Sprint 6 | Jun 30 – Jul 11 | Compliance, Treasury & Accounting Basics | Upcoming | — |
-| Sprint 7 | Jul 14 – Jul 25 | Payment Rail API & Integration Hardening | Upcoming | — |
-| Sprint 8 | Jul 28 – Aug 7 | Security Audit, UAT & Go-Live | Upcoming | — |
+| Sprint 0 | Apr 7 – Apr 18 ~~→ Apr 6~~ | Foundation & Infrastructure | Completed | 2026-04-06 |
+| Sprint 1 | Apr 21 – May 2 ~~→ Apr 6~~ | Authentication & Backoffice Shell | Completed | 2026-04-06 |
+| Sprint 2 | Apr 7 – Apr 11 | Global Settings & User/Role Management | Upcoming | — |
+| Sprint 3 | Apr 14 – Apr 18 | Customer Management & Onboarding Ops | Upcoming | — |
+| Sprint 4 | Apr 22 – Apr 30 | Wallet/Account Management + Web App Onboarding | Upcoming | — |
+| Sprint 5 | May 4 – May 13 | Payments Operations + Web App Core Flows | Upcoming | — |
+| Sprint 6 | May 18 – May 28 | Compliance, Treasury & Accounting Basics | Upcoming | — |
+| Sprint 7 | Jun 1 – Jun 9 | Payment Rail API & Integration Hardening | Upcoming | — |
+| Sprint 8 | Jun 12 – Jun 26 | Security Audit, UAT & Go-Live | Upcoming | — |
 
 ---
 
@@ -732,32 +809,37 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 
 ## Risk Register
 
-| Risk | Likelihood | Impact | Mitigation |
-|---|---|---|---|
-| Third-party sandbox/production access delayed | High | High | Start all provider engagements in Sprint 0; track weekly |
-| Payout partner connectivity not ready by Sprint 5 | Medium | High | Identify backup provider; build abstraction layer |
-| Security audit findings require major rework | Medium | High | Run internal OWASP review at Sprint 6 to catch issues early |
-| Team size below minimum (fewer than 6) | High | High | Re-scope; remove Payment Rail from MVP |
-| Regulatory review required before go-live | Medium | High | Engage compliance/legal review from Sprint 4 onwards |
-| FX rate provider unreliable or expensive | Low | Medium | Design for pluggable rate sources from day one |
-| Database schema changes in later sprints | Medium | Medium | Invest in migrations from Sprint 0; never alter tables manually |
-| Scope creep from stakeholder requests | High | Medium | All new requirements go through backlog triage; nothing enters a sprint mid-flight |
+*Updated 2026-04-06 to reflect revised timeline and confirmed team composition.*
+
+| # | Risk | Likelihood | Impact | Status | Mitigation |
+|---|---|---|---|---|---|
+| R1 | **Third-party provider onboarding delayed** — screening, FX, KYC, and payout partner all require account sign-up, compliance review, and sandbox issuance outside our control | **Critical** | **Critical** | Open — no providers selected | Select and engage all providers this week. Development continues against mocks but live sandbox testing is blocked until credentials land. Each week of delay here is a week of go-live delay. |
+| R2 | Payout partner not production-ready by Sprint 5 (target May 13) | High | High | Open | Identify primary and backup payout partner. Build payment routing as an abstracted adapter from day one so swapping providers requires no application changes. |
+| R3 | Security audit findings require major rework | Medium | High | Open | Run internal OWASP checklist at Sprint 6 end (target May 28) before external review. Address findings in Sprint 8 buffer. |
+| R4 | Regulatory or legal review required before go-live | Medium | High | Open | Engage legal/compliance review from Sprint 4 (target Apr 22) onwards. Do not leave this to Sprint 8 — regulatory feedback loops take time. |
+| R5 | Sprint 5 or Sprint 6 business logic requires significant iteration | Medium | Medium | Open | These sprints contain the most complex domain logic (double-entry ledger, payment routing, AML). Allow 1–2 extra days of buffer in the revised schedule. |
+| R6 | FX rate feed unavailable or too expensive at required update frequency | Low | Medium | Open | Design rate source as a pluggable adapter. Mock rates continue to work for all dev and most testing. |
+| R7 | Database schema requires breaking changes in Sprints 4–6 | Medium | Medium | Open | All schema changes go through Drizzle migrations. No manual ALTER TABLE. Review schema at start of each sprint before writing code. |
+| R8 | Scope creep — new requirements added mid-sprint | High | Medium | Open | All new requirements go to a backlog and are reviewed only between sprints. Nothing enters an in-progress sprint. |
+| R9 | ~~Team size below minimum~~ — resolved | N/A | N/A | Closed | Development tooling replaces the engineering headcount requirement. Team model confirmed. |
 
 ---
 
 ## Key Milestones
 
-| Date | Milestone |
-|---|---|
-| Apr 18 | Infrastructure live; design system ready; all third-party sandbox requests submitted |
-| May 2 | Authentication and Backoffice shell production-ready |
-| May 16 | Global settings and user management complete |
-| May 30 | Customer and onboarding operations complete |
-| Jun 13 | First end-to-end account visible in Web App |
-| Jun 27 | First end-to-end payment processed in sandbox |
-| Jul 11 | Compliance, treasury, and accounting baseline operational |
-| Jul 25 | Payment Rail API live; all integrations production-hardened |
-| Aug 7 | Go-live: production environment live, first tenant operational |
+*Revised 2026-04-06. Original dates shown in strikethrough where superseded.*
+
+| Original Date | Revised Date | Milestone | Status |
+|---|---|---|---|
+| Apr 18 | ~~Apr 18~~ **2026-04-06** | Infrastructure live; design system; CI pipeline | Done |
+| May 2 | ~~May 2~~ **2026-04-06** | Authentication and Backoffice shell production-ready | Done |
+| May 16 | **Apr 11** | Global settings and user/role management complete | Upcoming |
+| May 30 | **Apr 18** | Customer and onboarding operations complete | Upcoming |
+| Jun 13 | **Apr 30** | First end-to-end account visible in Web App | Upcoming |
+| Jun 27 | **May 13** | First end-to-end payment processed in sandbox | Upcoming |
+| Jul 11 | **May 28** | Compliance, treasury, and accounting baseline operational | Upcoming |
+| Jul 25 | **Jun 9** | Payment Rail API live; all integrations production-hardened | Upcoming |
+| Aug 7 | **Jun 26** | Go-live: production environment live, first tenant operational | Upcoming |
 
 ---
 
