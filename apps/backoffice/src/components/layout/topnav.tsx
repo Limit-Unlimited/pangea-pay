@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -72,10 +73,12 @@ export function TopNav({ tenantName = "Pangea Pay", breadcrumbs = [] }: TopNavPr
             <ChevronDown className="h-3.5 w-3.5 text-[#64748B]" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuLabel>
-              <p className="text-sm font-medium">{fullName}</p>
-              <p className="text-xs text-[#64748B] font-normal truncate">{user?.email}</p>
-            </DropdownMenuLabel>
+            <DropdownMenuGroup>
+              <DropdownMenuLabel>
+                <p className="text-sm font-medium">{fullName}</p>
+                <p className="text-xs text-[#64748B] font-normal truncate">{user?.email}</p>
+              </DropdownMenuLabel>
+            </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => window.location.href = "/profile"}>
               <User className="mr-2 h-4 w-4" /> My profile
