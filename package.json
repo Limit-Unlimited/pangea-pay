@@ -1,0 +1,24 @@
+{
+  "name": "pangea-pay",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pangea Pay — proprietary payments technology suite by Limit Unlimited Technologies Ltd",
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "test": "turbo test",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+  },
+  "packageManager": "pnpm@10.33.0",
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=10.0.0"
+  },
+  "devDependencies": {
+    "turbo": "^2.9.4"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild", "sharp", "unrs-resolver"]
+  }
+}
