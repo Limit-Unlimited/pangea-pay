@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  transpilePackages: ["@pangea/db", "@pangea/ui", "@pangea/config"],
+  experimental: {
+    serverComponentsExternalPackages: ["bcryptjs", "mysql2"],
+  },
 };
 
 export default nextConfig;
