@@ -15,6 +15,13 @@
       "when": 1775493272948,
       "tag": "0001_new_red_skull",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1775511623519,
+      "tag": "0002_fixed_vulture",
+      "breakpoints": true
     }
   ]
 }
