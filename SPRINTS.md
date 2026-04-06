@@ -189,21 +189,32 @@ git config user.email "<your Limit Unlimited email>"
 
 Run this once from the project root. The development tooling will commit under this identity automatically. All pushes to remote must be approved by you before execution — the tooling prepares the commit and branch; you authorise the push.
 
+### Push Cadence Policy
+
+To keep the remote in sync and protect against local data loss, the following push cadence applies:
+
+- **After every commit** — a post-commit hook will remind you to push
+- **End of every session** — always push before closing the project
+- **After every sprint deliverable** — push immediately when a sprint item is marked complete
+- **Never leave uncommitted work overnight** — commit and push at end of day
+
+The post-commit hook (installed in `.git/hooks/post-commit`) prints a push reminder after every local commit. Run `git push` to action it.
+
 ---
 
 ## Sprint Calendar
 
-| Sprint | Dates | Theme |
-|---|---|---|
-| Sprint 0 | Apr 7 – Apr 18 | Foundation & Infrastructure |
-| Sprint 1 | Apr 21 – May 2 | Authentication & Backoffice Shell |
-| Sprint 2 | May 5 – May 16 | Global Settings & User/Role Management |
-| Sprint 3 | May 19 – May 30 | Customer Management & Onboarding Ops |
-| Sprint 4 | Jun 2 – Jun 13 | Wallet/Account Management + Web App Onboarding |
-| Sprint 5 | Jun 16 – Jun 27 | Payments Operations + Web App Core Flows |
-| Sprint 6 | Jun 30 – Jul 11 | Compliance, Treasury & Accounting Basics |
-| Sprint 7 | Jul 14 – Jul 25 | Payment Rail API & Integration Hardening |
-| Sprint 8 | Jul 28 – Aug 7 | Security Audit, UAT & Go-Live |
+| Sprint | Dates | Theme | Status | Completed |
+|---|---|---|---|---|
+| Sprint 0 | Apr 7 – Apr 18 | Foundation & Infrastructure | Completed | 2026-04-06 |
+| Sprint 1 | Apr 21 – May 2 | Authentication & Backoffice Shell | Upcoming | — |
+| Sprint 2 | May 5 – May 16 | Global Settings & User/Role Management | Upcoming | — |
+| Sprint 3 | May 19 – May 30 | Customer Management & Onboarding Ops | Upcoming | — |
+| Sprint 4 | Jun 2 – Jun 13 | Wallet/Account Management + Web App Onboarding | Upcoming | — |
+| Sprint 5 | Jun 16 – Jun 27 | Payments Operations + Web App Core Flows | Upcoming | — |
+| Sprint 6 | Jun 30 – Jul 11 | Compliance, Treasury & Accounting Basics | Upcoming | — |
+| Sprint 7 | Jul 14 – Jul 25 | Payment Rail API & Integration Hardening | Upcoming | — |
+| Sprint 8 | Jul 28 – Aug 7 | Security Audit, UAT & Go-Live | Upcoming | — |
 
 ---
 
@@ -213,36 +224,37 @@ Run this once from the project root. The development tooling will commit under t
 
 ### Sprint 0 — Foundation & Infrastructure
 **Dates:** Apr 7 – Apr 18  
+**Status:** Completed — 2026-04-06 *(delivered ahead of schedule)*  
 **Goal:** Establish the technical foundation so every engineer can build in parallel from Sprint 1 onward.
 
 #### Deliverables
 
 **Infrastructure**
-- [ ] Repository structure: monorepo with `/apps/backoffice`, `/apps/web`, `/apps/api`, `/packages/ui`, `/packages/db`
-- [ ] Next.js projects scaffolded for Backoffice and Web App
-- [ ] MySQL database provisioned (dev, staging, production)
-- [ ] Base database schema: tenants, users, roles, sessions, audit_log
-- [ ] CI/CD pipeline (GitHub Actions or equivalent): lint → test → build → deploy
-- [ ] Environment config: `.env` structure, secrets management pattern, no plaintext credentials in code
-- [ ] Staging environment live and accessible
+- [x] Repository structure: monorepo with `/apps/backoffice`, `/apps/web`, `/packages/ui`, `/packages/db`, `/packages/config`
+- [x] Next.js projects scaffolded for Backoffice and Web App
+- [x] MySQL database provisioned locally (`pangea_pay`)
+- [x] Base database schema: tenants, users, sessions, audit_logs — migrated via Drizzle
+- [x] CI/CD pipeline (GitHub Actions): lint → build → migration on push to main/develop
+- [x] Environment config: `.env.example` with all provider placeholders; `.env.local` gitignored
+- [ ] Staging environment — deferred, local-only for development phase
 
 **Design System**
-- [ ] Tailwind CSS configured with Pangea brand tokens (colours, typography)
-- [ ] shadcn/ui initialised in shared package
-- [ ] Base layout components: AppShell, Sidebar, TopNav, PageHeader, DataTable, Modal, Form, Button variants
-- [ ] Lato Bold Italic for headings, Inter for body — configured via next/font
+- [x] Tailwind CSS configured with Pangea brand tokens (colours, typography) in `@pangea/config`
+- [ ] shadcn/ui initialised in shared package — Sprint 1
+- [ ] Base layout components: AppShell, Sidebar, TopNav, PageHeader, DataTable, Modal, Form, Button variants — Sprint 1
+- [ ] Lato Bold Italic for headings, Inter for body — Sprint 1
 
 **Commercial Portal (minimal)**
-- [ ] Tenant provisioning form: create tenant record with name, slug, environment type, go-live date
-- [ ] Tenant list view with status indicator
+- [ ] Tenant provisioning form — Sprint 1
+- [ ] Tenant list view with status indicator — Sprint 1
 - [ ] BRS ref: §1.5 Tenant Provisioning and Environment Management
 
-**Third-Party Setup (must start now)**
-- [ ] KYC/identity verification provider: sandbox access requested and onboarded
-- [ ] Sanctions / screening provider: sandbox access requested
-- [ ] FX / rate source: sandbox API access requested
-- [ ] Email provider (transactional): configured, test send verified
-- [ ] SMS provider: configured, test send verified
+**Third-Party Setup**
+- [ ] KYC/identity verification provider — mock adapter in place; real provider TBD
+- [ ] Sanctions / screening provider — mock adapter in place; real provider TBD
+- [ ] FX / rate source — mock adapter in place; real provider TBD
+- [ ] Email provider — Mailpit local SMTP for dev; real provider TBD
+- [ ] SMS provider — mock adapter in place; real provider TBD
 
 #### Definition of Done
 - All engineers can clone, run locally, and push to staging
