@@ -6,9 +6,7 @@
     ".": "./src/index.ts",
     "./components/*": "./src/components/*.tsx"
   },
-  "scripts": {
-    "lint": "eslint . --max-warnings 0"
-  },
+  "scripts": {},
   "devDependencies": {
     "typescript": "^5.9.3"
   },
