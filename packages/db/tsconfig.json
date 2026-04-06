@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "extends": "@pangea/config/typescript",
+  "extends": "../config/typescript.json",
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src"
