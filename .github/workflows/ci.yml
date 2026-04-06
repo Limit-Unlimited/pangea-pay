@@ -32,6 +32,8 @@ jobs:
       DB_PASSWORD: ci_password
       DB_NAME: pangea_pay_test
       AUTH_SECRET: ci-secret-not-for-production-use-only
+      NEXTAUTH_URL: http://localhost:3000
+      NEXTAUTH_SECRET: ci-secret-not-for-production-use-only
 
     steps:
       - name: Checkout
