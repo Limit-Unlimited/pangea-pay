@@ -223,6 +223,9 @@ importers:
         specifier: ^3.14.0
         version: 3.20.0(@types/node@20.19.39)
     devDependencies:
+      '@pangea/config':
+        specifier: workspace:*
+        version: link:../config
       '@types/bcryptjs':
         specifier: ^3.0.0
         version: 3.0.0
