@@ -207,7 +207,7 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 | Sprint | Dates | Theme | Status | Completed |
 |---|---|---|---|---|
 | Sprint 0 | Apr 7 – Apr 18 | Foundation & Infrastructure | Completed | 2026-04-06 |
-| Sprint 1 | Apr 21 – May 2 | Authentication & Backoffice Shell | Upcoming | — |
+| Sprint 1 | Apr 21 – May 2 | Authentication & Backoffice Shell | Completed | 2026-04-06 |
 | Sprint 2 | May 5 – May 16 | Global Settings & User/Role Management | Upcoming | — |
 | Sprint 3 | May 19 – May 30 | Customer Management & Onboarding Ops | Upcoming | — |
 | Sprint 4 | Jun 2 – Jun 13 | Wallet/Account Management + Web App Onboarding | Upcoming | — |
@@ -270,6 +270,7 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 
 ### Sprint 1 — Authentication & Backoffice Shell
 **Dates:** Apr 21 – May 2  
+**Status:** Completed — 2026-04-06 *(delivered ahead of schedule)*  
 **Goal:** Backoffice and Web App both have working, secure authentication and a navigable shell ready for feature work.
 
 #### Deliverables
