@@ -58,5 +58,7 @@ Thumbs.db
 .vercel
 .turbo
 
-# Internal tooling config — not for the repo
-.claude/
+# Claude Code project settings — committed intentionally
+# .claude/settings.json contains team-agreed tool permissions
+# .claude/settings.local.json (if created) is gitignored for personal overrides
+.claude/settings.local.json
