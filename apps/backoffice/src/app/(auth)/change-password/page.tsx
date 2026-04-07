@@ -26,7 +26,8 @@ type FormData = z.infer<typeof schema>;
 
 export default function ChangePasswordPage() {
   const router = useRouter();
-  const { update } = useSession();
+  const session = useSession();
+  const update = session?.update;
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -52,7 +53,7 @@ export default function ChangePasswordPage() {
       return;
     }
 
-    await update({ mustChangePassword: false, status: "active" });
+    await update?.({ mustChangePassword: false, status: "active" });
     router.push("/dashboard");
   }
 

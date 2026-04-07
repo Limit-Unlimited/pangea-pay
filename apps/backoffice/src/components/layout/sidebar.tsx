@@ -26,6 +26,7 @@ import {
   Flag,
   UserCog,
   Shield,
+  ClipboardList,
 } from "lucide-react";
 
 interface NavItem {
@@ -37,7 +38,15 @@ interface NavItem {
 
 const NAV: NavItem[] = [
   { label: "Dashboard",          href: "/dashboard",        icon: LayoutDashboard },
-  { label: "Customers",          href: "/customers",        icon: Users },
+  {
+    label: "Customers",
+    href:  "/customers",
+    icon:  Users,
+    children: [
+      { label: "All customers",   href: "/customers",        icon: Users },
+      { label: "Onboarding queue", href: "/onboarding",     icon: ClipboardList },
+    ],
+  },
   { label: "Payments",           href: "/payments",         icon: CreditCard },
   { label: "Messages",           href: "/messages",         icon: MessageSquare },
   { label: "Documents",          href: "/documents",        icon: FileText },

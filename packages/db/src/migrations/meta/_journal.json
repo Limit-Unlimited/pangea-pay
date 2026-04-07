@@ -22,6 +22,20 @@
       "when": 1775511623519,
       "tag": "0002_fixed_vulture",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1775577819529,
+      "tag": "0003_nasty_salo",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1775578869155,
+      "tag": "0004_productive_master_chief",
+      "breakpoints": true
     }
   ]
 }

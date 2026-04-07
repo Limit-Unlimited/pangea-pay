@@ -16,7 +16,20 @@ export type AuditAction =
   | "user.updated"
   | "user.status_changed"
   | "role.assigned"
-  | "role.removed";
+  | "role.removed"
+  | "customer.created"
+  | "customer.updated"
+  | "customer.status_changed"
+  | "customer.blacklisted"
+  | "customer.blacklist_removed"
+  | "customer.document_added"
+  | "customer.document_accepted"
+  | "customer.document_rejected"
+  | "customer.risk_assessed"
+  | "customer.screened"
+  | "customer.linked_user_added"
+  | "customer.sar_created"
+  | "customer.commission_added";
 
 interface AuditParams {
   tenantId?: string;
