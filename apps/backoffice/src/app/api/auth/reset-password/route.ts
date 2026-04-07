@@ -19,9 +19,9 @@ export async function POST(req: NextRequest) {
 
   const { token, password } = parsed.data;
 
-  const strengthError = validatePasswordStrength(password);
-  if (strengthError) {
-    return NextResponse.json({ error: strengthError }, { status: 400 });
+  const strengthResult = validatePasswordStrength(password);
+  if (!strengthResult.valid) {
+    return NextResponse.json({ error: strengthResult.message ?? "Password does not meet requirements." }, { status: 400 });
   }
 
   const now = new Date();
