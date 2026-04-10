@@ -36,6 +36,13 @@
       "when": 1775578869155,
       "tag": "0004_productive_master_chief",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1775859397018,
+      "tag": "0005_quick_wildside",
+      "breakpoints": true
     }
   ]
 }

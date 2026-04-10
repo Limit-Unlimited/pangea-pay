@@ -29,7 +29,13 @@ export type AuditAction =
   | "customer.screened"
   | "customer.linked_user_added"
   | "customer.sar_created"
-  | "customer.commission_added";
+  | "customer.commission_added"
+  | "account.opened"
+  | "account.status_changed"
+  | "account.balance_adjusted"
+  | "beneficiary.flagged"
+  | "beneficiary.blocked"
+  | "beneficiary.unflagged";
 
 interface AuditParams {
   tenantId?: string;

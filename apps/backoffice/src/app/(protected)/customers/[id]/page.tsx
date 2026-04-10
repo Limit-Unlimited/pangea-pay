@@ -876,6 +876,401 @@ function CommissionsTab({ customer }: { customer: Customer }) {
 }
 
 // ---------------------------------------------------------------------------
+// Accounts tab
+// ---------------------------------------------------------------------------
+type AccountRecord = {
+  id: string; accountNumber: string; accountType: string; currency: string;
+  status: string; currentBalance: string; availableBalance: string; reservedBalance: string;
+  openDate: string | null; closedAt: string | null; notes: string | null;
+};
+
+const ACCOUNT_STATUS_COLOURS: Record<string, string> = {
+  pending:   "bg-amber-100 text-amber-800",
+  active:    "bg-green-100 text-green-800",
+  blocked:   "bg-red-100 text-red-800",
+  suspended: "bg-orange-100 text-orange-800",
+  closed:    "bg-slate-100 text-slate-600",
+};
+
+const ACCOUNT_TRANSITIONS: Record<string, string[]> = {
+  pending:   ["active", "closed"],
+  active:    ["blocked", "suspended", "closed"],
+  blocked:   ["active", "suspended", "closed"],
+  suspended: ["active", "blocked", "closed"],
+  closed:    [],
+};
+
+function AccountsTab({ customer }: { customer: Customer }) {
+  const [accounts, setAccounts]   = useState<AccountRecord[]>([]);
+  const [loading, setLoading]     = useState(true);
+  const [openDialog, setOpenDialog]   = useState(false);
+  const [statusDialog, setStatusDialog] = useState(false);
+  const [selected, setSelected]   = useState<AccountRecord | null>(null);
+  const [form, setForm]           = useState({ currency: "", accountType: "current", notes: "" });
+  const [statusForm, setStatusForm] = useState({ status: "", reason: "" });
+  const [saving, setSaving]       = useState(false);
+  const [error, setError]         = useState("");
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const res  = await fetch(`/api/customers/${customer.id}/accounts`);
+    const json = await res.json();
+    setAccounts(Array.isArray(json) ? json : []);
+    setLoading(false);
+  }, [customer.id]);
+
+  useEffect(() => { load(); }, [load]);
+
+  async function openAccount() {
+    setSaving(true); setError("");
+    const res = await fetch(`/api/customers/${customer.id}/accounts`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ currency: form.currency.toUpperCase(), accountType: form.accountType, notes: form.notes || null }),
+    });
+    const json = await res.json();
+    setSaving(false);
+    if (!res.ok) { setError(json.error ?? "Failed to open account"); return; }
+    setOpenDialog(false);
+    setForm({ currency: "", accountType: "current", notes: "" });
+    load();
+  }
+
+  async function changeStatus() {
+    if (!selected) return;
+    setSaving(true); setError("");
+    const res = await fetch(`/api/customers/${customer.id}/accounts/${selected.id}/status`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: statusForm.status, reason: statusForm.reason }),
+    });
+    const json = await res.json();
+    setSaving(false);
+    if (!res.ok) { setError(json.error ?? "Failed to update status"); return; }
+    setStatusDialog(false);
+    setStatusForm({ status: "", reason: "" });
+    load();
+  }
+
+  function fmt(n: string | null) {
+    if (!n) return "0.00";
+    return parseFloat(n).toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-end">
+        <Button
+          className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white"
+          size="sm"
+          onClick={() => setOpenDialog(true)}
+        >
+          Open account
+        </Button>
+      </div>
+
+      {loading ? (
+        <p className="text-sm text-[#64748B] py-8 text-center">Loading…</p>
+      ) : accounts.length === 0 ? (
+        <p className="text-sm text-[#64748B] py-8 text-center">No accounts.</p>
+      ) : (
+        <Card className="overflow-hidden border-[#E2E8F0]">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-[#F7F9FC] hover:bg-[#F7F9FC]">
+                <TableHead className="text-[#64748B] font-medium">Account number</TableHead>
+                <TableHead className="text-[#64748B] font-medium">Type</TableHead>
+                <TableHead className="text-[#64748B] font-medium">Currency</TableHead>
+                <TableHead className="text-[#64748B] font-medium">Current balance</TableHead>
+                <TableHead className="text-[#64748B] font-medium">Available</TableHead>
+                <TableHead className="text-[#64748B] font-medium">Status</TableHead>
+                <TableHead className="text-[#64748B] font-medium">Opened</TableHead>
+                <TableHead className="text-[#64748B] font-medium w-8" />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {accounts.map((acc) => (
+                <TableRow key={acc.id}>
+                  <TableCell className="font-mono text-sm text-[#1A2332]">{acc.accountNumber}</TableCell>
+                  <TableCell className="capitalize text-[#64748B]">{acc.accountType}</TableCell>
+                  <TableCell className="uppercase font-medium text-[#1A2332]">{acc.currency}</TableCell>
+                  <TableCell className="text-[#1A2332]">{fmt(acc.currentBalance)}</TableCell>
+                  <TableCell className="text-[#64748B]">{fmt(acc.availableBalance)}</TableCell>
+                  <TableCell>
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium capitalize ${ACCOUNT_STATUS_COLOURS[acc.status] ?? "bg-slate-100 text-slate-600"}`}>
+                      {acc.status}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-[#64748B]">{formatDate(acc.openDate)}</TableCell>
+                  <TableCell>
+                    {ACCOUNT_TRANSITIONS[acc.status]?.length > 0 && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-xs h-7"
+                        onClick={() => { setSelected(acc); setStatusForm({ status: "", reason: "" }); setError(""); setStatusDialog(true); }}
+                      >
+                        Manage
+                      </Button>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Card>
+      )}
+
+      {/* Open account dialog */}
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Open account</DialogTitle></DialogHeader>
+          <div className="space-y-4 py-2">
+            {error && <p className="text-sm text-red-600">{error}</p>}
+            <div className="space-y-1.5">
+              <Label>Currency <span className="text-red-500">*</span></Label>
+              <Input
+                placeholder="e.g. GBP"
+                maxLength={3}
+                value={form.currency}
+                onChange={(e) => setForm((p) => ({ ...p, currency: e.target.value.toUpperCase() }))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Account type</Label>
+              <Select value={form.accountType} onValueChange={(v) => setForm((p) => ({ ...p, accountType: v ?? "current" }))}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="current">Current</SelectItem>
+                  <SelectItem value="wallet">Wallet</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Notes</Label>
+              <Textarea rows={2} value={form.notes} onChange={(e) => setForm((p) => ({ ...p, notes: e.target.value }))} placeholder="Optional notes…" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpenDialog(false)}>Cancel</Button>
+            <Button
+              className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white"
+              onClick={openAccount}
+              disabled={saving || form.currency.length !== 3}
+            >
+              {saving ? "Opening…" : "Open account"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Status change dialog */}
+      <Dialog open={statusDialog} onOpenChange={setStatusDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Manage account — {selected?.accountNumber}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            {error && <p className="text-sm text-red-600">{error}</p>}
+            <p className="text-sm text-[#64748B]">
+              Current status: <span className="font-medium capitalize">{selected?.status}</span>
+            </p>
+            <div className="space-y-1.5">
+              <Label>New status <span className="text-red-500">*</span></Label>
+              <Select value={statusForm.status || ""} onValueChange={(v) => setStatusForm((p) => ({ ...p, status: v ?? "" }))}>
+                <SelectTrigger><SelectValue placeholder="Select status…" /></SelectTrigger>
+                <SelectContent>
+                  {(ACCOUNT_TRANSITIONS[selected?.status ?? ""] ?? []).map((s) => (
+                    <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Reason <span className="text-red-500">*</span></Label>
+              <Textarea
+                rows={2}
+                value={statusForm.reason}
+                onChange={(e) => setStatusForm((p) => ({ ...p, reason: e.target.value }))}
+                placeholder="Reason for this status change…"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setStatusDialog(false)}>Cancel</Button>
+            <Button
+              className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white"
+              onClick={changeStatus}
+              disabled={saving || !statusForm.status || !statusForm.reason}
+            >
+              {saving ? "Saving…" : "Apply"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Beneficiaries tab
+// ---------------------------------------------------------------------------
+type BeneficiaryRecord = {
+  id: string; displayName: string; bankName: string | null; accountNumber: string | null;
+  iban: string | null; currency: string; country: string;
+  status: string; flagReason: string | null; flaggedAt: string | null;
+  createdAt: string;
+};
+
+const BENE_STATUS_COLOURS: Record<string, string> = {
+  active:  "bg-green-100 text-green-800",
+  flagged: "bg-amber-100 text-amber-800",
+  blocked: "bg-red-100 text-red-800",
+};
+
+function BeneficiariesTab({ customer }: { customer: Customer }) {
+  const [records, setRecords]     = useState<BeneficiaryRecord[]>([]);
+  const [loading, setLoading]     = useState(true);
+  const [actionDialog, setActionDialog] = useState(false);
+  const [selected, setSelected]   = useState<BeneficiaryRecord | null>(null);
+  const [form, setForm]           = useState({ status: "", flagReason: "" });
+  const [saving, setSaving]       = useState(false);
+  const [error, setError]         = useState("");
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const res  = await fetch(`/api/customers/${customer.id}/beneficiaries`);
+    const json = await res.json();
+    setRecords(Array.isArray(json) ? json : []);
+    setLoading(false);
+  }, [customer.id]);
+
+  useEffect(() => { load(); }, [load]);
+
+  async function applyAction() {
+    if (!selected) return;
+    setSaving(true); setError("");
+    const res = await fetch(`/api/customers/${customer.id}/beneficiaries/${selected.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: form.status, flagReason: form.flagReason || undefined }),
+    });
+    const json = await res.json();
+    setSaving(false);
+    if (!res.ok) { setError(json.error ?? "Failed"); return; }
+    setActionDialog(false);
+    setForm({ status: "", flagReason: "" });
+    load();
+  }
+
+  return (
+    <div className="space-y-4">
+      {loading ? (
+        <p className="text-sm text-[#64748B] py-8 text-center">Loading…</p>
+      ) : records.length === 0 ? (
+        <p className="text-sm text-[#64748B] py-8 text-center">No beneficiaries.</p>
+      ) : (
+        <Card className="overflow-hidden border-[#E2E8F0]">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-[#F7F9FC] hover:bg-[#F7F9FC]">
+                <TableHead className="text-[#64748B] font-medium">Name</TableHead>
+                <TableHead className="text-[#64748B] font-medium">Bank</TableHead>
+                <TableHead className="text-[#64748B] font-medium">Account / IBAN</TableHead>
+                <TableHead className="text-[#64748B] font-medium">Currency</TableHead>
+                <TableHead className="text-[#64748B] font-medium">Country</TableHead>
+                <TableHead className="text-[#64748B] font-medium">Status</TableHead>
+                <TableHead className="text-[#64748B] font-medium">Added</TableHead>
+                <TableHead className="text-[#64748B] font-medium w-8" />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {records.map((b) => (
+                <TableRow key={b.id}>
+                  <TableCell className="font-medium text-[#1A2332]">{b.displayName}</TableCell>
+                  <TableCell className="text-[#64748B]">{b.bankName ?? "—"}</TableCell>
+                  <TableCell className="font-mono text-sm text-[#64748B]">{b.iban ?? b.accountNumber ?? "—"}</TableCell>
+                  <TableCell className="uppercase font-medium text-[#1A2332]">{b.currency}</TableCell>
+                  <TableCell className="uppercase text-[#64748B]">{b.country}</TableCell>
+                  <TableCell>
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium capitalize ${BENE_STATUS_COLOURS[b.status] ?? "bg-slate-100 text-slate-600"}`}>
+                      {b.status}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-[#64748B]">{formatDate(b.createdAt)}</TableCell>
+                  <TableCell>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-xs h-7"
+                      onClick={() => {
+                        setSelected(b);
+                        setForm({ status: "", flagReason: b.flagReason ?? "" });
+                        setError("");
+                        setActionDialog(true);
+                      }}
+                    >
+                      Manage
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Card>
+      )}
+
+      {/* Manage beneficiary dialog */}
+      <Dialog open={actionDialog} onOpenChange={setActionDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Manage beneficiary — {selected?.displayName}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            {error && <p className="text-sm text-red-600">{error}</p>}
+            <p className="text-sm text-[#64748B]">
+              Current status: <span className="font-medium capitalize">{selected?.status}</span>
+            </p>
+            <div className="space-y-1.5">
+              <Label>Action <span className="text-red-500">*</span></Label>
+              <Select value={form.status || ""} onValueChange={(v) => setForm((p) => ({ ...p, status: v ?? "" }))}>
+                <SelectTrigger><SelectValue placeholder="Select action…" /></SelectTrigger>
+                <SelectContent>
+                  {selected?.status !== "active"  && <SelectItem value="active">Restore to active</SelectItem>}
+                  {selected?.status !== "flagged" && <SelectItem value="flagged">Flag for review</SelectItem>}
+                  {selected?.status !== "blocked" && <SelectItem value="blocked">Block</SelectItem>}
+                </SelectContent>
+              </Select>
+            </div>
+            {(form.status === "flagged" || form.status === "blocked") && (
+              <div className="space-y-1.5">
+                <Label>Reason <span className="text-red-500">*</span></Label>
+                <Textarea
+                  rows={2}
+                  value={form.flagReason}
+                  onChange={(e) => setForm((p) => ({ ...p, flagReason: e.target.value }))}
+                  placeholder="Reason for flagging or blocking…"
+                />
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setActionDialog(false)}>Cancel</Button>
+            <Button
+              className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white"
+              onClick={applyAction}
+              disabled={saving || !form.status || ((form.status === "flagged" || form.status === "blocked") && !form.flagReason)}
+            >
+              {saving ? "Saving…" : "Apply"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Audit tab
 // ---------------------------------------------------------------------------
 function AuditTab({ customer }: { customer: Customer }) {
@@ -1068,6 +1463,8 @@ export default function CustomerDetailPage() {
           <TabsTrigger value="risk">Risk</TabsTrigger>
           <TabsTrigger value="screening">Screening</TabsTrigger>
           {customer.type === "business" && <TabsTrigger value="users">Linked users</TabsTrigger>}
+          <TabsTrigger value="accounts">Accounts</TabsTrigger>
+          <TabsTrigger value="beneficiaries">Beneficiaries</TabsTrigger>
           <TabsTrigger value="sar">SAR</TabsTrigger>
           <TabsTrigger value="commissions">Commissions</TabsTrigger>
           <TabsTrigger value="audit">Audit trail</TabsTrigger>
@@ -1090,6 +1487,12 @@ export default function CustomerDetailPage() {
             <LinkedUsersTab customer={customer} />
           </TabsContent>
         )}
+        <TabsContent value="accounts">
+          <AccountsTab customer={customer} />
+        </TabsContent>
+        <TabsContent value="beneficiaries">
+          <BeneficiariesTab customer={customer} />
+        </TabsContent>
         <TabsContent value="sar">
           <SarTab customer={customer} />
         </TabsContent>
