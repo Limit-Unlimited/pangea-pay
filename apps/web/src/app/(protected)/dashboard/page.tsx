@@ -143,11 +143,17 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      {/* Quick actions (placeholder for Sprint 5) */}
+      {/* Quick actions */}
       <Card className="p-5 border-[#E2E8F0] bg-white">
         <h2 className="text-sm font-semibold text-[#1A2332] mb-3">Quick actions</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {["Send money", "Add beneficiary", "Get statement"].map((action) => (
+          <Link href="/convert">
+            <div className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-lg border border-[#E2E8F0] hover:border-[#1E4D8C]/40 hover:bg-[#F7F9FC] text-xs text-[#1A2332] transition-colors cursor-pointer">
+              <span className="text-lg">↔</span>
+              <span>Get a quote</span>
+            </div>
+          </Link>
+          {["Send money", "Get statement"].map((action) => (
             <button
               key={action}
               disabled

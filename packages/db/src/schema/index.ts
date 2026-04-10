@@ -8,3 +8,4 @@ export * from "./config";
 export * from "./customers";
 export * from "./accounts";
 export * from "./web-users";
+export * from "./fx";
