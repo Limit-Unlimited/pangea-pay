@@ -35,7 +35,13 @@ export type AuditAction =
   | "account.balance_adjusted"
   | "beneficiary.flagged"
   | "beneficiary.blocked"
-  | "beneficiary.unflagged";
+  | "beneficiary.unflagged"
+  | "transaction.created"
+  | "transaction.status_changed"
+  | "transaction.held"
+  | "transaction.released"
+  | "transaction.cancelled"
+  | "transaction.refund_initiated";
 
 interface AuditParams {
   tenantId?: string;

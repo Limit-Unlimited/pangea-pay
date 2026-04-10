@@ -353,36 +353,36 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 #### Deliverables
 
 **Authentication (Backoffice)**
-- [ ] Login page: email + password with Pangea brand styling
-- [ ] TOTP-based MFA enrolment and verification flow
-- [ ] Session management: JWT or secure session tokens, configurable timeout
-- [ ] Forced password change on first login
-- [ ] Failed login lockout policy (configurable attempt threshold)
-- [ ] Secure password reset via time-bound email link
-- [ ] Remember device option (optional, configurable)
-- [ ] BRS ref: §2.2.9 Password and Authentication Management, §2.2.10 Session and Access Control
+- [x] Login page: email + password with Pangea brand styling
+- [x] TOTP-based MFA enrolment and verification flow
+- [x] Session management: JWT or secure session tokens, configurable timeout
+- [x] Forced password change on first login
+- [x] Failed login lockout policy (configurable attempt threshold)
+- [x] Secure password reset via time-bound email link
+- [ ] Remember device option — deferred (not required for MVP)
+- [x] BRS ref: §2.2.9 Password and Authentication Management, §2.2.10 Session and Access Control
 
 **Authentication (Web App)**
-- [ ] Customer login page with email + password
-- [ ] MFA step (TOTP or SMS OTP, configurable per tenant)
-- [ ] Registration entry point (shell only — full flow in Sprint 4)
-- [ ] Forgot password flow
-- [ ] Session timeout and renewal handling
-- [ ] BRS ref: §3.11 App Security and Session Management
+- [x] Customer login page with email + password
+- [ ] MFA step (TOTP or SMS OTP) — deferred to Sprint 6 (SMS provider not configured; TOTP not required for MVP v1)
+- [x] Registration entry point (full flow delivered in Sprint 4)
+- [ ] Forgot password flow — deferred to Sprint 5
+- [x] Session timeout and renewal handling
+- [x] BRS ref: §3.11 App Security and Session Management
 
 **Backoffice Shell**
-- [ ] Persistent sidebar navigation with all top-level modules (placeholders for unbuilt screens)
-- [ ] Top navigation bar: tenant name, user name, avatar, logout
-- [ ] Breadcrumb system
-- [ ] Role-gated route protection (403 page for unauthorised access)
-- [ ] Notification bell (shell only)
-- [ ] Responsive layout for 1280px+ screens (Backoffice is desktop-first)
-- [ ] BRS ref: §2.1.9 Application Security Settings
+- [x] Persistent sidebar navigation with all top-level modules (placeholders for unbuilt screens)
+- [x] Top navigation bar: tenant name, user name, avatar, logout
+- [x] Breadcrumb system
+- [x] Role-gated route protection (403 page for unauthorised access)
+- [x] Notification bell (shell only)
+- [x] Responsive layout for 1280px+ screens (Backoffice is desktop-first)
+- [x] BRS ref: §2.1.9 Application Security Settings
 
 **Audit Foundation**
-- [ ] Audit log service: captures actor, action, resource, old value, new value, timestamp, tenant
-- [ ] All authentication events written to audit log (login, logout, MFA, lockout, password reset)
-- [ ] BRS ref: §2.1.14 Audit and Change Traceability, §6.12 Shared Audit and Evidence Rules
+- [x] Audit log service: captures actor, action, resource, old value, new value, timestamp, tenant
+- [x] All authentication events written to audit log (login, logout, MFA, lockout, password reset)
+- [x] BRS ref: §2.1.14 Audit and Change Traceability, §6.12 Shared Audit and Evidence Rules
 
 #### Definition of Done
 - Backoffice and Web App login/logout work with MFA
@@ -398,40 +398,41 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 ---
 
 ### Sprint 2 — Global Settings & User/Role Management
-**Dates:** May 5 – May 16  
+**Dates:** May 5 – May 16 ~~→ Apr 6~~
+**Status:** Completed — 2026-04-06 *(delivered ahead of schedule)*
 **Goal:** Backoffice administrators can configure the platform and manage internal users with full role-based access control.
 
 #### Deliverables
 
 **Global Settings**
-- [ ] Core Setup display: tenant name, base currency, timezone, environment type, platform version, configuration completeness indicator
-- [ ] Country configuration: add, update, activate/deactivate, country risk rating, send/receive designation
-- [ ] Corridor configuration: activate/deactivate, permitted products, permitted payout methods per corridor
-- [ ] Currency configuration: ISO code, decimal precision, activation status, eligibility flags
-- [ ] Product and service configuration: product code, name, type, eligible countries, eligible channels, active/inactive
-- [ ] Payout method configuration: add, update, activate/deactivate, operational cut-off times, value limits
-- [ ] Funding method configuration: bank transfer, wallet funding; eligibility by customer type and country
-- [ ] Pricing and fee configuration: corridor-level fees, fixed + percentage fee models, FX spread rules, effective dates
-- [ ] Notification template management: email and SMS templates, event-based mapping, merge fields, version history
-- [ ] Feature flags: create, activate, deactivate; environment-specific and corridor-specific activation; maintenance mode toggle
-- [ ] Business rules and threshold configuration: transaction limits, daily/monthly limits, risk-based review thresholds
-- [ ] Reference data: document types, customer types, risk categories, source of funds, transaction purpose categories
-- [ ] Audit trail for all settings changes
-- [ ] BRS ref: §2.1.1 through §2.1.14
+- [ ] Core Setup display: tenant name, base currency, timezone, environment type, platform version, configuration completeness indicator — deferred to Sprint 6
+- [x] Country configuration: add, update, activate/deactivate, country risk rating, send/receive designation
+- [x] Corridor configuration: activate/deactivate, permitted products, permitted payout methods per corridor
+- [x] Currency configuration: ISO code, decimal precision, activation status, eligibility flags
+- [x] Product and service configuration: product code, name, type, eligible countries, eligible channels, active/inactive
+- [ ] Payout method configuration — deferred to Sprint 5 (requires payout partner finalisation)
+- [ ] Funding method configuration — deferred to Sprint 5
+- [x] Pricing and fee configuration: corridor-level fees, fixed + percentage fee models, FX spread rules, effective dates
+- [ ] Notification template management — deferred to Sprint 6
+- [x] Feature flags: create, activate, deactivate; environment-specific and corridor-specific activation; maintenance mode toggle
+- [ ] Business rules and threshold configuration: transaction limits, daily/monthly limits, risk-based review thresholds — deferred to Sprint 5
+- [ ] Reference data: document types, customer types, risk categories, source of funds, transaction purpose categories — deferred to Sprint 6
+- [x] Audit trail for all settings changes
+- [x] BRS ref: §2.1.1 through §2.1.14
 
 **User & Role Management**
-- [ ] Internal user creation: name, email, role, department, tenant, MFA requirement, permitted environments
-- [ ] User invitation by email with time-bound activation link
-- [ ] User status lifecycle: invited → active → suspended → deactivated → archived
-- [ ] Role creation and management: name, permission set, privileged flag, active/inactive
-- [ ] Granular permission model: view, create, edit, approve, delete, export per module
-- [ ] Role assignment to users: single and multi-role, effective and expiry dates
-- [ ] Privileged access controls: mandatory MFA, enhanced audit for privileged users
-- [ ] User directory: searchable by name, email, role, department, status, MFA status
-- [ ] Account unlock and forced password reset flows
-- [ ] User and role audit trail
-- [ ] Reporting views: active users, locked/suspended users, MFA compliance, dormant accounts
-- [ ] BRS ref: §2.2.1 through §2.2.13
+- [x] Internal user creation: name, email, role, department, tenant, MFA requirement, permitted environments
+- [x] User invitation by email with time-bound activation link
+- [x] User status lifecycle: invited → active → suspended → deactivated → archived
+- [x] Role creation and management: name, permission set, privileged flag, active/inactive
+- [x] Granular permission model: view, create, edit, approve, delete, export per module
+- [x] Role assignment to users: single and multi-role, effective and expiry dates
+- [x] Privileged access controls: mandatory MFA, enhanced audit for privileged users
+- [x] User directory: searchable by name, email, role, department, status, MFA status
+- [x] Account unlock and forced password reset flows
+- [x] User and role audit trail
+- [ ] Reporting views: active users, locked/suspended users, MFA compliance, dormant accounts — deferred to Sprint 6
+- [x] BRS ref: §2.2.1 through §2.2.13
 
 #### Definition of Done
 - Admin can create a user, assign a role, and that user's access is gated correctly

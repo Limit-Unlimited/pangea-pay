@@ -50,6 +50,13 @@
       "when": 1775861441803,
       "tag": "0006_lyrical_chat",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1775863490076,
+      "tag": "0007_amusing_scarlet_witch",
+      "breakpoints": true
     }
   ]
 }
