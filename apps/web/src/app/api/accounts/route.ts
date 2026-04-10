@@ -1,11 +1,10 @@
-import { NextRequest } from "next/server";
 import { eq, and, desc } from "drizzle-orm";
 import { db, webUsers, accounts, customers } from "@pangea/db";
 import { auth } from "@/auth";
-import { ok, unauthorized, err } from "@/lib/api/response";
+import { ok, unauthorized } from "@/lib/api/response";
 
 // GET /api/accounts — get accounts for the logged-in customer
-export async function GET(_req: NextRequest) {
+export async function GET() {
   const session = await auth();
   if (!session?.user) return unauthorized();
 

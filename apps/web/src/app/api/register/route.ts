@@ -39,6 +39,7 @@ export async function POST(req: NextRequest) {
     const otp = String(randomInt(100000, 999999));
     const tokenHash = await bcrypt.hash(otp, 10);
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (db.insert(emailVerifications) as any).values({ email: email.toLowerCase(), tokenHash, expiresAt });
     await sendEmailVerificationOtp(email, otp).catch(console.error);
     return ok({ message: "Verification code resent", email });
@@ -46,6 +47,7 @@ export async function POST(req: NextRequest) {
 
   const passwordHash = await hashPassword(password);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   await (db.insert(webUsers) as any).values({
     tenantId,
     email:       email.toLowerCase(),
@@ -63,6 +65,7 @@ export async function POST(req: NextRequest) {
   const tokenHash = await bcrypt.hash(otp, 10);
   const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   await (db.insert(emailVerifications) as any).values({
     email: email.toLowerCase(),
     tokenHash,

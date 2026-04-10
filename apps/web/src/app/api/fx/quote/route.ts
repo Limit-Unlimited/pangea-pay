@@ -28,8 +28,8 @@ export async function POST(req: NextRequest) {
   try {
     const quote = await generateQuote(session.user.id, from, to, amount);
     return ok(quote);
-  } catch (e: any) {
-    const msg = e?.message ?? "Failed to generate quote";
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : "Failed to generate quote";
     if (msg.includes("Frankfurter error")) return err("Exchange rate service unavailable. Please try again.", 503);
     return err(msg);
   }

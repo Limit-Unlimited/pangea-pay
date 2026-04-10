@@ -128,7 +128,7 @@ export default function VerifyEmailForm() {
       </form>
 
       <p className="text-sm text-center text-[#64748B] mt-6">
-        Didn't receive a code?{" "}
+        Didn&apos;t receive a code?{" "}
         <button
           type="button"
           onClick={handleResend}

@@ -53,6 +53,7 @@ export async function generateQuote(
 
   const expiresAt = new Date(Date.now() + QUOTE_TTL_SECONDS * 1000);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   await (db.insert(fxQuotes) as any).values({
     tenantId:      webUser.tenantId,
     customerId:    webUser.customerId,
@@ -117,12 +118,14 @@ export async function acceptQuote(
   if (q.customerId !== webUser.customerId) throw new Error("Quote does not belong to this customer");
   if (q.status !== "pending") throw new Error(`Quote is ${q.status} — cannot accept`);
   if (new Date() > q.expiresAt) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await db.update(fxQuotes).set({ status: "expired" } as any).where(eq(fxQuotes.id, quoteId));
     throw new Error("Quote has expired");
   }
 
   await db
     .update(fxQuotes)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     .set({ status: "accepted", acceptedAt: new Date() } as any)
     .where(eq(fxQuotes.id, quoteId));
 }

@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
   try {
     await acceptQuote(parsed.data.quoteId, session.user.id);
     return ok({ accepted: true });
-  } catch (e: any) {
-    return err(e?.message ?? "Failed to accept quote");
+  } catch (e: unknown) {
+    return err(e instanceof Error ? e.message : "Failed to accept quote");
   }
 }

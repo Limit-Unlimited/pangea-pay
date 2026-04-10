@@ -4,7 +4,6 @@ import { auth } from "@/auth";
 import { db, webUsers, customers, accounts } from "@pangea/db";
 import { eq, and, desc } from "drizzle-orm";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 function fmt(n: string | null) {
@@ -94,14 +93,12 @@ export default async function DashboardPage() {
     .where(and(eq(accounts.customerId, webUser.customerId), eq(accounts.tenantId, webUser.tenantId)))
     .orderBy(desc(accounts.createdAt));
 
-  const displayName = `${customer.firstName ?? ""} ${customer.lastName ?? ""}`.trim() || webUser.email;
-
   return (
     <div className="space-y-6">
       {/* Welcome */}
       <div>
         <h1 className="text-2xl font-bold text-[#1A2332]">Welcome, {customer.firstName ?? "there"}</h1>
-        <p className="text-[#64748B] mt-1">Here's an overview of your accounts.</p>
+        <p className="text-[#64748B] mt-1">Here&apos;s an overview of your accounts.</p>
       </div>
 
       {/* Accounts grid */}

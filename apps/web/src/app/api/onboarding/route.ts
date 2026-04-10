@@ -75,6 +75,7 @@ export async function POST(req: NextRequest) {
   let customerId = webUser.customerId;
 
   if (!customerId) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (db.insert(customers) as any).values({
       tenantId:           webUser.tenantId,
       customerRef,
@@ -124,10 +125,12 @@ export async function POST(req: NextRequest) {
       postCode:           d.postCode,
       country:            d.country.toUpperCase(),
       onboardingStatus:   "pending",
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any).where(eq(customers.id, customerId));
   }
 
   // Add document record (metadata only; file upload deferred to Sprint 4 storage provision)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   await (db.insert(customerDocuments) as any).values({
     customerId,
     tenantId:       webUser.tenantId,
@@ -139,6 +142,7 @@ export async function POST(req: NextRequest) {
   });
 
   if (d.poaDocumentType) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (db.insert(customerDocuments) as any).values({
       customerId,
       tenantId:     webUser.tenantId,
@@ -148,7 +152,9 @@ export async function POST(req: NextRequest) {
   }
 
   // Advance onboarding status to under_review
-  await db.update(customers)
+  await db
+    .update(customers)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     .set({ onboardingStatus: "under_review", status: "onboarding" } as any)
     .where(eq(customers.id, customerId));
 
@@ -156,7 +162,7 @@ export async function POST(req: NextRequest) {
 }
 
 // GET /api/onboarding — get current onboarding state
-export async function GET(_req: NextRequest) {
+export async function GET() {
   const session = await auth();
   if (!session?.user) return unauthorized();
 

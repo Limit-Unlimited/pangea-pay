@@ -4,7 +4,6 @@ import { auth } from "@/auth";
 import { db, webUsers, accounts } from "@pangea/db";
 import { eq, and } from "drizzle-orm";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 
 type Params = { params: Promise<{ id: string }> };
 

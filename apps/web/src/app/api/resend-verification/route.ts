@@ -32,6 +32,7 @@ export async function POST(req: NextRequest) {
   const tokenHash = await bcrypt.hash(otp, 10);
   const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   await (db.insert(emailVerifications) as any).values({
     email: email.toLowerCase(),
     tokenHash,

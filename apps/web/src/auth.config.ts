@@ -22,14 +22,16 @@ export const authConfig: NextAuthConfig = {
 
     async jwt({ token, user, trigger, session }) {
       if (user) {
-        token.id           = user.id;
-        token.tenantId     = (user as any).tenantId;
-        token.customerId   = (user as any).customerId;
-        token.firstName    = (user as any).firstName;
-        token.lastName     = (user as any).lastName;
-        token.status       = (user as any).status;
-        token.emailVerified = (user as any).emailVerified;
-        token.onboardingStatus = (user as any).onboardingStatus;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const u = user as any;
+        token.id              = user.id;
+        token.tenantId        = u.tenantId;
+        token.customerId      = u.customerId;
+        token.firstName       = u.firstName;
+        token.lastName        = u.lastName;
+        token.status          = u.status;
+        token.emailVerified   = u.emailVerified;
+        token.onboardingStatus = u.onboardingStatus;
       }
       if (trigger === "update" && session) {
         if (session.onboardingStatus !== undefined) token.onboardingStatus = session.onboardingStatus;
@@ -40,14 +42,16 @@ export const authConfig: NextAuthConfig = {
     },
 
     async session({ session, token }) {
-      session.user.id             = token.id as string;
-      (session.user as any).tenantId       = token.tenantId as string;
-      (session.user as any).customerId     = token.customerId as string | null;
-      (session.user as any).firstName      = token.firstName as string;
-      (session.user as any).lastName       = token.lastName as string;
-      (session.user as any).status         = token.status as string;
-      (session.user as any).emailVerified  = token.emailVerified as boolean;
-      (session.user as any).onboardingStatus = token.onboardingStatus as string | null;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const su = session.user as any;
+      su.id               = token.id as string;
+      su.tenantId         = token.tenantId as string;
+      su.customerId       = token.customerId as string | null;
+      su.firstName        = token.firstName as string;
+      su.lastName         = token.lastName as string;
+      su.status           = token.status as string;
+      su.emailVerified    = token.emailVerified as boolean;
+      su.onboardingStatus = token.onboardingStatus as string | null;
       return session;
     },
   },
