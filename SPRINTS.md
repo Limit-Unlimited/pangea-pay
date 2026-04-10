@@ -75,13 +75,13 @@ The realistic target of **26 June 2026** represents a saving of approximately **
 
 The single biggest risk to the revised timeline is provider onboarding. **This is the critical path item and it must start immediately**, regardless of development progress:
 
-| Provider | Needed By | Action Required |
+| Provider | Needed By | Status |
 |---|---|---|
-| Sanctions / PEP screening provider | Sprint 3 (target Apr 14) | Select provider and begin sign-up this week |
-| FX rate feed | Sprint 5 (target May 6) | Select provider and begin API access request |
-| Payout / banking partner | Sprint 5 (target May 6) | Begin commercial conversation this week |
-| KYC / identity verification | Sprint 4 (target Apr 22) | Select provider and begin sign-up this week |
-| Email provider (production) | Sprint 6 (target May 18) | Low urgency — Mailpit handles dev |
+| Sanctions / PEP screening provider | Sprint 3 (target Apr 14) | Mock adapter active — live provider needed for Sprint 7 |
+| FX rate feed | Sprint 5 | **Resolved** — Frankfurter (api.frankfurter.dev/v2) wired in 2026-04-10 |
+| Payout / banking partner | Sprint 5 | Not yet started — begin commercial conversation now |
+| KYC / identity verification | Sprint 4 | Mock adapter active — sandbox credentials needed for Sprint 7 |
+| Email provider (production) | Sprint 6 | Low urgency — Mailpit handles dev |
 
 Development will continue against mock adapters in all cases, but **live sandbox testing cannot happen until credentials are in hand**. A 3-week delay in provider onboarding translates directly to a 3-week delay in go-live, regardless of how fast the code is written.
 
@@ -287,8 +287,8 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 | Sprint 1 | Apr 21 – May 2 ~~→ Apr 6~~ | Authentication & Backoffice Shell | Completed | 2026-04-06 |
 | Sprint 2 | Apr 7 – Apr 11 ~~→ Apr 6~~ | Global Settings & User/Role Management | Completed | 2026-04-06 |
 | Sprint 3 | Apr 14 – Apr 18 ~~→ Apr 7~~ | Customer Management & Onboarding Ops | Completed | 2026-04-07 |
-| Sprint 4 | Apr 22 – Apr 30 | Wallet/Account Management + Web App Onboarding | Upcoming | — |
-| Sprint 5 | May 4 – May 13 | Payments Operations + Web App Core Flows | Upcoming | — |
+| Sprint 4 | Apr 22 – Apr 30 ~~→ Apr 10~~ | Wallet/Account Management + Web App Onboarding | Completed | 2026-04-10 |
+| Sprint 5 | May 4 – May 13 | Payments Operations + Web App Core Flows | In Progress | — |
 | Sprint 6 | May 18 – May 28 | Compliance, Treasury & Accounting Basics | Upcoming | — |
 | Sprint 7 | Jun 1 – Jun 9 | Payment Rail API & Integration Hardening | Upcoming | — |
 | Sprint 8 | Jun 12 – Jun 26 | Security Audit, UAT & Go-Live | Upcoming | — |
@@ -509,62 +509,68 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 ---
 
 ### Sprint 4 — Wallet/Account Management & Web App Onboarding
-**Dates:** Jun 2 – Jun 13  
+**Dates:** Apr 22 – Apr 30 ~~→ Apr 10~~  
+**Status:** Completed — 2026-04-10 *(delivered ahead of schedule)*  
 **Goal:** Backoffice can manage customer wallets and accounts; Web App customers can register, complete onboarding, and view their account.
 
 #### Deliverables
 
 **Backoffice — Wallet and Current Account Management**
-- [ ] Wallet/account list per customer: account number, currency, balance, status, open date
-- [ ] Account status lifecycle: pending → active → blocked → suspended → closed
-- [ ] Open, block, suspend, and close account actions (authorised users only, with reason)
-- [ ] Balance view: current balance, available balance, reserved balance
-- [ ] Account transaction history: paginated list with date, type, amount, status, reference
-- [ ] Manual balance adjustment: create journal entry with reason, requires privileged permission + audit log
-- [ ] Multi-currency balance display where applicable
-- [ ] Virtual account list linked to a current account (display only at this stage)
-- [ ] BRS ref: §2.4 Wallet and Current Account Management
+- [x] Wallet/account list per customer: account number, currency, balance, status, open date
+- [x] Account status lifecycle: pending → active → blocked → suspended → closed
+- [x] Open, block, suspend, and close account actions (authorised users only, with reason)
+- [x] Balance view: current balance, available balance, reserved balance
+- [ ] Account transaction history: paginated list with date, type, amount, status, reference — deferred to Sprint 5
+- [ ] Manual balance adjustment: create journal entry with reason, requires privileged permission + audit log — deferred to Sprint 6
+- [x] Multi-currency balance display where applicable
+- [ ] Virtual account list linked to a current account (display only) — deferred to Sprint 6
+- [x] BRS ref: §2.4 Wallet and Current Account Management
 
 **Backoffice — Beneficiary Management (Operational View)**
-- [ ] Beneficiary list per customer: name, account details, currency, status, add date
-- [ ] Ability to flag or block a beneficiary from the backoffice
-- [ ] BRS ref: §2.6 (read/flag operations only)
+- [x] Beneficiary list per customer: name, account details, currency, status, add date
+- [x] Ability to flag or block a beneficiary from the backoffice
+- [x] BRS ref: §2.6 (read/flag operations only)
 
 **Web App — Customer Registration**
-- [ ] Registration form: full legal name, email, mobile, password, country of residence
-- [ ] Email verification: OTP or verification link
-- [ ] Mobile verification: SMS OTP
-- [ ] Terms and conditions acceptance with version tracking
-- [ ] BRS ref: §3.1 Customer Registration and Access Initiation
+- [x] Registration form: email, mobile (optional), password, country of residence
+- [x] Email verification: 6-digit OTP with resend support
+- [ ] Mobile verification: SMS OTP — deferred (phone_verifications schema in place; SMS provider not yet configured)
+- [x] Terms and conditions acceptance with version tracking
+- [x] BRS ref: §3.1 Customer Registration and Access Initiation
 
 **Web App — KYC Onboarding Flow**
-- [ ] Personal details collection: DOB, nationality, address, occupation, source of funds
-- [ ] Document upload: national ID or passport, proof of address
-- [ ] Submission confirmation screen with estimated review timeline
-- [ ] Onboarding status display: under review, approved, rejected with reason
-- [ ] BRS ref: §3.2 Identity Verification and Onboarding
+- [x] Personal details collection: DOB, nationality, address, occupation, source of funds
+- [x] Document metadata capture: national ID / passport / driving licence, proof of address
+- [ ] Document binary upload — deferred pending file storage provider (schema and metadata in place)
+- [x] Submission confirmation screen with status display
+- [x] Onboarding status display: under review, approved, rejected with reason
+- [x] BRS ref: §3.2 Identity Verification and Onboarding
 
 **Web App — Wallet and Account Dashboard**
-- [ ] Dashboard: display active wallets/accounts with currency and balance
-- [ ] Account detail screen: balance breakdown, recent transactions (last 5)
-- [ ] Multi-currency balance display
-- [ ] BRS ref: §3.3 Wallet and Current Account Access
+- [x] Dashboard: display active wallets/accounts with currency and balance; gated by onboarding status
+- [x] Account detail screen: balance breakdown (current / reserved / available)
+- [ ] Recent transactions (last 5) on account detail — deferred to Sprint 5
+- [x] Multi-currency balance display
+- [x] BRS ref: §3.3 Wallet and Current Account Access
 
-#### Definition of Done
+#### Definition of Done ✓
 - Customer registers on Web App, submits KYC documents
 - Operations user sees the application in the onboarding queue, reviews, and approves
 - Approved customer can log in and see their active account and balance
 - Backoffice account block action prevents Web App user from transacting
 - All wallet open/close/adjust actions are audit logged
 
-#### Risks
-- Document upload requires file storage (S3 or equivalent) — must be provisioned in Sprint 0
-- KYC provider webhook for status updates must be working before the end of this sprint
+#### Notes
+- `DEFAULT_TENANT_ID` env var required in `apps/web/.env.local` — get from `SELECT id FROM tenants LIMIT 1;`
+- Document binary upload deferred — file metadata captured; S3/local storage to be configured before go-live
+- SMS OTP deferred — `phone_verifications` table in place; wire up when SMS provider credentials are provided
+- account_status_history table records every status change immutably
 
 ---
 
 ### Sprint 5 — Payments Operations & Web App Core Flows
-**Dates:** Jun 16 – Jun 27  
+**Dates:** May 4 – May 13  
+**Status:** In Progress  
 **Goal:** End-to-end payment flow works: customers can initiate a transfer on the Web App; operations can view and manage it in the Backoffice.
 
 #### Deliverables
@@ -589,11 +595,13 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 - [ ] BRS ref: §3.5 Beneficiary and Counterparty Management
 
 **Web App — FX Quote and Conversion**
-- [ ] Get quote: enter send amount and currency, select receive currency, display rate, fee, and receive amount
-- [ ] Quote validity countdown (configurable, e.g. 30 seconds)
-- [ ] Accept quote and confirm conversion
-- [ ] Conversion confirmation screen with receipt
-- [ ] Conversion history
+- [x] FX rate provider: Frankfurter (api.frankfurter.dev/v2) — live rates, no API key required
+- [x] fx_quotes schema: rate, send/receive amounts, fee, 30-second expiry, status lifecycle
+- [x] Get quote: enter send amount and currency, select receive currency, display rate, fee, and receive amount
+- [x] Quote validity countdown (30 seconds, configurable via FX_QUOTE_TTL_SECONDS)
+- [x] Accept quote and confirm conversion
+- [x] Conversion confirmation screen with quote reference
+- [ ] Conversion history page
 - [ ] BRS ref: §3.6 FX Quote and Conversion
 
 **Web App — Payment Initiation**
@@ -619,7 +627,7 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 
 #### Risks
 - Payment routing to banking/payout partner sandbox must be operational by start of this sprint
-- FX rate feed must be live; stale or missing rates must fail gracefully
+- ~~FX rate feed must be live~~ — **resolved**: Frankfurter wired in (2026-04-10); mock adapter replaced
 - Limits enforcement requires the business rules config from Sprint 2 to be correctly populated
 
 ---
