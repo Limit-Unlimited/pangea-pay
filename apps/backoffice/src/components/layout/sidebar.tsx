@@ -32,6 +32,8 @@ import {
   FolderOpen,
   BookMarked,
   ReceiptText,
+  Plug,
+  SlidersHorizontal,
 } from "lucide-react";
 
 interface NavItem {
@@ -76,6 +78,7 @@ const NAV: NavItem[] = [
       { label: "Journal entries",   href: "/accounting#journal", icon: ReceiptText },
     ],
   },
+  { label: "Reconciliation",      href: "/reconciliation",   icon: SlidersHorizontal },
   { label: "Reports",            href: "/reports",          icon: BarChart3 },
   {
     label: "Configuration",
@@ -95,8 +98,9 @@ const NAV: NavItem[] = [
     href:  "/administration",
     icon:  Building2,
     children: [
-      { label: "Users",          href: "/administration/users", icon: UserCog },
-      { label: "Roles",          href: "/administration/roles", icon: Shield },
+      { label: "Users",          href: "/administration/users",          icon: UserCog },
+      { label: "Roles",          href: "/administration/roles",          icon: Shield },
+      { label: "API consumers",  href: "/administration/api-consumers",  icon: Plug },
     ],
   },
 ];

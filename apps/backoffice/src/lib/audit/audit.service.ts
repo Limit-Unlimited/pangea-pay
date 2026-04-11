@@ -56,7 +56,13 @@ export type AuditAction =
   | "treasury.prefunding.recorded"
   | "accounting.journal.posted"
   | "accounting.journal.reversed"
-  | "accounting.coa.account_added";
+  | "accounting.coa.account_added"
+  | "api_consumer.created"
+  | "api_consumer.updated"
+  | "api_consumer.active"
+  | "api_consumer.suspended"
+  | "api_consumer.revoked"
+  | "reconciliation.uploaded";
 
 interface AuditParams {
   tenantId?: string;

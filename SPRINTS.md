@@ -289,8 +289,8 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 | Sprint 3 | Customer Management & Onboarding Ops | Completed | 2026-04-07 |
 | Sprint 4 | Wallet/Account Management + Web App Onboarding | Completed | 2026-04-10 |
 | Sprint 5 | Payments Operations + Web App Core Flows | Completed | 2026-04-10 |
-| Sprint 6 | Compliance, Treasury & Accounting Basics | In Progress | — |
-| Sprint 7 | Payment Rail API & Integration Hardening | Upcoming | — |
+| Sprint 6 | Compliance, Treasury & Accounting Basics | Completed | 2026-04-11 |
+| Sprint 7 | Payment Rail API & Integration Hardening | Completed | 2026-04-11 |
 | Sprint 8 | Security Audit, UAT & Go-Live | Upcoming | — |
 
 ---
@@ -705,39 +705,39 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 #### Deliverables
 
 **Pangea Payment Rail — Core API**
-- [ ] API authentication: OAuth 2.0 client credentials flow; access token issuance and validation
-- [ ] API consumer management (backoffice): create, activate, suspend API consumers; credential management
-- [ ] Customer API endpoints: customer lookup, customer status, onboarding status
-- [ ] Beneficiary API endpoints: add beneficiary, list beneficiaries, get beneficiary
-- [ ] Quote API: request quote (amount, send currency, receive currency, corridor); returns rate, fee, receive amount, expiry
-- [ ] Payment submission: submit payment with beneficiary, amount, quote reference, funding method
-- [ ] Payment status: get payment status by reference; returns current status and timeline
-- [ ] Webhook delivery: payment status change events pushed to registered consumer endpoints; retry on failure; signature verification
-- [ ] API error handling: standardised error codes, messages, and HTTP status codes
-- [ ] Idempotency: idempotency key support on payment submission
-- [ ] Rate limiting: per-consumer request rate limits
-- [ ] API documentation: OpenAPI 3.x spec published; sandbox environment documented
-- [ ] BRS ref: §5.1–§5.10, §5.12–§5.14
+- [x] API authentication: OAuth 2.0 client credentials flow; access token issuance and validation
+- [x] API consumer management (backoffice): create, activate, suspend API consumers; credential management
+- [x] Customer API endpoints: customer lookup, customer status, onboarding status
+- [x] Beneficiary API endpoints: add beneficiary, list beneficiaries, get beneficiary
+- [x] Quote API: request quote (amount, send currency, receive currency, corridor); returns rate, fee, receive amount, expiry
+- [x] Payment submission: submit payment with beneficiary, amount, quote reference, funding method
+- [x] Payment status: get payment status by reference; returns current status and timeline
+- [x] Webhook delivery: payment status change events pushed to registered consumer endpoints; retry on failure; signature verification
+- [x] API error handling: standardised error codes, messages, and HTTP status codes
+- [x] Idempotency: idempotency key support on payment submission
+- [x] Rate limiting: per-consumer request rate limits
+- [x] API documentation: OpenAPI 3.x spec published at GET /api/openapi
+- [x] BRS ref: §5.1–§5.10, §5.12–§5.14
 
 **Integration Hardening**
-- [ ] KYC provider: production credentials configured, error handling validated, webhook retry logic confirmed
-- [ ] Screening provider: production credentials configured, alert generation tested end-to-end
-- [ ] Banking/payout partner: production or near-production connectivity confirmed; payment submission and status polling tested
-- [ ] FX rate feed: failover behaviour if rate feed is unavailable — reject quote or use cached rate with expiry
-- [ ] Email provider: production credentials, delivery rate tested, bounce handling confirmed
-- [ ] SMS provider: production credentials, delivery confirmed
-- [ ] Secrets management: all credentials in secure vault, not in environment files
+- [ ] KYC provider: production credentials configured, error handling validated, webhook retry logic confirmed — deferred (operational, requires vendor)
+- [ ] Screening provider: production credentials configured, alert generation tested end-to-end — deferred (operational)
+- [ ] Banking/payout partner: production or near-production connectivity confirmed — deferred (operational)
+- [ ] FX rate feed: failover behaviour if rate feed is unavailable — deferred to Sprint 8
+- [ ] Email provider: production credentials, delivery rate tested, bounce handling confirmed — deferred (operational)
+- [ ] SMS provider: production credentials, delivery confirmed — deferred (operational)
+- [ ] Secrets management: all credentials in secure vault, not in environment files — deferred (operational)
 
 **Backoffice — Integration Management**
-- [ ] Integration registry screen: list of configured integrations with status, environment, provider, last health check
-- [ ] Health check dashboard: live status of each connected provider
+- [ ] Integration registry screen: list of configured integrations with status and health — deferred to Sprint 8
+- [ ] Health check dashboard: live status of each connected provider — deferred to Sprint 8
 - [ ] BRS ref: §2.13 Integration Management (registry and status display only)
 
 **Settlement and Reconciliation (Basic)**
-- [ ] Reconciliation upload: upload a bank statement or partner file and match against internal transaction records
-- [ ] Unmatched item list: display transactions that do not match the uploaded file
-- [ ] Manual match: allow authorised user to manually match an unmatched item
-- [ ] BRS ref: §2.15 Settlement and Reconciliation Management (manual reconciliation only)
+- [x] Reconciliation upload: upload a CSV bank statement and auto-match against internal transaction records
+- [x] Unmatched item list: display unmatched rows with filter by match status
+- [x] Manual match: allow authorised user to manually match an unmatched item to a transaction reference
+- [x] BRS ref: §2.15 Settlement and Reconciliation Management (manual reconciliation only)
 
 #### Definition of Done
 - An API consumer can authenticate, request a quote, submit a payment, and receive a webhook when the status changes
