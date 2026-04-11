@@ -281,17 +281,17 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 
 ## Sprint Calendar
 
-| Sprint | Dates | Theme | Status | Completed |
-|---|---|---|---|---|
-| Sprint 0 | Apr 7 – Apr 18 ~~→ Apr 6~~ | Foundation & Infrastructure | Completed | 2026-04-06 |
-| Sprint 1 | Apr 21 – May 2 ~~→ Apr 6~~ | Authentication & Backoffice Shell | Completed | 2026-04-06 |
-| Sprint 2 | Apr 7 – Apr 11 ~~→ Apr 6~~ | Global Settings & User/Role Management | Completed | 2026-04-06 |
-| Sprint 3 | Apr 14 – Apr 18 ~~→ Apr 7~~ | Customer Management & Onboarding Ops | Completed | 2026-04-07 |
-| Sprint 4 | Apr 22 – Apr 30 ~~→ Apr 10~~ | Wallet/Account Management + Web App Onboarding | Completed | 2026-04-10 |
-| Sprint 5 | Apr 10 | Payments Operations + Web App Core Flows | Complete | — |
-| Sprint 6 | Apr 11 | Compliance, Treasury & Accounting Basics | In Progress | — |
-| Sprint 7 | Jun 1 – Jun 9 | Payment Rail API & Integration Hardening | Upcoming | — |
-| Sprint 8 | Jun 12 – Jun 26 | Security Audit, UAT & Go-Live | Upcoming | — |
+| Sprint | Theme | Status | Completed |
+|---|---|---|---|
+| Sprint 0 | Foundation & Infrastructure | Completed | 2026-04-06 |
+| Sprint 1 | Authentication & Backoffice Shell | Completed | 2026-04-06 |
+| Sprint 2 | Global Settings & User/Role Management | Completed | 2026-04-06 |
+| Sprint 3 | Customer Management & Onboarding Ops | Completed | 2026-04-07 |
+| Sprint 4 | Wallet/Account Management + Web App Onboarding | Completed | 2026-04-10 |
+| Sprint 5 | Payments Operations + Web App Core Flows | Completed | 2026-04-10 |
+| Sprint 6 | Compliance, Treasury & Accounting Basics | In Progress | — |
+| Sprint 7 | Payment Rail API & Integration Hardening | Upcoming | — |
+| Sprint 8 | Security Audit, UAT & Go-Live | Upcoming | — |
 
 ---
 
