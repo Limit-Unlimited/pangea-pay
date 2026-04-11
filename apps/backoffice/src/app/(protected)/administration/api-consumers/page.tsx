@@ -174,7 +174,7 @@ export default function ApiConsumersPage() {
 
       {/* Filters */}
       <div className="flex gap-3 mb-4">
-        <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v === "all" ? "" : v); setPage(1); }}>
+        <Select value={statusFilter} onValueChange={(v) => { setStatusFilter((v ?? "") === "all" ? "" : (v ?? "")); setPage(1); }}>
           <SelectTrigger className="w-44">
             <SelectValue placeholder="All statuses" />
           </SelectTrigger>
@@ -185,7 +185,7 @@ export default function ApiConsumersPage() {
             <SelectItem value="revoked">Revoked</SelectItem>
           </SelectContent>
         </Select>
-        <Select value={envFilter} onValueChange={(v) => { setEnvFilter(v === "all" ? "" : v); setPage(1); }}>
+        <Select value={envFilter} onValueChange={(v) => { setEnvFilter((v ?? "") === "all" ? "" : (v ?? "")); setPage(1); }}>
           <SelectTrigger className="w-44">
             <SelectValue placeholder="All environments" />
           </SelectTrigger>
@@ -303,7 +303,7 @@ export default function ApiConsumersPage() {
                 </div>
                 <div className="space-y-1">
                   <Label>Environment</Label>
-                  <Select value={createForm.environment} onValueChange={(v) => setCreateForm((f) => ({ ...f, environment: v }))}>
+                  <Select value={createForm.environment} onValueChange={(v) => setCreateForm((f) => ({ ...f, environment: v ?? "sandbox" }))}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="sandbox">Sandbox</SelectItem>
