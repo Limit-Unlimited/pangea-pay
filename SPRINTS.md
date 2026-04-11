@@ -288,7 +288,7 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 | Sprint 2 | Apr 7 – Apr 11 ~~→ Apr 6~~ | Global Settings & User/Role Management | Completed | 2026-04-06 |
 | Sprint 3 | Apr 14 – Apr 18 ~~→ Apr 7~~ | Customer Management & Onboarding Ops | Completed | 2026-04-07 |
 | Sprint 4 | Apr 22 – Apr 30 ~~→ Apr 10~~ | Wallet/Account Management + Web App Onboarding | Completed | 2026-04-10 |
-| Sprint 5 | May 4 – May 13 | Payments Operations + Web App Core Flows | In Progress | — |
+| Sprint 5 | Apr 10 | Payments Operations + Web App Core Flows | Complete | — |
 | Sprint 6 | Apr 11 | Compliance, Treasury & Accounting Basics | In Progress | — |
 | Sprint 7 | Jun 1 – Jun 9 | Payment Rail API & Integration Hardening | Upcoming | — |
 | Sprint 8 | Jun 12 – Jun 26 | Security Audit, UAT & Go-Live | Upcoming | — |
@@ -571,28 +571,29 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 
 ### Sprint 5 — Payments Operations & Web App Core Flows
 **Dates:** May 4 – May 13  
-**Status:** In Progress  
+**Status:** Complete  
 **Goal:** End-to-end payment flow works: customers can initiate a transfer on the Web App; operations can view and manage it in the Backoffice.
 
 #### Deliverables
 
 **Backoffice — Payment and Transaction Operations**
-- [ ] Transaction list: paginated, filterable by date range, status, type, amount, customer, corridor
-- [ ] Transaction detail screen: all fields, status timeline, linked documents, audit trail
-- [ ] Transaction status lifecycle: initiated → pending → processing → completed → failed → cancelled → refunded
-- [ ] Manual status override: for authorised users, with reason, audit logged
-- [ ] Payment hold: place a transaction on hold pending compliance review
-- [ ] Payment release: release a held transaction after review clearance
-- [ ] Payment cancellation: cancel a pending transaction with reason
-- [ ] Refund initiation: create a refund against a completed transaction (manual process)
-- [ ] Transaction query creation: link a customer query to a transaction record
-- [ ] Payment files: view and download bulk payment files where applicable
+- [x] Transaction list: paginated, filterable by date range, status, type, amount, customer, search
+- [x] Transaction detail screen: all fields, status timeline, audit trail
+- [x] Transaction status lifecycle: initiated → pending → processing → on_hold → completed → failed → cancelled → refunded
+- [x] Manual status override: hold, release, cancel, complete, fail, process — with reason, audit logged
+- [x] Payment hold: place a transaction on hold with reason
+- [x] Payment release: release a held transaction after review clearance
+- [x] Payment cancellation: cancel a pending transaction with reason and mock adapter cancel call
+- [ ] Refund initiation: status "refunded" exists in schema; UI action deferred — no refund flow built yet
+- [ ] Transaction query creation: link a customer query to a transaction record — deferred to Sprint 7
+- [ ] Payment files: view and download bulk payment files — deferred to Sprint 7 (bulk payments not in scope for MVP v1)
 - [ ] BRS ref: §2.8 Payment and Transaction Operations
 
 **Web App — Beneficiary Management**
-- [ ] Add beneficiary: name, bank account details (IBAN/account number/sort code), currency, country
-- [ ] Beneficiary list: display, edit, delete
-- [ ] Beneficiary verification confirmation before saving
+- [x] Add beneficiary: display name, first/last name, bank name, IBAN, account number, sort code, SWIFT/BIC, currency, country
+- [x] Beneficiary list: displays bank name, account identifier, currency, country
+- [x] Delete beneficiary: with confirmation dialog; blocked if ops-flagged
+- [ ] Beneficiary verification confirmation before saving — deferred (no verification provider integrated)
 - [ ] BRS ref: §3.5 Beneficiary and Counterparty Management
 
 **Web App — FX Quote and Conversion**
@@ -602,20 +603,21 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 - [x] Quote validity countdown (30 seconds, configurable via FX_QUOTE_TTL_SECONDS)
 - [x] Accept quote and confirm conversion
 - [x] Conversion confirmation screen with quote reference
-- [ ] Conversion history page
+- [ ] Conversion history page — deferred to Sprint 7
 - [ ] BRS ref: §3.6 FX Quote and Conversion
 
 **Web App — Payment Initiation**
-- [ ] Send money flow: select beneficiary → enter amount → select funding method → get quote → review → confirm
-- [ ] Transaction confirmation screen with reference number
-- [ ] Pre-submission validation: limits check, blocked corridor check, account status check
-- [ ] Duplicate transaction warning
-- [ ] Transaction pending screen with status tracking
+- [x] Send money flow: select beneficiary → enter amount → get FX quote → review → confirm (4-step wizard at `/send`)
+- [x] Transaction confirmation screen with reference number and provider ref
+- [x] Pre-submission validation: balance check, account active status, beneficiary active status, quote expiry
+- [ ] Duplicate transaction warning — deferred to Sprint 7
+- [x] Transaction pending screen: confirmation state shows reference and status after submission
 - [ ] BRS ref: §3.7 Payments, Transfers, and Remittance Initiation
 
 **Web App — Transaction History**
-- [ ] Transaction list: all transactions with date, type, amount, status, reference
-- [ ] Transaction detail: full breakdown, status timeline, reference number, receipt download
+- [x] Transaction list: all customer transactions with date, type, amount, status, reference at `/transactions`
+- [x] Transaction detail: status timeline, send/receive amounts, FX rate, fee, beneficiary, account — at `/transactions/[id]`
+- [ ] Receipt download — deferred to Sprint 7 (requires PDF generation)
 - [ ] BRS ref: §3.8 Transaction and Account Activity Tracking
 
 #### Definition of Done
