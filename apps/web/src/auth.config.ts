@@ -13,7 +13,7 @@ export const authConfig: NextAuthConfig = {
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      const PUBLIC_PATHS = ["/login", "/register", "/verify-email", "/api/auth", "/api/register", "/api/verify-email"];
+      const PUBLIC_PATHS = ["/login", "/register", "/verify-email", "/forgot-password", "/reset-password", "/api/auth", "/api/register", "/api/verify-email", "/api/forgot-password", "/api/reset-password", "/api/resend-verification"];
       const isPublic = PUBLIC_PATHS.some((p) => nextUrl.pathname.startsWith(p));
 
       if (!isLoggedIn && !isPublic) return false;

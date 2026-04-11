@@ -39,6 +39,20 @@ export async function sendWelcomeEmail(email: string, firstName: string): Promis
   });
 }
 
+export async function sendPasswordResetEmail(email: string, resetUrl: string): Promise<void> {
+  await transporter.sendMail({
+    from:    FROM,
+    to:      email,
+    subject: "Reset your password — Pangea Pay",
+    text:    `You requested a password reset.\n\nClick the link below to set a new password (valid for 1 hour):\n${resetUrl}\n\nIf you did not request this, you can ignore this email.`,
+    html: `
+      <p>You requested a password reset.</p>
+      <p><a href="${resetUrl}" style="color:#1E4D8C;font-weight:bold;">Reset your password</a></p>
+      <p>This link expires in 1 hour. If you did not request this, you can safely ignore this email.</p>
+    `,
+  });
+}
+
 export async function sendOnboardingStatusEmail(
   email: string,
   firstName: string,

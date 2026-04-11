@@ -30,8 +30,14 @@ export default async function ProtectedLayout({ children }: { children: React.Re
             <Link href="/accounts" className="text-sm text-[#64748B] hover:text-[#1A2332] transition-colors">
               Accounts
             </Link>
-            <Link href="/convert" className="text-sm text-[#64748B] hover:text-[#1A2332] transition-colors">
-              Convert
+            <Link href="/send" className="text-sm text-[#64748B] hover:text-[#1A2332] transition-colors">
+              Send
+            </Link>
+            <Link href="/beneficiaries" className="text-sm text-[#64748B] hover:text-[#1A2332] transition-colors">
+              Beneficiaries
+            </Link>
+            <Link href="/transactions" className="text-sm text-[#64748B] hover:text-[#1A2332] transition-colors">
+              History
             </Link>
           </nav>
 

@@ -143,23 +143,32 @@ export default async function DashboardPage() {
       {/* Quick actions */}
       <Card className="p-5 border-[#E2E8F0] bg-white">
         <h2 className="text-sm font-semibold text-[#1A2332] mb-3">Quick actions</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <Link href="/send">
+            <div className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-lg border border-[#E2E8F0] hover:border-[#1E4D8C]/40 hover:bg-[#F7F9FC] text-xs text-[#1A2332] transition-colors cursor-pointer">
+              <span className="text-lg">↑</span>
+              <span>Send money</span>
+            </div>
+          </Link>
           <Link href="/convert">
             <div className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-lg border border-[#E2E8F0] hover:border-[#1E4D8C]/40 hover:bg-[#F7F9FC] text-xs text-[#1A2332] transition-colors cursor-pointer">
               <span className="text-lg">↔</span>
               <span>Get a quote</span>
             </div>
           </Link>
-          {["Send money", "Get statement"].map((action) => (
-            <button
-              key={action}
-              disabled
-              className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-lg border border-[#E2E8F0] text-xs text-[#64748B] opacity-50 cursor-not-allowed"
-            >
-              <span>{action}</span>
-              <span className="text-[10px]">Coming soon</span>
-            </button>
-          ))}
+          <Link href="/transactions">
+            <div className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-lg border border-[#E2E8F0] hover:border-[#1E4D8C]/40 hover:bg-[#F7F9FC] text-xs text-[#1A2332] transition-colors cursor-pointer">
+              <span className="text-lg">≡</span>
+              <span>History</span>
+            </div>
+          </Link>
+          <button
+            disabled
+            className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-lg border border-[#E2E8F0] text-xs text-[#64748B] opacity-50 cursor-not-allowed"
+          >
+            <span>Get statement</span>
+            <span className="text-[10px]">Coming soon</span>
+          </button>
         </div>
       </Card>
     </div>
