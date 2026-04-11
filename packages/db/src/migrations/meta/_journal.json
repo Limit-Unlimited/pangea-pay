@@ -71,6 +71,13 @@
       "when": 1775944100263,
       "tag": "0009_kind_leo",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1776030600000,
+      "tag": "0010_performance_indexes",
+      "breakpoints": true
     }
   ]
 }

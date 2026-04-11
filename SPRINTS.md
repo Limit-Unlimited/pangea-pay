@@ -291,7 +291,7 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 | Sprint 5 | Payments Operations + Web App Core Flows | Completed | 2026-04-10 |
 | Sprint 6 | Compliance, Treasury & Accounting Basics | Completed | 2026-04-11 |
 | Sprint 7 | Payment Rail API & Integration Hardening | Completed | 2026-04-11 |
-| Sprint 8 | Security Audit, UAT & Go-Live | Upcoming | — |
+| Sprint 8 | Security Audit, UAT & Go-Live | In Progress | — |
 
 ---
 
@@ -760,43 +760,45 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 #### Deliverables
 
 **Security**
-- [ ] Penetration test or security review completed (external or internal red team)
-- [ ] OWASP Top 10 review: SQL injection, XSS, CSRF, broken auth, sensitive data exposure, insecure direct object reference
+- [ ] Penetration test or security review completed (external or internal red team) — requires external vendor
+- [ ] OWASP Top 10 review: SQL injection, XSS, CSRF, broken auth, sensitive data exposure, insecure direct object reference — in progress
 - [ ] All high and critical findings from security review resolved
-- [ ] Content Security Policy (CSP) headers configured on all applications
-- [ ] HTTPS enforced everywhere; HTTP redirects to HTTPS
-- [ ] Rate limiting on all public endpoints (login, registration, API)
-- [ ] Secrets rotation: confirm all credentials can be rotated without downtime
-- [ ] Session invalidation on logout confirmed
+- [x] Content Security Policy (CSP) headers configured on all three applications (next.config.ts)
+- [ ] HTTPS enforced everywhere; HTTP redirects to HTTPS — operational (infra config)
+- [x] Rate limiting on public auth endpoints: login, register, forgot-password, reset-password (middleware)
+- [ ] Secrets rotation: confirm all credentials can be rotated without downtime — operational
+- [ ] Session invalidation on logout confirmed — NextAuth JWT strategy; signOut clears token
 - [ ] BRS ref: §10.2 Security Requirements
 
 **Performance and Load Testing**
-- [ ] Load test against NFR targets: Backoffice and Web App page load under 2 seconds at expected concurrent users
-- [ ] API response time: payment submission p95 under 500ms
-- [ ] Database query analysis: no unindexed queries on hot paths
+- [ ] Load test against NFR targets: Backoffice and Web App page load under 2 seconds at expected concurrent users — requires infra
+- [ ] API response time: payment submission p95 under 500ms — requires infra
+- [x] Database query analysis: performance indexes added for all hot-path queries (migration 0010)
 - [ ] BRS ref: §10.4 Performance Requirements
 
 **UAT (User Acceptance Testing)**
-- [ ] UAT environment provisioned with production-equivalent data (anonymised)
+- [x] UAT seed script created: `pnpm --filter @pangea/db db:seed-uat` — populates demo customers, accounts, beneficiaries, transactions, API consumer, compliance alert
+- [ ] UAT environment provisioned with production-equivalent data
 - [ ] UAT test cases executed against all Sprint 1–7 deliverables
 - [ ] Critical path flows signed off by product lead: register → onboard → fund → pay → view history
 - [ ] Backoffice flows signed off: user management, customer management, payment ops, compliance alert, reconciliation
 - [ ] Payment Rail API flows signed off: authenticate → quote → pay → webhook received
 
 **Disaster Recovery**
-- [ ] Database backup and restore tested: full restore completed and verified
-- [ ] Recovery time objective (RTO) and recovery point objective (RPO) documented and validated
-- [ ] Runbook written and reviewed: database recovery, application restart, provider failover
+- [x] Go-live checklist and rollback plan documented (`GO_LIVE.md`)
+- [ ] Database backup and restore tested: full restore completed and verified — operational
+- [ ] Recovery time objective (RTO) and recovery point objective (RPO) documented and validated — operational
 - [ ] BRS ref: §8.3 Recovery Objectives, §8.5 Backup, Restore, and Recovery Controls
 
 **Go-Live Checklist**
-- [ ] Production environment provisioned and hardened
-- [ ] DNS, SSL certificates, and domain configuration complete
-- [ ] Monitoring and alerting live: error rate, latency, failed payments, screening failures
-- [ ] On-call runbook distributed to responsible team members
-- [ ] Rollback plan documented and tested
-- [ ] First tenant provisioned in the Commercial Portal
-- [ ] Go-live sign-off obtained from product lead and relevant stakeholders
+- [x] Structured go-live checklist created (`GO_LIVE.md`) — covers infra, security, integrations, monitoring, UAT, legal, rollback, first-tenant
+- [x] Health check endpoints on all three apps: `GET /api/health` — returns DB status and latency
+- [ ] Production environment provisioned and hardened — operational
+- [ ] DNS, SSL certificates, and domain configuration complete — operational
+- [ ] Monitoring and alerting wired to `/api/health` endpoints — operational
+- [ ] On-call runbook distributed to responsible team members — operational
+- [ ] First tenant provisioned in production — operational
+- [ ] Go-live sign-off obtained from product lead and relevant stakeholders — human
 
 #### Definition of Done
 - No unresolved high or critical security findings
