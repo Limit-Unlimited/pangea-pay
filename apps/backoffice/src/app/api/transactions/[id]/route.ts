@@ -45,7 +45,7 @@ export async function GET(_req: NextRequest, { params }: Params) {
       reason:      transactionStatusHistory.reason,
       performedBy: transactionStatusHistory.performedBy,
       createdAt:   transactionStatusHistory.createdAt,
-      actorName:   users.name,
+      actorName:   users.firstName,
     })
     .from(transactionStatusHistory)
     .leftJoin(users, eq(transactionStatusHistory.performedBy, users.id))

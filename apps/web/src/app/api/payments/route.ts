@@ -4,6 +4,7 @@ import { eq, and } from "drizzle-orm";
 import { db, webUsers, customers, accounts, beneficiaries, transactions, transactionStatusHistory, fxQuotes } from "@pangea/db";
 import { auth } from "@/auth";
 import { ok, err, unauthorized } from "@/lib/api/response";
+import { sendPaymentSubmittedEmail } from "@/lib/email/mailer";
 
 const schema = z.object({
   fromAccountId: z.string().uuid(),
@@ -34,7 +35,7 @@ export async function POST(req: NextRequest) {
   if (!webUser?.customerId) return err("No active customer account", 403);
 
   const [customer] = await db
-    .select({ onboardingStatus: customers.onboardingStatus, firstName: customers.firstName, lastName: customers.lastName })
+    .select({ onboardingStatus: customers.onboardingStatus, firstName: customers.firstName, lastName: customers.lastName, email: customers.email })
     .from(customers)
     .where(eq(customers.id, webUser.customerId))
     .limit(1);
@@ -153,6 +154,20 @@ export async function POST(req: NextRequest) {
     reason:        "Payment initiated by customer",
     performedBy:   null,
   });
+
+  // Send payment submitted notification (non-blocking)
+  const userEmail = webUser.email ?? customer?.email;
+  if (userEmail && customer?.firstName) {
+    sendPaymentSubmittedEmail(
+      userEmail,
+      customer.firstName,
+      referenceNumber,
+      String(d.sendAmount),
+      d.sendCurrency.toUpperCase(),
+      receiveAmount !== null ? String(receiveAmount) : null,
+      receiveCurrency?.toUpperCase() ?? null,
+    ).catch(() => {});
+  }
 
   return ok({ referenceNumber, transactionId: created.id, providerRef }, 201);
 }

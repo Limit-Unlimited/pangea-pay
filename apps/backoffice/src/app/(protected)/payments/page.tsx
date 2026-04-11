@@ -93,7 +93,6 @@ export default function PaymentsPage() {
       <PageHeader
         title="Payments"
         description="View and manage all transactions across your customer base."
-        breadcrumbs={[{ label: "Payments" }]}
       />
 
       {/* Filters */}

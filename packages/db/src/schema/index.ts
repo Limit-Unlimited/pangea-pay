@@ -10,3 +10,6 @@ export * from "./accounts";
 export * from "./web-users";
 export * from "./fx";
 export * from "./transactions";
+export * from "./compliance";
+export * from "./treasury";
+export * from "./accounting";

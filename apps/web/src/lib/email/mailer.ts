@@ -53,6 +53,78 @@ export async function sendPasswordResetEmail(email: string, resetUrl: string): P
   });
 }
 
+export async function sendPaymentSubmittedEmail(
+  email: string,
+  firstName: string,
+  referenceNumber: string,
+  sendAmount: string,
+  sendCurrency: string,
+  receiveAmount: string | null,
+  receiveCurrency: string | null,
+): Promise<void> {
+  const amountLine = receiveAmount && receiveCurrency
+    ? `You are sending ${sendCurrency} ${sendAmount} — the recipient will receive approximately ${receiveCurrency} ${receiveAmount}.`
+    : `You are sending ${sendCurrency} ${sendAmount}.`;
+
+  await transporter.sendMail({
+    from:    FROM,
+    to:      email,
+    subject: `Payment submitted — ${referenceNumber} — Pangea Pay`,
+    text: `Hi ${firstName},\n\nYour payment has been submitted and is being processed.\n\n${amountLine}\nReference: ${referenceNumber}\n\nYou will receive a confirmation once the payment is complete.\n\nThe Pangea Pay team`,
+    html: `
+      <p>Hi ${firstName},</p>
+      <p>Your payment has been submitted and is being processed.</p>
+      <p>${amountLine}<br>Reference: <strong>${referenceNumber}</strong></p>
+      <p>You will receive a confirmation once the payment is complete.</p>
+      <p>The Pangea Pay team</p>
+    `,
+  });
+}
+
+export async function sendPaymentCompletedEmail(
+  email: string,
+  firstName: string,
+  referenceNumber: string,
+  sendAmount: string,
+  sendCurrency: string,
+): Promise<void> {
+  await transporter.sendMail({
+    from:    FROM,
+    to:      email,
+    subject: `Payment completed — ${referenceNumber} — Pangea Pay`,
+    text: `Hi ${firstName},\n\nYour payment of ${sendCurrency} ${sendAmount} has been completed successfully.\n\nReference: ${referenceNumber}\n\nThank you for using Pangea Pay.\n\nThe Pangea Pay team`,
+    html: `
+      <p>Hi ${firstName},</p>
+      <p>Your payment of <strong>${sendCurrency} ${sendAmount}</strong> has been completed successfully.</p>
+      <p>Reference: <strong>${referenceNumber}</strong></p>
+      <p>Thank you for using Pangea Pay.</p>
+      <p>The Pangea Pay team</p>
+    `,
+  });
+}
+
+export async function sendPaymentFailedEmail(
+  email: string,
+  firstName: string,
+  referenceNumber: string,
+  sendAmount: string,
+  sendCurrency: string,
+  reason?: string,
+): Promise<void> {
+  await transporter.sendMail({
+    from:    FROM,
+    to:      email,
+    subject: `Payment unsuccessful — ${referenceNumber} — Pangea Pay`,
+    text: `Hi ${firstName},\n\nUnfortunately your payment of ${sendCurrency} ${sendAmount} (reference ${referenceNumber}) could not be completed${reason ? `: ${reason}` : ""}.\n\nPlease contact our support team if you need assistance.\n\nThe Pangea Pay team`,
+    html: `
+      <p>Hi ${firstName},</p>
+      <p>Unfortunately your payment of <strong>${sendCurrency} ${sendAmount}</strong> (reference <strong>${referenceNumber}</strong>) could not be completed${reason ? `: ${reason}` : ""}.</p>
+      <p>Please contact our support team if you need assistance.</p>
+      <p>The Pangea Pay team</p>
+    `,
+  });
+}
+
 export async function sendOnboardingStatusEmail(
   email: string,
   firstName: string,

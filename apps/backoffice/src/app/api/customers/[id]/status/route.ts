@@ -2,9 +2,10 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 import { eq, and } from "drizzle-orm";
 import { auth } from "@/auth";
-import { db, customers } from "@pangea/db";
+import { db, customers, webUsers } from "@pangea/db";
 import { writeAuditLog } from "@/lib/audit/audit.service";
 import { ok, err, unauthorized } from "@/lib/api/response";
+import { sendOnboardingStatusEmail } from "@/lib/email/mailer";
 
 // Valid lifecycle transitions
 const TRANSITIONS: Record<string, string[]> = {
@@ -38,7 +39,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   const { id } = await params;
 
   const [existing] = await db
-    .select({ id: customers.id, status: customers.status, onboardingStatus: customers.onboardingStatus })
+    .select({ id: customers.id, status: customers.status, onboardingStatus: customers.onboardingStatus, firstName: customers.firstName, email: customers.email })
     .from(customers)
     .where(and(eq(customers.id, id), eq(customers.tenantId, session.user.tenantId)))
     .limit(1);
@@ -90,6 +91,25 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     ipAddress:  req.headers.get("x-forwarded-for") ?? "unknown",
     userAgent:  req.headers.get("user-agent") ?? "",
   });
+
+  // Send KYC status notification (approved / rejected)
+  if (onboardingStatus === "approved" || onboardingStatus === "rejected") {
+    const [webUser] = await db
+      .select({ email: webUsers.email })
+      .from(webUsers)
+      .where(eq(webUsers.customerId, id))
+      .limit(1);
+
+    const toEmail = webUser?.email ?? existing.email;
+    if (toEmail && existing.firstName) {
+      sendOnboardingStatusEmail(
+        toEmail,
+        existing.firstName,
+        onboardingStatus,
+        reason,
+      ).catch(() => null);
+    }
+  }
 
   return ok({ id, ...update });
 }

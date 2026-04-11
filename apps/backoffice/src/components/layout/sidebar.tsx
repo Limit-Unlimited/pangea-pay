@@ -27,6 +27,11 @@ import {
   UserCog,
   Shield,
   ClipboardList,
+  Landmark,
+  ShieldAlert,
+  FolderOpen,
+  BookMarked,
+  ReceiptText,
 } from "lucide-react";
 
 interface NavItem {
@@ -52,8 +57,25 @@ const NAV: NavItem[] = [
   { label: "Documents",          href: "/documents",        icon: FileText },
   { label: "Wallets & Accounts", href: "/accounts",         icon: Wallet },
   { label: "Currency Exchange",  href: "/fx",               icon: ArrowLeftRight },
-  { label: "Accounting",         href: "/accounting",       icon: BookOpen },
-  { label: "Compliance",         href: "/compliance",       icon: ShieldCheck },
+  {
+    label: "Compliance",
+    href:  "/compliance",
+    icon:  ShieldCheck,
+    children: [
+      { label: "Alert queue",    href: "/compliance/alerts", icon: ShieldAlert },
+      { label: "Cases",          href: "/compliance/cases",  icon: FolderOpen },
+    ],
+  },
+  { label: "Treasury",           href: "/treasury",         icon: Landmark },
+  {
+    label: "Accounting",
+    href:  "/accounting",
+    icon:  BookOpen,
+    children: [
+      { label: "Chart of accounts", href: "/accounting",      icon: BookMarked },
+      { label: "Journal entries",   href: "/accounting#journal", icon: ReceiptText },
+    ],
+  },
   { label: "Reports",            href: "/reports",          icon: BarChart3 },
   {
     label: "Configuration",

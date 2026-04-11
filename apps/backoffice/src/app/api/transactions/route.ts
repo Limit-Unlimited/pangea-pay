@@ -23,8 +23,10 @@ export async function GET(req: NextRequest) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const conditions: any[] = [eq(transactions.tenantId, session.user.tenantId)];
 
-  if (status)     conditions.push(eq(transactions.status,     status as Parameters<typeof eq>[1]));
-  if (type)       conditions.push(eq(transactions.type,       type   as Parameters<typeof eq>[1]));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  if (status)     conditions.push(eq(transactions.status,     status as any));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  if (type)       conditions.push(eq(transactions.type,       type   as any));
   if (customerId) conditions.push(eq(transactions.customerId, customerId));
   if (dateFrom)   conditions.push(gte(transactions.createdAt, new Date(dateFrom)));
   if (dateTo)     conditions.push(lte(transactions.createdAt, new Date(dateTo)));

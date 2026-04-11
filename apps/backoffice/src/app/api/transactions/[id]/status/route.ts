@@ -1,11 +1,12 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
-import { db, transactions, transactionStatusHistory } from "@pangea/db";
+import { db, transactions, transactionStatusHistory, customers, webUsers } from "@pangea/db";
 import { eq, and } from "drizzle-orm";
 import { auth } from "@/auth";
 import { ok, err, unauthorized } from "@/lib/api/response";
 import { writeAuditLog } from "@/lib/audit/audit.service";
 import { getPayoutAdapter } from "@/lib/payout/mock.adapter";
+import { sendPaymentCompletedEmail, sendPaymentFailedEmail } from "@/lib/email/mailer";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -117,6 +118,46 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     newValue:    { status: newStatus, reason },
     ipAddress:   req.headers.get("x-forwarded-for") ?? undefined,
   });
+
+  // Send customer notification for completed / failed outcomes
+  if (action === "complete" || action === "fail") {
+    try {
+      // Fetch customer email and name via webUsers
+      const [webUser] = await db
+        .select({ email: webUsers.email })
+        .from(webUsers)
+        .where(eq(webUsers.customerId, txn.customerId))
+        .limit(1);
+
+      const [customer] = await db
+        .select({ firstName: customers.firstName, email: customers.email })
+        .from(customers)
+        .where(eq(customers.id, txn.customerId))
+        .limit(1);
+
+      const toEmail = webUser?.email ?? customer?.email;
+      const firstName = customer?.firstName ?? "there";
+
+      if (toEmail) {
+        if (action === "complete") {
+          sendPaymentCompletedEmail(
+            toEmail, firstName,
+            txn.referenceNumber,
+            txn.sendAmount, txn.sendCurrency,
+          ).catch(() => null);
+        } else {
+          sendPaymentFailedEmail(
+            toEmail, firstName,
+            txn.referenceNumber,
+            txn.sendAmount, txn.sendCurrency,
+            reason,
+          ).catch(() => null);
+        }
+      }
+    } catch {
+      // Notification failure must never break the status update
+    }
+  }
 
   return ok({ id, status: newStatus });
 }

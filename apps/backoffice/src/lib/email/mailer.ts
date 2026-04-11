@@ -29,6 +29,71 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string): Prom
   });
 }
 
+export async function sendPaymentCompletedEmail(
+  to: string,
+  firstName: string,
+  referenceNumber: string,
+  sendAmount: string,
+  sendCurrency: string,
+): Promise<void> {
+  const transport = createTransport();
+  await transport.sendMail({
+    from:    `Pangea Pay <${FROM}>`,
+    to,
+    subject: `Payment completed — ${referenceNumber} — Pangea Pay`,
+    text: `Hi ${firstName},\n\nYour payment of ${sendCurrency} ${sendAmount} (reference ${referenceNumber}) has been completed successfully.\n\nThank you for using Pangea Pay.\n\nThe Pangea Pay team`,
+    html: `
+      <p>Hi ${firstName},</p>
+      <p>Your payment of <strong>${sendCurrency} ${sendAmount}</strong> (reference <strong>${referenceNumber}</strong>) has been completed successfully.</p>
+      <p>Thank you for using Pangea Pay.</p>
+      <p>The Pangea Pay team</p>
+    `,
+  });
+}
+
+export async function sendPaymentFailedEmail(
+  to: string,
+  firstName: string,
+  referenceNumber: string,
+  sendAmount: string,
+  sendCurrency: string,
+  reason?: string,
+): Promise<void> {
+  const transport = createTransport();
+  await transport.sendMail({
+    from:    `Pangea Pay <${FROM}>`,
+    to,
+    subject: `Payment unsuccessful — ${referenceNumber} — Pangea Pay`,
+    text: `Hi ${firstName},\n\nUnfortunately your payment of ${sendCurrency} ${sendAmount} (reference ${referenceNumber}) could not be completed${reason ? `: ${reason}` : ""}.\n\nPlease contact our support team if you need help.\n\nThe Pangea Pay team`,
+    html: `
+      <p>Hi ${firstName},</p>
+      <p>Unfortunately your payment of <strong>${sendCurrency} ${sendAmount}</strong> (reference <strong>${referenceNumber}</strong>) could not be completed${reason ? `: ${reason}` : ""}.</p>
+      <p>Please contact our support team if you need help.</p>
+      <p>The Pangea Pay team</p>
+    `,
+  });
+}
+
+export async function sendOnboardingStatusEmail(
+  to: string,
+  firstName: string,
+  status: "approved" | "rejected",
+  reason?: string,
+): Promise<void> {
+  const transport = createTransport();
+  const subject =
+    status === "approved"
+      ? "Your account has been approved — Pangea Pay"
+      : "Update on your application — Pangea Pay";
+
+  const text =
+    status === "approved"
+      ? `Hi ${firstName},\n\nGreat news — your identity verification has been approved and your account is now active. You can sign in and start sending money.\n\nThe Pangea Pay team`
+      : `Hi ${firstName},\n\nWe were unable to verify your identity at this time${reason ? `: ${reason}` : ""}. Please contact support if you have questions.\n\nThe Pangea Pay team`;
+
+  await transport.sendMail({ from: `Pangea Pay <${FROM}>`, to, subject, text });
+}
+
 export async function sendUserInvitationEmail(to: string, activationUrl: string, tempPassword: string): Promise<void> {
   const transport = createTransport();
   await transport.sendMail({

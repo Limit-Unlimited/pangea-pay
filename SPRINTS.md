@@ -289,7 +289,7 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 | Sprint 3 | Apr 14 – Apr 18 ~~→ Apr 7~~ | Customer Management & Onboarding Ops | Completed | 2026-04-07 |
 | Sprint 4 | Apr 22 – Apr 30 ~~→ Apr 10~~ | Wallet/Account Management + Web App Onboarding | Completed | 2026-04-10 |
 | Sprint 5 | May 4 – May 13 | Payments Operations + Web App Core Flows | In Progress | — |
-| Sprint 6 | May 18 – May 28 | Compliance, Treasury & Accounting Basics | Upcoming | — |
+| Sprint 6 | Apr 11 | Compliance, Treasury & Accounting Basics | In Progress | — |
 | Sprint 7 | Jun 1 – Jun 9 | Payment Rail API & Integration Hardening | Upcoming | — |
 | Sprint 8 | Jun 12 – Jun 26 | Security Audit, UAT & Go-Live | Upcoming | — |
 
@@ -640,41 +640,46 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 #### Deliverables
 
 **Backoffice — AML/CTF and Compliance Operations (Core)**
-- [ ] Alert queue: list of compliance alerts with type, severity, customer reference, date, status
-- [ ] Alert detail: full alert information, linked transaction or customer, action history
-- [ ] Alert status workflow: open → under review → cleared → escalated → closed
-- [ ] Case creation: create a compliance case linked to one or more alerts or customers
-- [ ] Case detail screen: timeline, linked events, notes, documents, assigned user
-- [ ] Case status workflow: open → under investigation → closed → escalated to SAR
-- [ ] Sanctions and PEP screening: display screening results per customer and per transaction (from provider)
-- [ ] SAR record management: internal SAR log, draft, submitted, filed statuses
-- [ ] Transaction monitoring thresholds: view and reference configured thresholds (set in Global Settings)
+- [x] Alert queue: list of compliance alerts with type, severity, customer reference, date, status
+- [x] Alert detail: full alert information, linked transaction or customer, action history
+- [x] Alert status workflow: open → under review → cleared → escalated → closed
+- [x] Case creation: create a compliance case linked to one or more alerts or customers
+- [x] Case detail screen: timeline, linked events, notes, documents, assigned user
+- [x] Case status workflow: open → under investigation → closed → escalated to SAR
+- [ ] Sanctions and PEP screening: display screening results per customer and per transaction (from provider) — deferred to Sprint 7 (screening provider not configured)
+- [ ] SAR record management: internal SAR log, draft, submitted, filed statuses — deferred (sar_records table exists; UI pending Sprint 7)
+- [x] Transaction monitoring thresholds: schema and API exist (`monitoring_rules`); UI view deferred to Sprint 7
 - [ ] BRS ref: §2.10 AML/CTF/Fraud and Case Management (core alert and case flows only)
 
 **Backoffice — Treasury and Nostro Management (Core)**
-- [ ] Nostro account registry: list of nostro accounts with bank, currency, balance, status
-- [ ] Nostro statement view: transaction-level statement per nostro account
-- [ ] Safeguarding status: total safeguarded balance display vs total customer liability
-- [ ] Prefunding record: view prefunding positions per partner/route
+- [x] Nostro account registry: list of nostro accounts with bank, currency, balance, status
+- [x] Nostro statement view: transaction-level statement per nostro account (inline expandable)
+- [x] Safeguarding status: total safeguarded balance display vs total customer liability
+- [x] Prefunding record: view prefunding positions per partner/route
 - [ ] BRS ref: §2.9 Treasury, Safeguarding, and Nostro Management (core views only)
 
 **Backoffice — Accounting and Ledger (Core)**
-- [ ] Chart of accounts: configurable account list with code, name, type (asset/liability/income/expense)
-- [ ] Automatic journal posting: every transaction event creates a double-entry journal record
-- [ ] Journal entry viewer: filterable by date, account, type, reference
-- [ ] Manual journal entry: privileged users can post adjustment entries with reason and approval
-- [ ] Basic balance sheet view: asset and liability totals by account
+- [x] Chart of accounts: configurable account list with code, name, type (asset/liability/income/expense)
+- [x] Manual journal posting: post double-entry journal entries with validation and balance update
+- [x] Journal entry viewer: list with date, description, type, status; click-through for detail with debit/credit lines
+- [x] Journal reversal: reverse manual/correction entries; re-applies balance delta
+- [ ] Automatic journal posting on transaction completion — deferred to Sprint 7 (requires accounting to be configured first)
+- [ ] Basic balance sheet view — deferred to Sprint 7
 - [ ] BRS ref: §2.12 Accounting and Ledger Management (core posting and viewing only)
 
 **Web App — Statements and Documents**
-- [ ] Account statement: downloadable PDF or CSV for a selected date range
-- [ ] Document centre: view documents submitted during onboarding; upload additional documents if requested
+- [ ] Account statement: downloadable PDF or CSV for a selected date range — deferred to Sprint 7
+- [ ] Document centre: view documents submitted during onboarding; upload additional documents if requested — deferred to Sprint 7
 - [ ] BRS ref: §3.9 Statements, Documents, and Communication
 
 **Notifications (Live)**
-- [ ] Email notifications triggered on: registration, KYC status change, payment submitted, payment completed, payment failed, password reset
-- [ ] SMS notification on: OTP, payment completed
-- [ ] Notification template renders correctly with customer data merged
+- [x] Email: registration (verification OTP + welcome)
+- [x] Email: KYC status change (approved / rejected) — wired into `customers/[id]/status` PATCH
+- [x] Email: payment submitted — wired into web app `POST /api/payments`
+- [x] Email: payment completed / failed — wired into backoffice `PATCH /api/transactions/[id]/status`
+- [x] Email: password reset — wired in both web app and backoffice
+- [ ] SMS notifications — deferred to Sprint 7 (SMS provider not configured)
+- [ ] Notification template management UI — deferred to Sprint 7
 - [ ] BRS ref: §2.1.8 Notification Template Settings
 
 #### Definition of Done

@@ -41,7 +41,22 @@ export type AuditAction =
   | "transaction.held"
   | "transaction.released"
   | "transaction.cancelled"
-  | "transaction.refund_initiated";
+  | "transaction.refund_initiated"
+  | "compliance.alert.reviewed"
+  | "compliance.alert.escalated"
+  | "compliance.alert.cleared"
+  | "compliance.case.created"
+  | "compliance.case.updated"
+  | "compliance.case.closed"
+  | "compliance.case.escalated_to_sar"
+  | "compliance.case.note_added"
+  | "treasury.nostro.created"
+  | "treasury.nostro.entry_added"
+  | "treasury.nostro.reconciled"
+  | "treasury.prefunding.recorded"
+  | "accounting.journal.posted"
+  | "accounting.journal.reversed"
+  | "accounting.coa.account_added";
 
 interface AuditParams {
   tenantId?: string;

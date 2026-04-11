@@ -171,28 +171,28 @@ export default function TransactionDetailPage({ params }: { params: Promise<{ id
         <PageHeader
           title={txn.referenceNumber}
           description={`${txn.type.charAt(0).toUpperCase() + txn.type.slice(1)} transaction`}
-          breadcrumbs={[{ label: "Payments", href: "/payments" }, { label: txn.referenceNumber }]}
-        >
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={() => router.push("/payments")}>
-              <ArrowLeft className="w-4 h-4 mr-1" /> Back
-            </Button>
-            {availableActions.map((action) => {
-              const cfg = ACTION_CONFIG[action];
-              return (
-                <Button
-                  key={action}
-                  variant={cfg.variant}
-                  size="sm"
-                  onClick={() => { setActiveAction(action); setReason(""); setActionError(""); }}
-                >
-                  <span className={cfg.colour}>{cfg.icon}</span>
-                  <span className="ml-1.5">{cfg.label}</span>
-                </Button>
-              );
-            })}
-          </div>
-        </PageHeader>
+          action={
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" onClick={() => router.push("/payments")}>
+                <ArrowLeft className="w-4 h-4 mr-1" /> Back
+              </Button>
+              {availableActions.map((action) => {
+                const cfg = ACTION_CONFIG[action];
+                return (
+                  <Button
+                    key={action}
+                    variant={cfg.variant}
+                    size="sm"
+                    onClick={() => { setActiveAction(action); setReason(""); setActionError(""); }}
+                  >
+                    <span className={cfg.colour}>{cfg.icon}</span>
+                    <span className="ml-1.5">{cfg.label}</span>
+                  </Button>
+                );
+              })}
+            </div>
+          }
+        />
 
         <div className="grid gap-6 lg:grid-cols-3">
           {/* Transaction summary */}
