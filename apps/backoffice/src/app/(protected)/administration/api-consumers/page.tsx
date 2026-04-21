@@ -40,7 +40,7 @@ const STATUS_COLOURS: Record<string, string> = {
 
 const ENV_COLOURS: Record<string, string> = {
   sandbox:    "bg-[#64748B]/10 text-[#64748B] border-[#64748B]/20",
-  production: "bg-[#1E4D8C]/10 text-[#1E4D8C] border-[#1E4D8C]/20",
+  production: "bg-[#4A8C1C]/10 text-[#4A8C1C] border-[#4A8C1C]/20",
 };
 
 function SecretReveal({ value }: { value: string }) {
@@ -55,7 +55,7 @@ function SecretReveal({ value }: { value: string }) {
 
   return (
     <div className="flex items-center gap-2 mt-1">
-      <code className="flex-1 text-xs bg-[#F7F9FC] border border-[#E2E8F0] rounded px-2 py-1 break-all font-mono">
+      <code className="flex-1 text-xs bg-[#F8FBEF] border border-[#E2E8F0] rounded px-2 py-1 break-all font-mono">
         {visible ? value : "•".repeat(Math.min(value.length, 48))}
       </code>
       <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={() => setVisible((v) => !v)}>
@@ -166,7 +166,7 @@ export default function ApiConsumersPage() {
         title="API Consumers"
         description="Manage OAuth 2.0 client credentials for the Pangea Payment Rail."
         action={
-          <Button className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white" onClick={() => setShowCreate(true)}>
+          <Button className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white" onClick={() => setShowCreate(true)}>
             <Plus className="mr-2 h-4 w-4" /> New consumer
           </Button>
         }
@@ -203,7 +203,7 @@ export default function ApiConsumersPage() {
       <Card className="overflow-hidden border-[#E2E8F0]">
         <Table>
           <TableHeader>
-            <TableRow className="bg-[#F7F9FC] hover:bg-[#F7F9FC]">
+            <TableRow className="bg-[#F8FBEF] hover:bg-[#F8FBEF]">
               <TableHead className="text-[#64748B] font-medium">Consumer</TableHead>
               <TableHead className="text-[#64748B] font-medium">Client ID</TableHead>
               <TableHead className="text-[#64748B] font-medium">Environment</TableHead>
@@ -219,13 +219,13 @@ export default function ApiConsumersPage() {
             ) : !data?.data.length ? (
               <TableRow><TableCell colSpan={7} className="text-center py-12 text-[#64748B]">No API consumers yet.</TableCell></TableRow>
             ) : data.data.map((c) => (
-              <TableRow key={c.id} className="hover:bg-[#F7F9FC]">
+              <TableRow key={c.id} className="hover:bg-[#F8FBEF]">
                 <TableCell>
                   <p className="font-medium text-[#1A2332]">{c.name}</p>
                   <p className="text-xs text-[#64748B]">{c.consumerRef}</p>
                 </TableCell>
                 <TableCell>
-                  <code className="text-xs font-mono text-[#64748B] bg-[#F7F9FC] px-1.5 py-0.5 rounded">{c.clientId.slice(0, 20)}…</code>
+                  <code className="text-xs font-mono text-[#64748B] bg-[#F8FBEF] px-1.5 py-0.5 rounded">{c.clientId.slice(0, 20)}…</code>
                 </TableCell>
                 <TableCell>
                   <Badge variant="outline" className={ENV_COLOURS[c.environment] ?? ""}>{c.environment}</Badge>
@@ -347,12 +347,12 @@ export default function ApiConsumersPage() {
             {!created ? (
               <>
                 <Button variant="outline" onClick={closeCreate}>Cancel</Button>
-                <Button className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white" onClick={handleCreate} disabled={creating || !createForm.name}>
+                <Button className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white" onClick={handleCreate} disabled={creating || !createForm.name}>
                   {creating ? "Creating…" : "Create consumer"}
                 </Button>
               </>
             ) : (
-              <Button className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white" onClick={closeCreate}>Done</Button>
+              <Button className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white" onClick={closeCreate}>Done</Button>
             )}
           </DialogFooter>
         </DialogContent>
@@ -394,7 +394,7 @@ export default function ApiConsumersPage() {
               <>
                 <Button variant="outline" onClick={() => { setActionConsumer(null); setActionType(null); }}>Cancel</Button>
                 <Button
-                  className={actionType === "revoke" ? "bg-[#EF4444] hover:bg-red-600 text-white" : "bg-[#1E4D8C] hover:bg-[#1a4279] text-white"}
+                  className={actionType === "revoke" ? "bg-[#EF4444] hover:bg-red-600 text-white" : "bg-[#4A8C1C] hover:bg-[#3a7016] text-white"}
                   onClick={handleAction}
                   disabled={actionLoading}
                 >
@@ -402,7 +402,7 @@ export default function ApiConsumersPage() {
                 </Button>
               </>
             ) : (
-              <Button className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white"
+              <Button className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white"
                 onClick={() => { setActionConsumer(null); setActionType(null); setRegenResult(null); setRefresh((n) => n + 1); }}>
                 Done
               </Button>

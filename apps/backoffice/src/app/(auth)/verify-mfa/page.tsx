@@ -20,7 +20,7 @@ export default function VerifyMfaPage() {
           <p>For security, please sign in again to verify your identity with your MFA code.</p>
         </div>
         <Button
-          className="w-full bg-[#1E4D8C] hover:bg-[#1a4279] text-white"
+          className="w-full bg-[#4A8C1C] hover:bg-[#3a7016] text-white"
           onClick={() => signOut({ callbackUrl: "/login" })}
         >
           Sign in again

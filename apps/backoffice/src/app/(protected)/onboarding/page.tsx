@@ -121,7 +121,7 @@ export default function OnboardingQueuePage() {
       <Card className="overflow-hidden border-[#E2E8F0]">
         <Table>
           <TableHeader>
-            <TableRow className="bg-[#F7F9FC] hover:bg-[#F7F9FC]">
+            <TableRow className="bg-[#F8FBEF] hover:bg-[#F8FBEF]">
               <TableHead className="text-[#64748B] font-medium">Ref</TableHead>
               <TableHead className="text-[#64748B] font-medium">Name</TableHead>
               <TableHead className="text-[#64748B] font-medium">Type</TableHead>
@@ -144,7 +144,7 @@ export default function OnboardingQueuePage() {
             ) : data.data.map((c) => (
               <TableRow
                 key={c.id}
-                className="cursor-pointer hover:bg-[#F7F9FC]"
+                className="cursor-pointer hover:bg-[#F8FBEF]"
                 onClick={() => router.push(`/customers/${c.id}`)}
               >
                 <TableCell className="font-mono text-sm text-[#64748B]">{c.customerRef}</TableCell>

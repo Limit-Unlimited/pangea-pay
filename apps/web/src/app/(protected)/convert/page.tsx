@@ -63,7 +63,7 @@ function Countdown({
   }, [expiresAt, onExpired]);
 
   const pct    = Math.min(100, (remaining / totalSeconds) * 100);
-  const colour = remaining > 10 ? "#2A9D8F" : remaining > 5 ? "#E9A820" : "#EF4444";
+  const colour = remaining > 10 ? "#B0D980" : remaining > 5 ? "#D4EDAA" : "#EF4444";
 
   return (
     <div className="flex items-center gap-3">
@@ -225,7 +225,7 @@ export default function ConvertPage() {
             <div className="flex-1 h-px bg-[#E2E8F0]" />
             <button
               onClick={() => { setFrom(to); setTo(from); }}
-              className="mx-3 w-8 h-8 rounded-full border border-[#E2E8F0] bg-white flex items-center justify-center text-[#64748B] hover:bg-[#F7F9FC] transition-colors"
+              className="mx-3 w-8 h-8 rounded-full border border-[#E2E8F0] bg-white flex items-center justify-center text-[#64748B] hover:bg-[#F8FBEF] transition-colors"
               title="Swap currencies"
             >
               ⇅
@@ -247,7 +247,7 @@ export default function ConvertPage() {
           </div>
 
           <Button
-            className="w-full h-10 bg-[#1E4D8C] hover:bg-[#1a4279] text-white"
+            className="w-full h-10 bg-[#4A8C1C] hover:bg-[#3a7016] text-white"
             onClick={getQuote}
             disabled={loading || !amount}
           >
@@ -289,7 +289,7 @@ export default function ConvertPage() {
           </div>
 
           {/* Quote breakdown */}
-          <div className="rounded-lg bg-[#F7F9FC] border border-[#E2E8F0] p-4 space-y-3">
+          <div className="rounded-lg bg-[#F8FBEF] border border-[#E2E8F0] p-4 space-y-3">
             <QuoteLine label="You send"    value={`${quote.base} ${fmt(quote.sendAmount)}`} />
             <QuoteLine label="Fee"         value={`${quote.base} ${fmt(quote.fee)}`} muted />
             <QuoteLine label="Exchange rate" value={`1 ${quote.base} = ${fmt(quote.rate, 4)} ${quote.quote}`} muted />
@@ -308,7 +308,7 @@ export default function ConvertPage() {
           </p>
 
           <Button
-            className="w-full h-11 bg-[#E9A820] hover:bg-[#d4971d] text-white font-semibold"
+            className="w-full h-11 bg-[#D4EDAA] hover:bg-[#d4971d] text-white font-semibold"
             onClick={acceptQuote}
             disabled={accepting}
           >
@@ -322,7 +322,7 @@ export default function ConvertPage() {
   // ── Stage: confirmed ──────────────────────────────────────────────────────
   return (
     <div className="max-w-md mx-auto text-center space-y-6 py-8">
-      <div className="w-16 h-16 rounded-full bg-[#2A9D8F]/10 flex items-center justify-center mx-auto">
+      <div className="w-16 h-16 rounded-full bg-[#B0D980]/10 flex items-center justify-center mx-auto">
         <span className="text-3xl">✓</span>
       </div>
 
@@ -359,7 +359,7 @@ export default function ConvertPage() {
           New conversion
         </Button>
         <Button
-          className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white"
+          className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white"
           onClick={() => router.push("/dashboard")}
         >
           Back to home
@@ -378,7 +378,7 @@ function QuoteLine({
   return (
     <div className="flex justify-between items-center gap-4">
       <p className={`text-sm ${muted ? "text-[#64748B]" : "text-[#1A2332]"}`}>{label}</p>
-      <p className={`text-sm text-right ${mono ? "font-mono" : ""} ${bold ? "font-bold" : ""} ${highlight ? "text-[#1E4D8C]" : muted ? "text-[#64748B]" : "text-[#1A2332]"}`}>
+      <p className={`text-sm text-right ${mono ? "font-mono" : ""} ${bold ? "font-bold" : ""} ${highlight ? "text-[#4A8C1C]" : muted ? "text-[#64748B]" : "text-[#1A2332]"}`}>
         {value}
       </p>
     </div>

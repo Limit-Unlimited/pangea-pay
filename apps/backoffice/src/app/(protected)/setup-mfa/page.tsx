@@ -66,7 +66,7 @@ export default function SetupMfaPage() {
             <CheckCircle className="h-12 w-12 text-[#22C55E] mx-auto" />
             <h2 className="text-lg font-semibold text-[#1A2332]">MFA enabled</h2>
             <p className="text-sm text-[#64748B]">Your account is now protected by two-factor authentication. You&apos;ll be asked for your code on each sign-in.</p>
-            <Button className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white w-full" onClick={() => router.push("/profile")}>
+            <Button className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white w-full" onClick={() => router.push("/profile")}>
               Back to profile
             </Button>
           </CardContent>
@@ -104,7 +104,7 @@ export default function SetupMfaPage() {
             <div className="space-y-2">
               <p className="text-sm font-medium text-[#1A2332]">Can&apos;t scan? Enter this code manually</p>
               <div className="flex items-center gap-2">
-                <code className="flex-1 text-xs bg-[#F7F9FC] border border-[#E2E8F0] rounded px-3 py-2 font-mono break-all">{secret}</code>
+                <code className="flex-1 text-xs bg-[#F8FBEF] border border-[#E2E8F0] rounded px-3 py-2 font-mono break-all">{secret}</code>
                 <Button type="button" variant="outline" size="icon" onClick={copySecret} aria-label="Copy secret">
                   {copied ? <Check className="h-4 w-4 text-[#22C55E]" /> : <Copy className="h-4 w-4" />}
                 </Button>
@@ -129,7 +129,7 @@ export default function SetupMfaPage() {
                   {form.formState.errors.token && <p className="text-xs text-destructive">{form.formState.errors.token.message}</p>}
                 </div>
                 <div className="flex gap-3">
-                  <Button type="submit" className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white" disabled={isSaving}>
+                  <Button type="submit" className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white" disabled={isSaving}>
                     {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Verifying…</> : "Verify and enable"}
                   </Button>
                   <Button type="button" variant="outline" onClick={() => router.push("/profile")}>Cancel</Button>

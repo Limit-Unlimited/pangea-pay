@@ -78,7 +78,7 @@ export default function NewCustomerPage() {
                 onClick={() => setType(t)}
                 className={`flex-1 py-3 px-4 rounded-lg border text-sm font-medium capitalize transition-colors
                   ${type === t
-                    ? "border-[#1E4D8C] bg-[#1E4D8C]/5 text-[#1E4D8C]"
+                    ? "border-[#4A8C1C] bg-[#4A8C1C]/5 text-[#4A8C1C]"
                     : "border-[#E2E8F0] text-[#64748B] hover:border-[#94A3B8]"
                   }`}
               >
@@ -206,7 +206,7 @@ export default function NewCustomerPage() {
         )}
 
         <div className="flex gap-3">
-          <Button type="submit" className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white" disabled={isSubmitting}>
+          <Button type="submit" className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white" disabled={isSubmitting}>
             {isSubmitting ? "Creating…" : "Create customer"}
           </Button>
           <Button type="button" variant="outline" onClick={() => router.back()}>Cancel</Button>

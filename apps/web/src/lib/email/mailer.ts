@@ -47,7 +47,7 @@ export async function sendPasswordResetEmail(email: string, resetUrl: string): P
     text:    `You requested a password reset.\n\nClick the link below to set a new password (valid for 1 hour):\n${resetUrl}\n\nIf you did not request this, you can ignore this email.`,
     html: `
       <p>You requested a password reset.</p>
-      <p><a href="${resetUrl}" style="color:#1E4D8C;font-weight:bold;">Reset your password</a></p>
+      <p><a href="${resetUrl}" style="color:#4A8C1C;font-weight:bold;">Reset your password</a></p>
       <p>This link expires in 1 hour. If you did not request this, you can safely ignore this email.</p>
     `,
   });

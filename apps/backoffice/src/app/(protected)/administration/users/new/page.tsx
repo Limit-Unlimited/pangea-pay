@@ -134,7 +134,7 @@ export default function InviteUserPage() {
             </div>
 
             <div className="flex gap-3 pt-2">
-              <Button type="submit" className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white" disabled={isLoading}>
+              <Button type="submit" className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white" disabled={isLoading}>
                 {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending invitation…</> : "Send invitation"}
               </Button>
               <Button type="button" variant="outline" onClick={() => router.back()}>Cancel</Button>

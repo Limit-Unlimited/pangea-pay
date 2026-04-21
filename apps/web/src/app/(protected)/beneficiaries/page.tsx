@@ -119,7 +119,7 @@ export default function BeneficiariesPage() {
           <p className="text-[#64748B] mt-1 text-sm">Manage the people and accounts you send money to.</p>
         </div>
         <Button
-          className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white h-9"
+          className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white h-9"
           onClick={() => { setShowAdd(true); setError(""); setForm(initForm()); }}
         >
           <Plus className="w-4 h-4 mr-1.5" /> Add beneficiary
@@ -139,7 +139,7 @@ export default function BeneficiariesPage() {
           {rows.map((b) => (
             <Card key={b.id} className="p-4 border-[#E2E8F0] bg-white flex items-center justify-between gap-4">
               <div className="flex items-center gap-3 min-w-0">
-                <div className="w-9 h-9 rounded-full bg-[#F7F9FC] border border-[#E2E8F0] flex items-center justify-center shrink-0">
+                <div className="w-9 h-9 rounded-full bg-[#F8FBEF] border border-[#E2E8F0] flex items-center justify-center shrink-0">
                   <Building2 className="w-4 h-4 text-[#64748B]" />
                 </div>
                 <div className="min-w-0">
@@ -249,7 +249,7 @@ export default function BeneficiariesPage() {
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setShowAdd(false)}>Cancel</Button>
-              <Button type="submit" disabled={saving} className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white">
+              <Button type="submit" disabled={saving} className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white">
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Add beneficiary"}
               </Button>
             </DialogFooter>

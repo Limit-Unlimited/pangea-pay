@@ -66,7 +66,7 @@ export default function UsersPage() {
         title="Users"
         description="Manage backoffice user accounts and access."
         action={
-          <Button className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white" onClick={() => router.push("/administration/users/new")}>
+          <Button className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white" onClick={() => router.push("/administration/users/new")}>
             <Plus className="mr-2 h-4 w-4" /> Invite user
           </Button>
         }
@@ -108,7 +108,7 @@ export default function UsersPage() {
       <Card className="overflow-hidden border-[#E2E8F0]">
         <Table>
           <TableHeader>
-            <TableRow className="bg-[#F7F9FC] hover:bg-[#F7F9FC]">
+            <TableRow className="bg-[#F8FBEF] hover:bg-[#F8FBEF]">
               <TableHead className="text-[#64748B] font-medium">Name</TableHead>
               <TableHead className="text-[#64748B] font-medium">Email</TableHead>
               <TableHead className="text-[#64748B] font-medium">Job title</TableHead>
@@ -130,7 +130,7 @@ export default function UsersPage() {
             ) : data.data.map((user) => (
               <TableRow
                 key={user.id}
-                className="cursor-pointer hover:bg-[#F7F9FC]"
+                className="cursor-pointer hover:bg-[#F8FBEF]"
                 onClick={() => router.push(`/administration/users/${user.id}`)}
               >
                 <TableCell className="font-medium text-[#1A2332]">{user.firstName} {user.lastName}</TableCell>

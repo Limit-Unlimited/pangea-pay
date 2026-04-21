@@ -13,7 +13,7 @@ export default async function ProtectedLayout({ children }: { children: React.Re
 
   return (
     <SessionProvider session={session}>
-      <div className="flex h-screen overflow-hidden bg-[#F7F9FC]">
+      <div className="flex h-screen overflow-hidden bg-[#F8FBEF]">
         <Sidebar />
         <div className="flex flex-col flex-1 overflow-hidden">
           <TopNav />

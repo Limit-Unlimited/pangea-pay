@@ -124,7 +124,7 @@ export default function AlertDetailPage({ params }: { params: Promise<{ id: stri
             {alert.caseId && <DetailRow label="Linked case" value={
               <button
                 onClick={() => router.push(`/compliance/cases/${alert.caseId}`)}
-                className="text-[#1E4D8C] hover:underline flex items-center gap-1"
+                className="text-[#4A8C1C] hover:underline flex items-center gap-1"
               >
                 View case <ExternalLink className="w-3 h-3" />
               </button>
@@ -134,7 +134,7 @@ export default function AlertDetailPage({ params }: { params: Promise<{ id: stri
           {alert.triggerDetails && (
             <Card className="p-5 border-[#E2E8F0]">
               <h2 className="text-sm font-semibold text-[#1A2332] mb-3">Trigger data</h2>
-              <pre className="text-xs text-[#64748B] bg-[#F7F9FC] rounded p-3 overflow-auto whitespace-pre-wrap">
+              <pre className="text-xs text-[#64748B] bg-[#F8FBEF] rounded p-3 overflow-auto whitespace-pre-wrap">
                 {(() => {
                   try { return JSON.stringify(JSON.parse(alert.triggerDetails!), null, 2); }
                   catch { return alert.triggerDetails; }
@@ -162,7 +162,7 @@ export default function AlertDetailPage({ params }: { params: Promise<{ id: stri
               </p>
               <button
                 onClick={() => router.push(`/customers/${alert.customer!.id}`)}
-                className="text-xs text-[#1E4D8C] hover:underline flex items-center gap-1 mt-1"
+                className="text-xs text-[#4A8C1C] hover:underline flex items-center gap-1 mt-1"
               >
                 {alert.customer.customerRef} <ExternalLink className="w-3 h-3" />
               </button>
@@ -180,7 +180,7 @@ export default function AlertDetailPage({ params }: { params: Promise<{ id: stri
               </p>
               <button
                 onClick={() => router.push(`/payments/${alert.transaction!.id}`)}
-                className="text-xs text-[#1E4D8C] hover:underline flex items-center gap-1 mt-1"
+                className="text-xs text-[#4A8C1C] hover:underline flex items-center gap-1 mt-1"
               >
                 View transaction <ExternalLink className="w-3 h-3" />
               </button>
@@ -228,7 +228,7 @@ export default function AlertDetailPage({ params }: { params: Promise<{ id: stri
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setAction(null)}>Cancel</Button>
-            <Button onClick={handleAction} disabled={saving} className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white">
+            <Button onClick={handleAction} disabled={saving} className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white">
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Confirm"}
             </Button>
           </DialogFooter>

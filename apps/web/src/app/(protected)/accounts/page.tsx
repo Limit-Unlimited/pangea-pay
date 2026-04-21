@@ -56,7 +56,7 @@ export default async function AccountsPage() {
         <div className="space-y-3">
           {customerAccounts.map((acc) => (
             <Link key={acc.id} href={`/accounts/${acc.id}`}>
-              <Card className="p-5 border-[#E2E8F0] bg-white hover:border-[#1E4D8C]/40 hover:shadow-sm transition-all cursor-pointer">
+              <Card className="p-5 border-[#E2E8F0] bg-white hover:border-[#4A8C1C]/40 hover:shadow-sm transition-all cursor-pointer">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-1">

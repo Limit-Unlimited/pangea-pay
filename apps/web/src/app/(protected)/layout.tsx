@@ -8,13 +8,13 @@ export default async function ProtectedLayout({ children }: { children: React.Re
   if (!session?.user) redirect("/login");
 
   return (
-    <div className="min-h-screen bg-[#F7F9FC] flex flex-col">
+    <div className="min-h-screen bg-[#F8FBEF] flex flex-col">
       {/* Top navigation */}
       <header className="bg-white border-b border-[#E2E8F0] sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           {/* Logo */}
           <Link href="/dashboard" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#1E4D8C] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-[#4A8C1C] flex items-center justify-center">
               <span className="text-white font-bold text-sm">P</span>
             </div>
             <span className="font-bold text-[#1A2332] text-lg" style={{ fontFamily: "var(--font-lato)" }}>

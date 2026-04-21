@@ -19,13 +19,17 @@ See `requirements-v2.md` for full functional and non-functional requirements.
 
 | Role | Name | Hex |
 |---|---|---|
-| Primary | Ocean Blue | `#1E4D8C` |
-| Secondary | Teal | `#2A9D8F` |
-| Accent / CTA | Warm Gold | `#E9A820` |
-| Background | Soft White | `#F7F9FC` |
+| Primary / CTA | Forest Green | `#4A8C1C` |
+| Accent / Brand | Lime Green | `#B0D980` |
+| Accent Light | Soft Lime | `#D4EDAA` |
+| Background (web) | White | `#FFFFFF` |
+| Background (backoffice) | Green White | `#F8FBEF` |
+| Muted | Light Green | `#F0F7E6` |
 | Surface | White | `#FFFFFF` |
+| Sidebar | Deep Forest | `#162712` |
 | Text Primary | Deep Charcoal | `#1A2332` |
 | Text Secondary | Slate | `#64748B` |
+| Border | Sage | `#D1E8B8` |
 | Success | Green | `#22C55E` |
 | Warning | Amber | `#F59E0B` |
 | Error | Red | `#EF4444` |

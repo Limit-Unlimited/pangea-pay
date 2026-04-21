@@ -6,9 +6,9 @@ export default async function DashboardPage() {
   const session = await auth();
 
   const stats = [
-    { label: "Active Customers",    value: "—", icon: Users,          color: "text-[#1E4D8C]" },
-    { label: "Transactions Today",  value: "—", icon: CreditCard,     color: "text-[#2A9D8F]" },
-    { label: "FX Volume (Today)",   value: "—", icon: ArrowLeftRight, color: "text-[#E9A820]" },
+    { label: "Active Customers",    value: "—", icon: Users,          color: "text-[#4A8C1C]" },
+    { label: "Transactions Today",  value: "—", icon: CreditCard,     color: "text-[#B0D980]" },
+    { label: "FX Volume (Today)",   value: "—", icon: ArrowLeftRight, color: "text-[#D4EDAA]" },
     { label: "Open Alerts",         value: "—", icon: ShieldCheck,    color: "text-[#EF4444]" },
   ];
 

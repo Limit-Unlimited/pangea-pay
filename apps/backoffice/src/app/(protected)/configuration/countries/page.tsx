@@ -67,7 +67,7 @@ export default function CountriesPage() {
         title="Countries"
         description="Configure which countries are enabled for sending and receiving."
         action={
-          <Button className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white" onClick={() => setShowAdd(true)}>
+          <Button className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white" onClick={() => setShowAdd(true)}>
             <Plus className="mr-2 h-4 w-4" /> Add country
           </Button>
         }
@@ -76,7 +76,7 @@ export default function CountriesPage() {
       <Card className="overflow-hidden border-[#E2E8F0]">
         <Table>
           <TableHeader>
-            <TableRow className="bg-[#F7F9FC] hover:bg-[#F7F9FC]">
+            <TableRow className="bg-[#F8FBEF] hover:bg-[#F8FBEF]">
               <TableHead className="text-[#64748B] font-medium">Country</TableHead>
               <TableHead className="text-[#64748B] font-medium">Code</TableHead>
               <TableHead className="text-[#64748B] font-medium">Currency</TableHead>
@@ -90,7 +90,7 @@ export default function CountriesPage() {
             {isLoading ? (
               <TableRow><TableCell colSpan={7} className="text-center py-10 text-[#64748B]">Loading…</TableCell></TableRow>
             ) : countries.map((c) => (
-              <TableRow key={c.id} className="hover:bg-[#F7F9FC]">
+              <TableRow key={c.id} className="hover:bg-[#F8FBEF]">
                 <TableCell className="font-medium text-[#1A2332]">
                   <div className="flex items-center gap-2">
                     <Globe className="h-4 w-4 text-[#64748B]" />
@@ -143,7 +143,7 @@ export default function CountriesPage() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowAdd(false)}>Cancel</Button>
-            <Button className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white" onClick={addCountry} disabled={saving}>
+            <Button className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white" onClick={addCountry} disabled={saving}>
               {saving ? "Adding…" : "Add country"}
             </Button>
           </DialogFooter>

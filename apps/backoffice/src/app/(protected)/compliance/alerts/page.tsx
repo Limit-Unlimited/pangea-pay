@@ -128,7 +128,7 @@ export default function AlertsPage() {
       ) : (
         <div className="bg-white border border-[#E2E8F0] rounded-xl overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-[#F7F9FC] border-b border-[#E2E8F0]">
+            <thead className="bg-[#F8FBEF] border-b border-[#E2E8F0]">
               <tr>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-[#64748B] uppercase tracking-wide">Ref</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-[#64748B] uppercase tracking-wide">Rule</th>
@@ -142,7 +142,7 @@ export default function AlertsPage() {
               {rows.map((a) => (
                 <tr
                   key={a.id}
-                  className="hover:bg-[#F7F9FC] cursor-pointer transition-colors"
+                  className="hover:bg-[#F8FBEF] cursor-pointer transition-colors"
                   onClick={() => router.push(`/compliance/alerts/${a.id}`)}
                 >
                   <td className="px-4 py-3 font-mono text-xs text-[#1A2332]">{a.alertRef}</td>
@@ -167,7 +167,7 @@ export default function AlertsPage() {
 
           {/* Pagination */}
           {pages > 1 && (
-            <div className="flex items-center justify-between px-4 py-3 border-t border-[#E2E8F0] bg-[#F7F9FC]">
+            <div className="flex items-center justify-between px-4 py-3 border-t border-[#E2E8F0] bg-[#F8FBEF]">
               <p className="text-xs text-[#64748B]">{total} alert{total !== 1 ? "s" : ""}</p>
               <div className="flex items-center gap-2">
                 <Button variant="outline" size="sm" className="h-7 px-2" onClick={() => { setPage((p) => Math.max(1, p - 1)); load(); }} disabled={page === 1}>

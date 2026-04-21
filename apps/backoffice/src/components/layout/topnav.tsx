@@ -41,7 +41,7 @@ export function TopNav({ tenantName = "Pangea Pay", breadcrumbs = [] }: TopNavPr
             <span key={i} className="flex items-center gap-2">
               {i > 0 && <span className="text-[#CBD5E1]">/</span>}
               {crumb.href ? (
-                <a href={crumb.href} className="hover:text-[#1E4D8C]">{crumb.label}</a>
+                <a href={crumb.href} className="hover:text-[#4A8C1C]">{crumb.label}</a>
               ) : (
                 <span className={i === breadcrumbs.length - 1 ? "text-[#1A2332] font-medium" : ""}>
                   {crumb.label}
@@ -57,7 +57,7 @@ export function TopNav({ tenantName = "Pangea Pay", breadcrumbs = [] }: TopNavPr
         {/* Notification bell — shell only */}
         <Button variant="ghost" size="icon" className="relative text-[#64748B] hover:text-[#1A2332]">
           <Bell className="h-5 w-5" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#E9A820] rounded-full" />
+          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#D4EDAA] rounded-full" />
           <span className="sr-only">Notifications</span>
         </Button>
 
@@ -65,7 +65,7 @@ export function TopNav({ tenantName = "Pangea Pay", breadcrumbs = [] }: TopNavPr
         <DropdownMenu>
           <DropdownMenuTrigger className="flex items-center gap-2 h-9 px-2 rounded-md hover:bg-accent text-sm transition-colors">
             <Avatar className="h-7 w-7">
-              <AvatarFallback className="bg-[#1E4D8C] text-white text-xs">
+              <AvatarFallback className="bg-[#4A8C1C] text-white text-xs">
                 {initials}
               </AvatarFallback>
             </Avatar>

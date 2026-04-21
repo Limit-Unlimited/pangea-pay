@@ -41,7 +41,7 @@ function ResetPasswordForm() {
           <ShieldAlert className="h-10 w-10 text-[#EF4444] mx-auto" />
           <p className="font-medium text-[#1A2332]">Invalid reset link</p>
           <p className="text-sm text-[#64748B]">This link is missing a token. Please request a new reset link.</p>
-          <a href="/forgot-password" className="text-sm text-[#1E4D8C] hover:underline block">Request new link</a>
+          <a href="/forgot-password" className="text-sm text-[#4A8C1C] hover:underline block">Request new link</a>
         </CardContent>
       </Card>
     );
@@ -55,7 +55,7 @@ function ResetPasswordForm() {
           <p className="font-medium text-[#1A2332]">Password reset successfully</p>
           <p className="text-sm text-[#64748B]">You can now sign in with your new password.</p>
           <Button
-            className="w-full bg-[#1E4D8C] hover:bg-[#1a4279] text-white mt-2"
+            className="w-full bg-[#4A8C1C] hover:bg-[#3a7016] text-white mt-2"
             onClick={() => router.push("/login")}
           >
             Sign in
@@ -136,7 +136,7 @@ function ResetPasswordForm() {
             )}
           </div>
 
-          <Button type="submit" className="w-full bg-[#1E4D8C] hover:bg-[#1a4279] text-white" disabled={isLoading}>
+          <Button type="submit" className="w-full bg-[#4A8C1C] hover:bg-[#3a7016] text-white" disabled={isLoading}>
             {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Setting password…</> : "Set new password"}
           </Button>
           <a href="/login" className="block text-center text-sm text-[#64748B] hover:text-[#1A2332]">Back to sign in</a>

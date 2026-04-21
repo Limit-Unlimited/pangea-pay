@@ -191,7 +191,7 @@ export default function TreasuryPage() {
           <Button variant="outline" className="h-9" onClick={() => { setShowPrefund(true); setPrefundError(""); setPrefundForm(initPrefundForm()); }}>
             <Plus className="w-4 h-4 mr-1.5" /> Prefunding
           </Button>
-          <Button className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white h-9" onClick={() => { setShowNostro(true); setNostroError(""); setNostroForm(initNostroForm()); }}>
+          <Button className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white h-9" onClick={() => { setShowNostro(true); setNostroError(""); setNostroForm(initNostroForm()); }}>
             <Plus className="w-4 h-4 mr-1.5" /> Nostro account
           </Button>
         </div>
@@ -235,7 +235,7 @@ export default function TreasuryPage() {
             {accounts.map((acc) => (
               <Card key={acc.id} className="border-[#E2E8F0] overflow-hidden">
                 <div
-                  className="p-4 flex items-center justify-between cursor-pointer hover:bg-[#F7F9FC] transition-colors"
+                  className="p-4 flex items-center justify-between cursor-pointer hover:bg-[#F8FBEF] transition-colors"
                   onClick={() => toggleExpand(acc.id)}
                 >
                   <div className="flex items-center gap-3 min-w-0">
@@ -271,7 +271,7 @@ export default function TreasuryPage() {
                 </div>
 
                 {expandedId === acc.id && (
-                  <div className="border-t border-[#E2E8F0] bg-[#F7F9FC] p-4">
+                  <div className="border-t border-[#E2E8F0] bg-[#F8FBEF] p-4">
                     {loadingEntries ? (
                       <div className="flex justify-center py-4"><Loader2 className="w-4 h-4 animate-spin text-[#64748B]" /></div>
                     ) : entries.length === 0 ? (
@@ -326,7 +326,7 @@ export default function TreasuryPage() {
         ) : (
           <div className="bg-white border border-[#E2E8F0] rounded-xl overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-[#F7F9FC] border-b border-[#E2E8F0]">
+              <thead className="bg-[#F8FBEF] border-b border-[#E2E8F0]">
                 <tr>
                   <th className="text-left px-4 py-3 text-xs font-semibold text-[#64748B] uppercase tracking-wide">Ref</th>
                   <th className="text-left px-4 py-3 text-xs font-semibold text-[#64748B] uppercase tracking-wide">Nostro</th>
@@ -408,7 +408,7 @@ export default function TreasuryPage() {
             </div>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setShowNostro(false)}>Cancel</Button>
-              <Button type="submit" disabled={savingNostro} className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white">
+              <Button type="submit" disabled={savingNostro} className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white">
                 {savingNostro ? <Loader2 className="w-4 h-4 animate-spin" /> : "Add account"}
               </Button>
             </DialogFooter>
@@ -454,7 +454,7 @@ export default function TreasuryPage() {
             </div>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setShowEntry(null)}>Cancel</Button>
-              <Button type="submit" disabled={savingEntry} className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white">
+              <Button type="submit" disabled={savingEntry} className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white">
                 {savingEntry ? <Loader2 className="w-4 h-4 animate-spin" /> : "Record entry"}
               </Button>
             </DialogFooter>
@@ -495,7 +495,7 @@ export default function TreasuryPage() {
             </div>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setShowPrefund(false)}>Cancel</Button>
-              <Button type="submit" disabled={savingPrefund} className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white">
+              <Button type="submit" disabled={savingPrefund} className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white">
                 {savingPrefund ? <Loader2 className="w-4 h-4 animate-spin" /> : "Record prefunding"}
               </Button>
             </DialogFooter>

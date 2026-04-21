@@ -125,10 +125,10 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="flex flex-col w-64 min-h-screen bg-[#1A2332] text-[#F7F9FC] shrink-0">
+    <aside className="flex flex-col w-64 min-h-screen bg-[#1A2332] text-[#F8FBEF] shrink-0">
       {/* Logo */}
       <div className="flex items-center gap-3 px-6 py-5 border-b border-[#2D3748]">
-        <div className="w-8 h-8 rounded-lg bg-[#1E4D8C] flex items-center justify-center shrink-0">
+        <div className="w-8 h-8 rounded-lg bg-[#4A8C1C] flex items-center justify-center shrink-0">
           <span className="text-white font-bold text-sm">P</span>
         </div>
         <div>
@@ -153,7 +153,7 @@ export function Sidebar() {
                     className={cn(
                       "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors",
                       isActive
-                        ? "bg-[#1E4D8C]/60 text-white"
+                        ? "bg-[#4A8C1C]/60 text-white"
                         : "text-[#94A3B8] hover:bg-[#2D3748] hover:text-white"
                     )}
                   >
@@ -173,7 +173,7 @@ export function Sidebar() {
                               className={cn(
                                 "flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors",
                                 childActive
-                                  ? "bg-[#1E4D8C] text-white"
+                                  ? "bg-[#4A8C1C] text-white"
                                   : "text-[#94A3B8] hover:bg-[#2D3748] hover:text-white"
                               )}
                             >
@@ -196,7 +196,7 @@ export function Sidebar() {
                   className={cn(
                     "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors",
                     isActive
-                      ? "bg-[#1E4D8C] text-white"
+                      ? "bg-[#4A8C1C] text-white"
                       : "text-[#94A3B8] hover:bg-[#2D3748] hover:text-white"
                   )}
                 >

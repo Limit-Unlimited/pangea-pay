@@ -45,7 +45,7 @@ function Countdown({ expiresAt, totalSeconds, onExpired }: { expiresAt: string; 
     const id = setInterval(tick, 250);
     return () => clearInterval(id);
   }, [expiresAt, onExpired]);
-  const colour = remaining > 10 ? "#2A9D8F" : remaining > 5 ? "#E9A820" : "#EF4444";
+  const colour = remaining > 10 ? "#B0D980" : remaining > 5 ? "#D4EDAA" : "#EF4444";
   const pct    = Math.min(100, (remaining / totalSeconds) * 100);
   return (
     <div className="flex items-center gap-2 text-sm text-[#64748B]">
@@ -67,7 +67,7 @@ function QuoteLine({ label, value, muted, bold, highlight }: { label: string; va
   return (
     <div className="flex justify-between items-center gap-4">
       <p className={`text-sm ${muted ? "text-[#64748B]" : "text-[#1A2332]"}`}>{label}</p>
-      <p className={`text-sm text-right ${bold ? "font-bold" : ""} ${highlight ? "text-[#1E4D8C]" : muted ? "text-[#64748B]" : "text-[#1A2332]"}`}>{value}</p>
+      <p className={`text-sm text-right ${bold ? "font-bold" : ""} ${highlight ? "text-[#4A8C1C]" : muted ? "text-[#64748B]" : "text-[#1A2332]"}`}>{value}</p>
     </div>
   );
 }
@@ -161,8 +161,8 @@ export default function SendPage() {
   if (stage === "done" && result) {
     return (
       <div className="max-w-md mx-auto text-center space-y-6 py-8">
-        <div className="w-16 h-16 rounded-full bg-[#2A9D8F]/10 flex items-center justify-center mx-auto">
-          <CheckCircle className="w-8 h-8 text-[#2A9D8F]" />
+        <div className="w-16 h-16 rounded-full bg-[#B0D980]/10 flex items-center justify-center mx-auto">
+          <CheckCircle className="w-8 h-8 text-[#B0D980]" />
         </div>
         <div>
           <h1 className="text-2xl font-bold text-[#1A2332]">Payment submitted</h1>
@@ -187,7 +187,7 @@ export default function SendPage() {
         </p>
         <div className="flex gap-3 justify-center">
           <Button variant="outline" onClick={() => router.push("/transactions")}>View history</Button>
-          <Button className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white" onClick={() => router.push("/dashboard")}>Back to home</Button>
+          <Button className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white" onClick={() => router.push("/dashboard")}>Back to home</Button>
         </div>
       </div>
     );
@@ -206,13 +206,13 @@ export default function SendPage() {
           <div key={step} className="flex items-center flex-1 last:flex-none">
             <div className="flex flex-col items-center gap-1">
               <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-colors
-                ${i < stepIndex ? "bg-[#2A9D8F] text-white" : i === stepIndex ? "bg-[#1E4D8C] text-white" : "bg-[#E2E8F0] text-[#64748B]"}`}>
+                ${i < stepIndex ? "bg-[#B0D980] text-white" : i === stepIndex ? "bg-[#4A8C1C] text-white" : "bg-[#E2E8F0] text-[#64748B]"}`}>
                 {i < stepIndex ? "✓" : i + 1}
               </div>
-              <span className={`text-[10px] font-medium ${i === stepIndex ? "text-[#1E4D8C]" : "text-[#64748B]"}`}>{step}</span>
+              <span className={`text-[10px] font-medium ${i === stepIndex ? "text-[#4A8C1C]" : "text-[#64748B]"}`}>{step}</span>
             </div>
             {i < STEPS.length - 1 && (
-              <div className={`flex-1 h-px mx-1 mb-4 ${i < stepIndex ? "bg-[#2A9D8F]" : "bg-[#E2E8F0]"}`} />
+              <div className={`flex-1 h-px mx-1 mb-4 ${i < stepIndex ? "bg-[#B0D980]" : "bg-[#E2E8F0]"}`} />
             )}
           </div>
         ))}
@@ -236,9 +236,9 @@ export default function SendPage() {
                   key={b.id}
                   onClick={() => { setSelBenef(b); setError(""); setStage("amount"); }}
                   className={`w-full flex items-center gap-3 p-3 rounded-lg border text-left transition-all
-                    ${selectedBenef?.id === b.id ? "border-[#1E4D8C] bg-[#F0F5FF]" : "border-[#E2E8F0] hover:border-[#1E4D8C]/40 hover:bg-[#F7F9FC]"}`}
+                    ${selectedBenef?.id === b.id ? "border-[#4A8C1C] bg-[#F0F5FF]" : "border-[#E2E8F0] hover:border-[#4A8C1C]/40 hover:bg-[#F8FBEF]"}`}
                 >
-                  <div className="w-9 h-9 rounded-full bg-[#F7F9FC] border border-[#E2E8F0] flex items-center justify-center shrink-0">
+                  <div className="w-9 h-9 rounded-full bg-[#F8FBEF] border border-[#E2E8F0] flex items-center justify-center shrink-0">
                     <Building2 className="w-4 h-4 text-[#64748B]" />
                   </div>
                   <div className="min-w-0">
@@ -261,7 +261,7 @@ export default function SendPage() {
             <button onClick={() => { setStage("beneficiary"); setError(""); }} className="text-xs text-[#64748B] hover:text-[#1A2332]">Change</button>
           </div>
 
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-[#F7F9FC] border border-[#E2E8F0]">
+          <div className="flex items-center gap-3 p-3 rounded-lg bg-[#F8FBEF] border border-[#E2E8F0]">
             <Building2 className="w-4 h-4 text-[#64748B] shrink-0" />
             <div>
               <p className="text-sm font-medium text-[#1A2332]">{selectedBenef.displayName}</p>
@@ -288,7 +288,7 @@ export default function SendPage() {
           <div className="space-y-1.5">
             <Label>Amount to send</Label>
             <div className="flex gap-2">
-              <span className="flex items-center justify-center w-16 h-9 rounded-lg border border-[#E2E8F0] bg-[#F7F9FC] text-sm text-[#64748B] font-medium shrink-0">
+              <span className="flex items-center justify-center w-16 h-9 rounded-lg border border-[#E2E8F0] bg-[#F8FBEF] text-sm text-[#64748B] font-medium shrink-0">
                 {selectedAccount?.currency ?? "—"}
               </span>
               <Input
@@ -309,7 +309,7 @@ export default function SendPage() {
           </div>
 
           <Button
-            className="w-full h-10 bg-[#1E4D8C] hover:bg-[#1a4279] text-white"
+            className="w-full h-10 bg-[#4A8C1C] hover:bg-[#3a7016] text-white"
             disabled={loading || !selectedAccount || !amount}
             onClick={getQuote}
           >
@@ -332,7 +332,7 @@ export default function SendPage() {
             <Countdown expiresAt={quote.expiresAt} totalSeconds={quote.expiresInSeconds} onExpired={handleExpired} />
           </div>
 
-          <div className="rounded-lg bg-[#F7F9FC] border border-[#E2E8F0] p-4 space-y-3">
+          <div className="rounded-lg bg-[#F8FBEF] border border-[#E2E8F0] p-4 space-y-3">
             <QuoteLine label="You send"       value={fmt(quote.sendAmount,    selectedAccount.currency)} />
             <QuoteLine label="Fee"            value={fmt(quote.fee,           selectedAccount.currency)} muted />
             <QuoteLine label="Exchange rate"  value={`1 ${selectedAccount.currency} = ${quote.rate.toFixed(4)} ${selectedBenef.currency}`} muted />
@@ -347,7 +347,7 @@ export default function SendPage() {
           </div>
 
           <Button
-            className="w-full h-11 bg-[#E9A820] hover:bg-[#d4971d] text-white font-semibold"
+            className="w-full h-11 bg-[#D4EDAA] hover:bg-[#d4971d] text-white font-semibold"
             onClick={() => { setStage("confirm"); setError(""); }}
           >
             Review and confirm
@@ -360,7 +360,7 @@ export default function SendPage() {
         <Card className="p-6 border-[#E2E8F0] bg-white space-y-5">
           <h2 className="text-sm font-semibold text-[#1A2332]">Confirm your payment</h2>
 
-          <div className="rounded-lg bg-[#F7F9FC] border border-[#E2E8F0] p-4 space-y-3">
+          <div className="rounded-lg bg-[#F8FBEF] border border-[#E2E8F0] p-4 space-y-3">
             <QuoteLine label="Sending to"     value={selectedBenef.displayName} />
             <QuoteLine label="From account"   value={`${selectedAccount.currency} · ${selectedAccount.accountNumber}`} muted />
             <QuoteLine label="You send"       value={fmt(quote.sendAmount,    selectedAccount.currency)} />
@@ -380,7 +380,7 @@ export default function SendPage() {
           <div className="flex gap-3">
             <Button variant="outline" className="flex-1" onClick={() => { setStage("quote"); setError(""); }}>Back</Button>
             <Button
-              className="flex-1 h-10 bg-[#E9A820] hover:bg-[#d4971d] text-white font-semibold"
+              className="flex-1 h-10 bg-[#D4EDAA] hover:bg-[#d4971d] text-white font-semibold"
               disabled={loading}
               onClick={acceptAndConfirm}
             >

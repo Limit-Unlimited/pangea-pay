@@ -100,9 +100,9 @@ export default function RoleDetailPage({ params }: { params: Promise<{ id: strin
       />
 
       {readonly && (
-        <Alert className="mb-4 border-[#1E4D8C]/20 bg-[#1E4D8C]/5">
-          <Info className="h-4 w-4 text-[#1E4D8C]" />
-          <AlertDescription className="text-[#1E4D8C]">System roles are managed by the platform and cannot be modified.</AlertDescription>
+        <Alert className="mb-4 border-[#4A8C1C]/20 bg-[#4A8C1C]/5">
+          <Info className="h-4 w-4 text-[#4A8C1C]" />
+          <AlertDescription className="text-[#4A8C1C]">System roles are managed by the platform and cannot be modified.</AlertDescription>
         </Alert>
       )}
 
@@ -118,11 +118,11 @@ export default function RoleDetailPage({ params }: { params: Promise<{ id: strin
           <CardContent className="pt-6 space-y-5">
             <div className="space-y-1.5">
               <Label htmlFor="name">Role name</Label>
-              <Input id="name" {...form.register("name")} disabled={readonly} className={readonly ? "bg-[#F7F9FC]" : ""} />
+              <Input id="name" {...form.register("name")} disabled={readonly} className={readonly ? "bg-[#F8FBEF]" : ""} />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="description">Description</Label>
-              <Textarea id="description" {...form.register("description")} rows={2} disabled={readonly} className={readonly ? "bg-[#F7F9FC]" : ""} />
+              <Textarea id="description" {...form.register("description")} rows={2} disabled={readonly} className={readonly ? "bg-[#F8FBEF]" : ""} />
             </div>
             <div className={`flex items-center justify-between rounded-lg border border-[#E2E8F0] p-4 ${readonly ? "opacity-60" : ""}`}>
               <div>
@@ -166,7 +166,7 @@ export default function RoleDetailPage({ params }: { params: Promise<{ id: strin
 
         {!readonly && (
           <div className="flex gap-3">
-            <Button type="submit" className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white" disabled={isSaving}>
+            <Button type="submit" className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white" disabled={isSaving}>
               {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving…</> : "Save changes"}
             </Button>
             <Button type="button" variant="outline" onClick={() => router.back()}>Cancel</Button>

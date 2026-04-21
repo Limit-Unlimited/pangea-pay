@@ -207,12 +207,12 @@ export default function AccountingPage() {
         </div>
         <div className="flex gap-2">
           {tab === "coa" && (
-            <Button className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white h-9" onClick={() => { setShowCoaForm(true); setCoaError(""); setCoaForm(initCoaForm()); }}>
+            <Button className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white h-9" onClick={() => { setShowCoaForm(true); setCoaError(""); setCoaForm(initCoaForm()); }}>
               <Plus className="w-4 h-4 mr-1.5" /> Add account
             </Button>
           )}
           {tab === "journal" && (
-            <Button className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white h-9" onClick={() => { setShowJournalForm(true); setJournalError(""); setJournalForm(initJournalForm()); }}>
+            <Button className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white h-9" onClick={() => { setShowJournalForm(true); setJournalError(""); setJournalForm(initJournalForm()); }}>
               <Plus className="w-4 h-4 mr-1.5" /> Post entry
             </Button>
           )}
@@ -226,7 +226,7 @@ export default function AccountingPage() {
             key={t}
             onClick={() => setTab(t)}
             className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
-              tab === t ? "border-[#1E4D8C] text-[#1E4D8C]" : "border-transparent text-[#64748B] hover:text-[#1A2332]"
+              tab === t ? "border-[#4A8C1C] text-[#4A8C1C]" : "border-transparent text-[#64748B] hover:text-[#1A2332]"
             }`}
           >
             {t === "coa" ? "Chart of accounts" : "Journal entries"}
@@ -253,7 +253,7 @@ export default function AccountingPage() {
                 </div>
                 <div className="bg-white border border-[#E2E8F0] rounded-xl overflow-hidden">
                   <table className="w-full text-sm">
-                    <thead className="bg-[#F7F9FC] border-b border-[#E2E8F0]">
+                    <thead className="bg-[#F8FBEF] border-b border-[#E2E8F0]">
                       <tr>
                         <th className="text-left px-4 py-2.5 text-xs font-semibold text-[#64748B] uppercase tracking-wide">Code</th>
                         <th className="text-left px-4 py-2.5 text-xs font-semibold text-[#64748B] uppercase tracking-wide">Name</th>
@@ -264,7 +264,7 @@ export default function AccountingPage() {
                     </thead>
                     <tbody className="divide-y divide-[#E2E8F0]">
                       {accs.map((a) => (
-                        <tr key={a.id} className="hover:bg-[#F7F9FC]">
+                        <tr key={a.id} className="hover:bg-[#F8FBEF]">
                           <td className="px-4 py-2.5 font-mono text-xs text-[#1A2332]">{a.code}</td>
                           <td className="px-4 py-2.5 text-[#1A2332]">{a.name}</td>
                           <td className="px-4 py-2.5 text-xs text-[#64748B]">{a.subType ?? "—"}</td>
@@ -295,7 +295,7 @@ export default function AccountingPage() {
         ) : (
           <div className="bg-white border border-[#E2E8F0] rounded-xl overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-[#F7F9FC] border-b border-[#E2E8F0]">
+              <thead className="bg-[#F8FBEF] border-b border-[#E2E8F0]">
                 <tr>
                   <th className="text-left px-4 py-3 text-xs font-semibold text-[#64748B] uppercase tracking-wide">Ref</th>
                   <th className="text-left px-4 py-3 text-xs font-semibold text-[#64748B] uppercase tracking-wide">Date</th>
@@ -308,7 +308,7 @@ export default function AccountingPage() {
                 {entries.map((e) => (
                   <tr
                     key={e.id}
-                    className="hover:bg-[#F7F9FC] cursor-pointer transition-colors"
+                    className="hover:bg-[#F8FBEF] cursor-pointer transition-colors"
                     onClick={() => handleViewEntry(e.id)}
                   >
                     <td className="px-4 py-3 font-mono text-xs text-[#1A2332]">{e.entryRef}</td>
@@ -325,7 +325,7 @@ export default function AccountingPage() {
               </tbody>
             </table>
             {pages > 1 && (
-              <div className="flex items-center justify-between px-4 py-3 border-t border-[#E2E8F0] bg-[#F7F9FC]">
+              <div className="flex items-center justify-between px-4 py-3 border-t border-[#E2E8F0] bg-[#F8FBEF]">
                 <p className="text-xs text-[#64748B]">{total} entries</p>
                 <div className="flex items-center gap-2">
                   <Button variant="outline" size="sm" className="h-7 px-2" onClick={() => { setPage((p) => Math.max(1, p - 1)); loadJournal(); }} disabled={page === 1}>
@@ -381,7 +381,7 @@ export default function AccountingPage() {
             </div>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setShowCoaForm(false)}>Cancel</Button>
-              <Button type="submit" disabled={savingCoa} className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white">
+              <Button type="submit" disabled={savingCoa} className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white">
                 {savingCoa ? <Loader2 className="w-4 h-4 animate-spin" /> : "Add account"}
               </Button>
             </DialogFooter>
@@ -463,7 +463,7 @@ export default function AccountingPage() {
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setShowJournalForm(false)}>Cancel</Button>
-              <Button type="submit" disabled={savingJournal} className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white">
+              <Button type="submit" disabled={savingJournal} className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white">
                 {savingJournal ? <Loader2 className="w-4 h-4 animate-spin" /> : "Post entry"}
               </Button>
             </DialogFooter>

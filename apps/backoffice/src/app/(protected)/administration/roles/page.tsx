@@ -41,7 +41,7 @@ export default function RolesPage() {
         title="Roles"
         description="Define access levels and assign them to users."
         action={
-          <Button className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white" onClick={() => router.push("/administration/roles/new")}>
+          <Button className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white" onClick={() => router.push("/administration/roles/new")}>
             <Plus className="mr-2 h-4 w-4" /> Create role
           </Button>
         }
@@ -50,7 +50,7 @@ export default function RolesPage() {
       <Card className="overflow-hidden border-[#E2E8F0]">
         <Table>
           <TableHeader>
-            <TableRow className="bg-[#F7F9FC] hover:bg-[#F7F9FC]">
+            <TableRow className="bg-[#F8FBEF] hover:bg-[#F8FBEF]">
               <TableHead className="text-[#64748B] font-medium">Name</TableHead>
               <TableHead className="text-[#64748B] font-medium">Description</TableHead>
               <TableHead className="text-[#64748B] font-medium">Type</TableHead>
@@ -65,13 +65,13 @@ export default function RolesPage() {
             ) : roles.map((role) => (
               <TableRow
                 key={role.id}
-                className="cursor-pointer hover:bg-[#F7F9FC]"
+                className="cursor-pointer hover:bg-[#F8FBEF]"
                 onClick={() => router.push(`/administration/roles/${role.id}`)}
               >
                 <TableCell>
                   <div className="flex items-center gap-2">
                     {role.isPrivileged
-                      ? <ShieldCheck className="h-4 w-4 text-[#E9A820]" />
+                      ? <ShieldCheck className="h-4 w-4 text-[#D4EDAA]" />
                       : <Shield className="h-4 w-4 text-[#64748B]" />}
                     <span className="font-medium text-[#1A2332]">{role.name}</span>
                     {role.isSystem && (
@@ -82,7 +82,7 @@ export default function RolesPage() {
                 <TableCell className="text-[#64748B] max-w-sm truncate">{role.description ?? "—"}</TableCell>
                 <TableCell>
                   {role.isPrivileged
-                    ? <Badge variant="outline" className="text-xs text-[#E9A820] border-[#E9A820]/30 bg-[#E9A820]/10">Privileged</Badge>
+                    ? <Badge variant="outline" className="text-xs text-[#D4EDAA] border-[#D4EDAA]/30 bg-[#D4EDAA]/10">Privileged</Badge>
                     : <Badge variant="outline" className="text-xs text-[#64748B] border-[#CBD5E1]">Standard</Badge>}
                 </TableCell>
                 <TableCell><StatusBadge status={role.status} /></TableCell>

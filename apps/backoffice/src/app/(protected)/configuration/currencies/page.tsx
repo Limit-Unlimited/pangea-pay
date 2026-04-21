@@ -64,7 +64,7 @@ export default function CurrenciesPage() {
         title="Currencies"
         description="Manage the currencies supported across send and receive corridors."
         action={
-          <Button className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white" onClick={() => setShowAdd(true)}>
+          <Button className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white" onClick={() => setShowAdd(true)}>
             <Plus className="mr-2 h-4 w-4" /> Add currency
           </Button>
         }
@@ -73,7 +73,7 @@ export default function CurrenciesPage() {
       <Card className="overflow-hidden border-[#E2E8F0]">
         <Table>
           <TableHeader>
-            <TableRow className="bg-[#F7F9FC] hover:bg-[#F7F9FC]">
+            <TableRow className="bg-[#F8FBEF] hover:bg-[#F8FBEF]">
               <TableHead className="text-[#64748B] font-medium">Code</TableHead>
               <TableHead className="text-[#64748B] font-medium">Name</TableHead>
               <TableHead className="text-[#64748B] font-medium">Symbol</TableHead>
@@ -85,7 +85,7 @@ export default function CurrenciesPage() {
             {isLoading ? (
               <TableRow><TableCell colSpan={5} className="text-center py-10 text-[#64748B]">Loading…</TableCell></TableRow>
             ) : currencies.map((c) => (
-              <TableRow key={c.id} className="hover:bg-[#F7F9FC]">
+              <TableRow key={c.id} className="hover:bg-[#F8FBEF]">
                 <TableCell className="font-mono font-semibold text-[#1A2332]">{c.code}</TableCell>
                 <TableCell className="text-[#1A2332]">{c.name}</TableCell>
                 <TableCell className="text-[#64748B]">{c.symbol}</TableCell>
@@ -127,7 +127,7 @@ export default function CurrenciesPage() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowAdd(false)}>Cancel</Button>
-            <Button className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white" onClick={addCurrency} disabled={saving}>
+            <Button className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white" onClick={addCurrency} disabled={saving}>
               {saving ? "Adding…" : "Add currency"}
             </Button>
           </DialogFooter>

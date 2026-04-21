@@ -181,7 +181,7 @@ export default function CaseDetailPage({ params }: { params: Promise<{ id: strin
                       <Badge className={`text-xs ${SEV_COLOURS[a.severity]}`}>{a.severity}</Badge>
                       <button
                         onClick={() => router.push(`/compliance/alerts/${a.id}`)}
-                        className="text-[#1E4D8C] hover:text-[#1a4279]"
+                        className="text-[#4A8C1C] hover:text-[#3a7016]"
                       >
                         <ExternalLink className="w-3.5 h-3.5" />
                       </button>
@@ -198,7 +198,7 @@ export default function CaseDetailPage({ params }: { params: Promise<{ id: strin
             {caseData.notes.length > 0 && (
               <div className="space-y-3 mb-4">
                 {caseData.notes.map((n) => (
-                  <div key={n.id} className="bg-[#F7F9FC] rounded-lg p-3">
+                  <div key={n.id} className="bg-[#F8FBEF] rounded-lg p-3">
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-xs font-medium text-[#1A2332]">{n.authorName ?? n.authorEmail ?? "System"}</span>
                       <span className="text-xs text-[#64748B]">{new Date(n.createdAt).toLocaleString("en-GB")}</span>
@@ -220,7 +220,7 @@ export default function CaseDetailPage({ params }: { params: Promise<{ id: strin
                 <Button
                   onClick={handleAddNote}
                   disabled={addingNote || !noteText.trim()}
-                  className="self-end bg-[#1E4D8C] hover:bg-[#1a4279] text-white h-9"
+                  className="self-end bg-[#4A8C1C] hover:bg-[#3a7016] text-white h-9"
                 >
                   {addingNote ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                 </Button>
@@ -240,7 +240,7 @@ export default function CaseDetailPage({ params }: { params: Promise<{ id: strin
               </p>
               <button
                 onClick={() => router.push(`/customers/${caseData.customer!.id}`)}
-                className="text-xs text-[#1E4D8C] hover:underline flex items-center gap-1 mt-1"
+                className="text-xs text-[#4A8C1C] hover:underline flex items-center gap-1 mt-1"
               >
                 {caseData.customer.customerRef} <ExternalLink className="w-3 h-3" />
               </button>
@@ -300,7 +300,7 @@ export default function CaseDetailPage({ params }: { params: Promise<{ id: strin
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setAction(null)}>Cancel</Button>
-            <Button onClick={handleAction} disabled={saving} className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white">
+            <Button onClick={handleAction} disabled={saving} className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white">
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Confirm"}
             </Button>
           </DialogFooter>

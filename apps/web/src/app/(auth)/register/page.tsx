@@ -132,20 +132,20 @@ export default function RegisterPage() {
             id="tc"
             checked={form.tcAccepted}
             onChange={(e) => f("tcAccepted", e.target.checked)}
-            className="mt-0.5 h-4 w-4 rounded border-[#CBD5E1] accent-[#1E4D8C]"
+            className="mt-0.5 h-4 w-4 rounded border-[#CBD5E1] accent-[#4A8C1C]"
           />
           <Label htmlFor="tc" className="text-sm font-normal text-[#64748B] leading-snug cursor-pointer">
             I have read and agree to the{" "}
-            <a href="#" className="text-[#1E4D8C] hover:underline">Terms and Conditions</a>{" "}
+            <a href="#" className="text-[#4A8C1C] hover:underline">Terms and Conditions</a>{" "}
             and{" "}
-            <a href="#" className="text-[#1E4D8C] hover:underline">Privacy Policy</a>
+            <a href="#" className="text-[#4A8C1C] hover:underline">Privacy Policy</a>
           </Label>
         </div>
 
         <Button
           type="submit"
           disabled={loading}
-          className="w-full h-10 bg-[#1E4D8C] hover:bg-[#1a4279] text-white"
+          className="w-full h-10 bg-[#4A8C1C] hover:bg-[#3a7016] text-white"
         >
           {loading ? "Creating account…" : "Create account"}
         </Button>
@@ -153,7 +153,7 @@ export default function RegisterPage() {
 
       <p className="text-sm text-center text-[#64748B] mt-6">
         Already have an account?{" "}
-        <Link href="/login" className="text-[#1E4D8C] hover:underline font-medium">
+        <Link href="/login" className="text-[#4A8C1C] hover:underline font-medium">
           Sign in
         </Link>
       </p>

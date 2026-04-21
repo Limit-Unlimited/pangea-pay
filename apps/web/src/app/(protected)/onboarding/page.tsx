@@ -64,9 +64,9 @@ function StepIndicator({ current }: { current: number }) {
             <div
               className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-colors ${
                 step.id < current
-                  ? "bg-[#2A9D8F] text-white"
+                  ? "bg-[#B0D980] text-white"
                   : step.id === current
-                  ? "bg-[#1E4D8C] text-white"
+                  ? "bg-[#4A8C1C] text-white"
                   : "bg-[#E2E8F0] text-[#64748B]"
               }`}
             >
@@ -77,7 +77,7 @@ function StepIndicator({ current }: { current: number }) {
             </span>
           </div>
           {i < STEPS.length - 1 && (
-            <div className={`flex-1 h-0.5 mx-2 mb-5 ${step.id < current ? "bg-[#2A9D8F]" : "bg-[#E2E8F0]"}`} />
+            <div className={`flex-1 h-0.5 mx-2 mb-5 ${step.id < current ? "bg-[#B0D980]" : "bg-[#E2E8F0]"}`} />
           )}
         </div>
       ))}
@@ -330,7 +330,7 @@ export default function OnboardingPage() {
               </Select>
             </div>
 
-            <div className="rounded-lg border border-dashed border-[#CBD5E1] p-4 bg-[#F7F9FC]">
+            <div className="rounded-lg border border-dashed border-[#CBD5E1] p-4 bg-[#F8FBEF]">
               <p className="text-sm text-[#64748B] text-center">
                 Document upload will be available once file storage is configured.
                 <br />
@@ -370,7 +370,7 @@ export default function OnboardingPage() {
               </ReviewSection>
             </div>
 
-            <div className="rounded-lg border border-[#E2E8F0] bg-[#F7F9FC] p-4">
+            <div className="rounded-lg border border-[#E2E8F0] bg-[#F8FBEF] p-4">
               <p className="text-sm text-[#64748B]">
                 By submitting this application, you confirm that all details are accurate and complete. False information may result in your application being declined.
               </p>
@@ -387,12 +387,12 @@ export default function OnboardingPage() {
           ) : <div />}
 
           {step < 4 ? (
-            <Button className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white" onClick={next}>
+            <Button className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white" onClick={next}>
               Continue
             </Button>
           ) : (
             <Button
-              className="bg-[#E9A820] hover:bg-[#d4971d] text-white px-6"
+              className="bg-[#D4EDAA] hover:bg-[#d4971d] text-white px-6"
               onClick={submit}
               disabled={submitting}
             >
@@ -408,7 +408,7 @@ export default function OnboardingPage() {
 function ReviewSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="rounded-lg border border-[#E2E8F0] overflow-hidden">
-      <div className="bg-[#F7F9FC] px-4 py-2.5 border-b border-[#E2E8F0]">
+      <div className="bg-[#F8FBEF] px-4 py-2.5 border-b border-[#E2E8F0]">
         <p className="text-xs font-semibold text-[#64748B] uppercase tracking-wide">{title}</p>
       </div>
       <div className="p-4 space-y-2.5">{children}</div>

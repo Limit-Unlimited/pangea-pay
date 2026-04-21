@@ -14,6 +14,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   email_not_verified:  "Please verify your email before signing in.",
   account_suspended:   "Your account has been suspended. Please contact support.",
   CredentialsSignin:   "Incorrect email or password.",
+  CallbackRouteError:  "Incorrect email or password.",
 };
 
 export default function LoginPage() {
@@ -83,7 +84,7 @@ export default function LoginPage() {
         </div>
 
         <div className="flex justify-end">
-          <Link href="/forgot-password" className="text-xs text-[#1E4D8C] hover:underline">
+          <Link href="/forgot-password" className="text-xs text-[#4A8C1C] hover:underline">
             Forgot password?
           </Link>
         </div>
@@ -91,7 +92,7 @@ export default function LoginPage() {
         <Button
           type="submit"
           disabled={loading}
-          className="w-full h-10 bg-[#1E4D8C] hover:bg-[#1a4279] text-white"
+          className="w-full h-10 bg-[#4A8C1C] hover:bg-[#3a7016] text-white"
         >
           {loading ? "Signing in…" : "Sign in"}
         </Button>
@@ -99,7 +100,7 @@ export default function LoginPage() {
 
       <p className="text-sm text-center text-[#64748B] mt-6">
         Don&apos;t have an account?{" "}
-        <Link href="/register" className="text-[#1E4D8C] hover:underline font-medium">
+        <Link href="/register" className="text-[#4A8C1C] hover:underline font-medium">
           Create account
         </Link>
       </p>

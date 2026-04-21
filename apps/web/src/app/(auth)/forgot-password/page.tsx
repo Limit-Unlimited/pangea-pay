@@ -39,7 +39,7 @@ export default function ForgotPasswordPage() {
             Check your inbox — it may take a minute to arrive.
           </p>
           <p className="text-sm text-center text-[#64748B] mt-4">
-            <Link href="/login" className="text-[#1E4D8C] hover:underline font-medium">Back to sign in</Link>
+            <Link href="/login" className="text-[#4A8C1C] hover:underline font-medium">Back to sign in</Link>
           </p>
         </>
       ) : (
@@ -62,13 +62,13 @@ export default function ForgotPasswordPage() {
                 value={email} onChange={(e) => setEmail(e.target.value)}
               />
             </div>
-            <Button type="submit" disabled={loading} className="w-full h-10 bg-[#1E4D8C] hover:bg-[#1a4279] text-white">
+            <Button type="submit" disabled={loading} className="w-full h-10 bg-[#4A8C1C] hover:bg-[#3a7016] text-white">
               {loading ? "Sending…" : "Send reset link"}
             </Button>
           </form>
 
           <p className="text-sm text-center text-[#64748B] mt-6">
-            <Link href="/login" className="text-[#1E4D8C] hover:underline font-medium">Back to sign in</Link>
+            <Link href="/login" className="text-[#4A8C1C] hover:underline font-medium">Back to sign in</Link>
           </p>
         </>
       )}

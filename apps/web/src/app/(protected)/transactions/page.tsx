@@ -82,9 +82,9 @@ export default function TransactionsPage() {
               onClick={() => router.push(`/transactions/${txn.id}`)}
               className="w-full text-left"
             >
-              <Card className="p-4 border-[#E2E8F0] bg-white hover:border-[#1E4D8C]/40 hover:shadow-sm transition-all">
+              <Card className="p-4 border-[#E2E8F0] bg-white hover:border-[#4A8C1C]/40 hover:shadow-sm transition-all">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-[#F7F9FC] border border-[#E2E8F0] flex items-center justify-center shrink-0">
+                  <div className="w-9 h-9 rounded-full bg-[#F8FBEF] border border-[#E2E8F0] flex items-center justify-center shrink-0">
                     {TYPE_ICON[txn.type] ?? <ArrowUpRight className="w-4 h-4 text-[#64748B]" />}
                   </div>
 

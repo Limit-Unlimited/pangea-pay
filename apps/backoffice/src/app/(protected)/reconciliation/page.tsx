@@ -41,7 +41,7 @@ type DetailResponse = { upload: UploadRow; items: RecItem[] };
 
 const MATCH_COLOURS: Record<string, string> = {
   matched:          "bg-[#22C55E]/10 text-[#22C55E] border-[#22C55E]/20",
-  manually_matched: "bg-[#2A9D8F]/10 text-[#2A9D8F] border-[#2A9D8F]/20",
+  manually_matched: "bg-[#B0D980]/10 text-[#B0D980] border-[#B0D980]/20",
   unmatched:        "bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/20",
   excluded:         "bg-[#64748B]/10 text-[#64748B] border-[#64748B]/20",
 };
@@ -168,7 +168,7 @@ export default function ReconciliationPage() {
         description="Upload bank statements or partner files to auto-match and reconcile transactions."
         action={
           <Button
-            className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white"
+            className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white"
             onClick={() => fileRef.current?.click()}
             disabled={uploading}
           >
@@ -183,7 +183,7 @@ export default function ReconciliationPage() {
         <div className="mb-4 rounded-lg bg-[#22C55E]/10 border border-[#22C55E]/20 p-4 text-sm">
           <span className="font-medium">{uploadResult.uploadRef}</span> processed —{" "}
           {uploadResult.totalRows} rows, {uploadResult.matched} matched, {uploadResult.unmatched} unmatched.
-          <Button variant="link" className="text-[#1E4D8C] p-0 ml-2 h-auto" onClick={() => setUploadResult(null)}>Dismiss</Button>
+          <Button variant="link" className="text-[#4A8C1C] p-0 ml-2 h-auto" onClick={() => setUploadResult(null)}>Dismiss</Button>
         </div>
       )}
 
@@ -207,8 +207,8 @@ export default function ReconciliationPage() {
                 onClick={() => openDetail(u.id)}
                 className={`w-full text-left px-3 py-2.5 rounded-lg border transition-colors ${
                   selectedUploadId === u.id
-                    ? "border-[#1E4D8C] bg-[#1E4D8C]/5"
-                    : "border-[#E2E8F0] hover:border-[#1E4D8C]/50 bg-white"
+                    ? "border-[#4A8C1C] bg-[#4A8C1C]/5"
+                    : "border-[#E2E8F0] hover:border-[#4A8C1C]/50 bg-white"
                 }`}
               >
                 <div className="flex items-center justify-between">
@@ -245,7 +245,7 @@ export default function ReconciliationPage() {
                 </div>
                 <div className="flex gap-1.5">
                   {["", "matched", "manually_matched", "unmatched", "excluded"].map((s) => (
-                    <Button key={s} variant={matchFilter === s ? "default" : "outline"} size="sm" className={`text-xs h-7 ${matchFilter === s ? "bg-[#1E4D8C] text-white" : ""}`}
+                    <Button key={s} variant={matchFilter === s ? "default" : "outline"} size="sm" className={`text-xs h-7 ${matchFilter === s ? "bg-[#4A8C1C] text-white" : ""}`}
                       onClick={() => setMatchFilter(s)}>
                       {s || "All"}
                     </Button>
@@ -256,7 +256,7 @@ export default function ReconciliationPage() {
               <Card className="overflow-hidden border-[#E2E8F0]">
                 <Table>
                   <TableHeader>
-                    <TableRow className="bg-[#F7F9FC] hover:bg-[#F7F9FC]">
+                    <TableRow className="bg-[#F8FBEF] hover:bg-[#F8FBEF]">
                       <TableHead className="text-[#64748B] font-medium w-12">Row</TableHead>
                       <TableHead className="text-[#64748B] font-medium">Date</TableHead>
                       <TableHead className="text-[#64748B] font-medium">Reference</TableHead>
@@ -270,7 +270,7 @@ export default function ReconciliationPage() {
                     {!filteredItems.length ? (
                       <TableRow><TableCell colSpan={7} className="text-center py-8 text-[#64748B]">No items.</TableCell></TableRow>
                     ) : filteredItems.map((item) => (
-                      <TableRow key={item.id} className="hover:bg-[#F7F9FC]">
+                      <TableRow key={item.id} className="hover:bg-[#F8FBEF]">
                         <TableCell className="text-xs text-[#64748B]">{item.rowNumber}</TableCell>
                         <TableCell className="text-xs text-[#64748B]">{item.valueDate ?? "—"}</TableCell>
                         <TableCell>
@@ -290,7 +290,7 @@ export default function ReconciliationPage() {
                         </TableCell>
                         <TableCell>
                           {item.matchedRef ? (
-                            <code className="text-xs font-mono text-[#1E4D8C]">{item.matchedRef}</code>
+                            <code className="text-xs font-mono text-[#4A8C1C]">{item.matchedRef}</code>
                           ) : "—"}
                         </TableCell>
                         <TableCell>
@@ -327,7 +327,7 @@ export default function ReconciliationPage() {
           </DialogHeader>
           <div className="py-2 space-y-3">
             {matchItem && (
-              <div className="text-sm text-[#64748B] rounded-lg bg-[#F7F9FC] border border-[#E2E8F0] p-3 space-y-0.5">
+              <div className="text-sm text-[#64748B] rounded-lg bg-[#F8FBEF] border border-[#E2E8F0] p-3 space-y-0.5">
                 <p><span className="font-medium">Reference:</span> {matchItem.reference ?? "—"}</p>
                 <p><span className="font-medium">Amount:</span> {matchItem.amount} {matchItem.currency}</p>
                 <p><span className="font-medium">Date:</span> {matchItem.valueDate ?? "—"}</p>
@@ -341,7 +341,7 @@ export default function ReconciliationPage() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setMatchItem(null)}>Cancel</Button>
-            <Button className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white"
+            <Button className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white"
               onClick={handleManualMatch}
               disabled={matchLoading || !matchTxnRef.trim()}>
               {matchLoading ? "Matching…" : "Confirm match"}

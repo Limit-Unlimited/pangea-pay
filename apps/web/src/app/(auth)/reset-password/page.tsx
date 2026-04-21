@@ -41,7 +41,7 @@ function ResetPasswordForm() {
       <Card className="p-8 shadow-sm border-[#E2E8F0] bg-white">
         <h1 className="text-2xl font-bold text-[#1A2332] mb-2">Invalid link</h1>
         <p className="text-sm text-[#64748B] mb-4">This reset link is invalid or has expired.</p>
-        <Link href="/forgot-password" className="text-sm text-[#1E4D8C] hover:underline font-medium">
+        <Link href="/forgot-password" className="text-sm text-[#4A8C1C] hover:underline font-medium">
           Request a new reset link
         </Link>
       </Card>
@@ -84,7 +84,7 @@ function ResetPasswordForm() {
                 value={confirm} onChange={(e) => setConfirm(e.target.value)} />
             </div>
             <Button type="submit" disabled={loading || !token}
-              className="w-full h-10 bg-[#1E4D8C] hover:bg-[#1a4279] text-white">
+              className="w-full h-10 bg-[#4A8C1C] hover:bg-[#3a7016] text-white">
               {loading ? "Saving…" : "Set new password"}
             </Button>
           </form>

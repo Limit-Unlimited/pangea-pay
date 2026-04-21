@@ -74,7 +74,7 @@ export default function ProductsPage() {
         title="Products"
         description="Define the delivery methods available for sending money (e.g. bank transfer, mobile money)."
         action={
-          <Button className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white" onClick={() => setShowAdd(true)}>
+          <Button className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white" onClick={() => setShowAdd(true)}>
             <Plus className="mr-2 h-4 w-4" /> Add product
           </Button>
         }
@@ -83,7 +83,7 @@ export default function ProductsPage() {
       <Card className="overflow-hidden border-[#E2E8F0]">
         <Table>
           <TableHeader>
-            <TableRow className="bg-[#F7F9FC] hover:bg-[#F7F9FC]">
+            <TableRow className="bg-[#F8FBEF] hover:bg-[#F8FBEF]">
               <TableHead className="text-[#64748B] font-medium">Name</TableHead>
               <TableHead className="text-[#64748B] font-medium">Code</TableHead>
               <TableHead className="text-[#64748B] font-medium">Type</TableHead>
@@ -95,11 +95,11 @@ export default function ProductsPage() {
             {isLoading ? (
               <TableRow><TableCell colSpan={5} className="text-center py-10 text-[#64748B]">Loading…</TableCell></TableRow>
             ) : products.map((p) => (
-              <TableRow key={p.id} className="hover:bg-[#F7F9FC]">
+              <TableRow key={p.id} className="hover:bg-[#F8FBEF]">
                 <TableCell className="font-medium text-[#1A2332]">{p.name}</TableCell>
                 <TableCell className="font-mono text-[#64748B]">{p.code}</TableCell>
                 <TableCell>
-                  <Badge variant="outline" className="text-xs text-[#1E4D8C] border-[#1E4D8C]/30 bg-[#1E4D8C]/5">
+                  <Badge variant="outline" className="text-xs text-[#4A8C1C] border-[#4A8C1C]/30 bg-[#4A8C1C]/5">
                     {TYPE_LABELS[p.type] ?? p.type}
                   </Badge>
                 </TableCell>
@@ -146,7 +146,7 @@ export default function ProductsPage() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowAdd(false)}>Cancel</Button>
-            <Button className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white" onClick={addProduct} disabled={saving || !form.code || !form.name || !form.type}>
+            <Button className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white" onClick={addProduct} disabled={saving || !form.code || !form.name || !form.type}>
               {saving ? "Adding…" : "Add product"}
             </Button>
           </DialogFooter>

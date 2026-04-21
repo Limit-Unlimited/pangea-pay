@@ -99,7 +99,7 @@ export default function PricingPage() {
         title="Pricing"
         description="Configure fees and FX markup per corridor and product."
         action={
-          <Button className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white" onClick={() => setShowAdd(true)}>
+          <Button className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white" onClick={() => setShowAdd(true)}>
             <Plus className="mr-2 h-4 w-4" /> Add pricing rule
           </Button>
         }
@@ -108,7 +108,7 @@ export default function PricingPage() {
       <Card className="overflow-hidden border-[#E2E8F0]">
         <Table>
           <TableHeader>
-            <TableRow className="bg-[#F7F9FC] hover:bg-[#F7F9FC]">
+            <TableRow className="bg-[#F8FBEF] hover:bg-[#F8FBEF]">
               <TableHead className="text-[#64748B] font-medium">Corridor</TableHead>
               <TableHead className="text-[#64748B] font-medium">Product</TableHead>
               <TableHead className="text-[#64748B] font-medium">Fee</TableHead>
@@ -122,7 +122,7 @@ export default function PricingPage() {
             ) : !rules.length ? (
               <TableRow><TableCell colSpan={5} className="text-center py-10 text-[#64748B]">No pricing rules configured.</TableCell></TableRow>
             ) : rules.map((rule) => (
-              <TableRow key={rule.id} className="hover:bg-[#F7F9FC]">
+              <TableRow key={rule.id} className="hover:bg-[#F8FBEF]">
                 <TableCell className="font-medium text-[#1A2332] font-mono text-sm">{corridorLabel(rule.corridorId)}</TableCell>
                 <TableCell className="text-[#64748B]">{productLabel(rule.productId)}</TableCell>
                 <TableCell className="text-[#64748B]">{feeDisplay(rule)}</TableCell>
@@ -185,7 +185,7 @@ export default function PricingPage() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowAdd(false)}>Cancel</Button>
-            <Button className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white" onClick={addRule} disabled={saving || !form.corridorId || !form.productId}>
+            <Button className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white" onClick={addRule} disabled={saving || !form.corridorId || !form.productId}>
               {saving ? "Adding…" : "Add rule"}
             </Button>
           </DialogFooter>

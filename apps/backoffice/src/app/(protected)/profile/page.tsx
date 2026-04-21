@@ -75,7 +75,7 @@ export default function ProfilePage() {
             <CardContent className="pt-6">
               <div className="flex items-center gap-4 mb-6">
                 <Avatar className="h-16 w-16">
-                  <AvatarFallback className="bg-[#1E4D8C] text-white text-xl">{initials}</AvatarFallback>
+                  <AvatarFallback className="bg-[#4A8C1C] text-white text-xl">{initials}</AvatarFallback>
                 </Avatar>
                 <div>
                   <p className="text-lg font-semibold text-[#1A2332]">{user.firstName} {user.lastName}</p>
@@ -141,7 +141,7 @@ export default function ProfilePage() {
                   <Input id="confirmPassword" type={showNew ? "text" : "password"} {...form.register("confirmPassword")} />
                   {form.formState.errors.confirmPassword && <p className="text-xs text-destructive">{form.formState.errors.confirmPassword.message}</p>}
                 </div>
-                <Button type="submit" className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white" disabled={isSaving}>
+                <Button type="submit" className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white" disabled={isSaving}>
                   {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving…</> : "Change password"}
                 </Button>
               </form>

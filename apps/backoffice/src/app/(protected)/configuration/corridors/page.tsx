@@ -80,7 +80,7 @@ export default function CorridorsPage() {
         title="Corridors"
         description="Define which send → receive country and currency pairs are operational."
         action={
-          <Button className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white" onClick={() => setShowAdd(true)}>
+          <Button className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white" onClick={() => setShowAdd(true)}>
             <Plus className="mr-2 h-4 w-4" /> Add corridor
           </Button>
         }
@@ -89,7 +89,7 @@ export default function CorridorsPage() {
       <Card className="overflow-hidden border-[#E2E8F0]">
         <Table>
           <TableHeader>
-            <TableRow className="bg-[#F7F9FC] hover:bg-[#F7F9FC]">
+            <TableRow className="bg-[#F8FBEF] hover:bg-[#F8FBEF]">
               <TableHead className="text-[#64748B] font-medium">Route</TableHead>
               <TableHead className="text-[#64748B] font-medium">Currencies</TableHead>
               <TableHead className="text-[#64748B] font-medium">Min send</TableHead>
@@ -103,7 +103,7 @@ export default function CorridorsPage() {
             ) : !corridors.length ? (
               <TableRow><TableCell colSpan={5} className="text-center py-10 text-[#64748B]">No corridors configured.</TableCell></TableRow>
             ) : corridors.map((c) => (
-              <TableRow key={c.id} className="hover:bg-[#F7F9FC]">
+              <TableRow key={c.id} className="hover:bg-[#F8FBEF]">
                 <TableCell>
                   <div className="flex items-center gap-2 font-medium text-[#1A2332]">
                     <span>{countryName(c.sendCountryCode)} ({c.sendCountryCode})</span>
@@ -171,7 +171,7 @@ export default function CorridorsPage() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowAdd(false)}>Cancel</Button>
-            <Button className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white" onClick={addCorridor} disabled={saving}>
+            <Button className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white" onClick={addCorridor} disabled={saving}>
               {saving ? "Adding…" : "Add corridor"}
             </Button>
           </DialogFooter>

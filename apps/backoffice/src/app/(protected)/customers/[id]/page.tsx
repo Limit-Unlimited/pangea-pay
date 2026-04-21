@@ -113,7 +113,7 @@ function ProfileTab({ customer, onRefresh }: { customer: Customer; onRefresh: ()
           <div className="flex gap-2">
             {error && <p className="text-sm text-red-600 self-center mr-2">{error}</p>}
             <Button variant="outline" onClick={() => { setEditing(false); setForm(customer); }}>Cancel</Button>
-            <Button className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white" onClick={save} disabled={saving}>
+            <Button className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white" onClick={save} disabled={saving}>
               {saving ? "Saving…" : "Save changes"}
             </Button>
           </div>
@@ -249,7 +249,7 @@ function DocumentsTab({ customerId }: { customerId: string }) {
         <Card className="overflow-hidden border-[#E2E8F0]">
           <Table>
             <TableHeader>
-              <TableRow className="bg-[#F7F9FC] hover:bg-[#F7F9FC]">
+              <TableRow className="bg-[#F8FBEF] hover:bg-[#F8FBEF]">
                 <TableHead className="text-[#64748B] font-medium">Type</TableHead>
                 <TableHead className="text-[#64748B] font-medium">Document number</TableHead>
                 <TableHead className="text-[#64748B] font-medium">Expiry</TableHead>
@@ -405,7 +405,7 @@ function RiskTab({ customer, onRefresh }: { customer: Customer; onRefresh: () =>
               <Textarea value={form.notes} onChange={(e) => setForm((p) => ({ ...p, notes: e.target.value }))} rows={2} />
             </div>
           </div>
-          <Button className="mt-3 bg-[#1E4D8C] hover:bg-[#1a4279] text-white" onClick={submit} disabled={saving}>
+          <Button className="mt-3 bg-[#4A8C1C] hover:bg-[#3a7016] text-white" onClick={submit} disabled={saving}>
             {saving ? "Saving…" : "Submit assessment"}
           </Button>
         </Card>
@@ -419,7 +419,7 @@ function RiskTab({ customer, onRefresh }: { customer: Customer; onRefresh: () =>
         <Card className="overflow-hidden border-[#E2E8F0]">
           <Table>
             <TableHeader>
-              <TableRow className="bg-[#F7F9FC] hover:bg-[#F7F9FC]">
+              <TableRow className="bg-[#F8FBEF] hover:bg-[#F8FBEF]">
                 <TableHead className="text-[#64748B] font-medium">Risk category</TableHead>
                 <TableHead className="text-[#64748B] font-medium">Score</TableHead>
                 <TableHead className="text-[#64748B] font-medium">Next review</TableHead>
@@ -507,7 +507,7 @@ function ScreeningTab({ customer, onRefresh }: { customer: Customer; onRefresh: 
         <Card className="overflow-hidden border-[#E2E8F0]">
           <Table>
             <TableHeader>
-              <TableRow className="bg-[#F7F9FC] hover:bg-[#F7F9FC]">
+              <TableRow className="bg-[#F8FBEF] hover:bg-[#F8FBEF]">
                 <TableHead className="text-[#64748B] font-medium">Type</TableHead>
                 <TableHead className="text-[#64748B] font-medium">Provider</TableHead>
                 <TableHead className="text-[#64748B] font-medium">Status</TableHead>
@@ -605,7 +605,7 @@ function LinkedUsersTab({ customer }: { customer: Customer }) {
             </div>
           </div>
           {error && <p className="text-sm text-red-600 mt-2">{error}</p>}
-          <Button className="mt-3 bg-[#1E4D8C] hover:bg-[#1a4279] text-white" onClick={add} disabled={saving}>
+          <Button className="mt-3 bg-[#4A8C1C] hover:bg-[#3a7016] text-white" onClick={add} disabled={saving}>
             {saving ? "Adding…" : "Add user"}
           </Button>
         </Card>
@@ -619,7 +619,7 @@ function LinkedUsersTab({ customer }: { customer: Customer }) {
         <Card className="overflow-hidden border-[#E2E8F0]">
           <Table>
             <TableHeader>
-              <TableRow className="bg-[#F7F9FC] hover:bg-[#F7F9FC]">
+              <TableRow className="bg-[#F8FBEF] hover:bg-[#F8FBEF]">
                 <TableHead className="text-[#64748B] font-medium">Name</TableHead>
                 <TableHead className="text-[#64748B] font-medium">Email</TableHead>
                 <TableHead className="text-[#64748B] font-medium">Role</TableHead>
@@ -717,7 +717,7 @@ function SarTab({ customer }: { customer: Customer }) {
               />
             </div>
           </div>
-          <Button className="mt-3 bg-[#1E4D8C] hover:bg-[#1a4279] text-white" onClick={submit} disabled={saving || !form.description}>
+          <Button className="mt-3 bg-[#4A8C1C] hover:bg-[#3a7016] text-white" onClick={submit} disabled={saving || !form.description}>
             {saving ? "Saving…" : "Create SAR"}
           </Button>
         </Card>
@@ -731,7 +731,7 @@ function SarTab({ customer }: { customer: Customer }) {
         <Card className="overflow-hidden border-[#E2E8F0]">
           <Table>
             <TableHeader>
-              <TableRow className="bg-[#F7F9FC] hover:bg-[#F7F9FC]">
+              <TableRow className="bg-[#F8FBEF] hover:bg-[#F8FBEF]">
                 <TableHead className="text-[#64748B] font-medium">Ref</TableHead>
                 <TableHead className="text-[#64748B] font-medium">Type</TableHead>
                 <TableHead className="text-[#64748B] font-medium">Status</TableHead>
@@ -835,7 +835,7 @@ function CommissionsTab({ customer }: { customer: Customer }) {
             </div>
           </div>
           {error && <p className="text-sm text-red-600 mt-2">{error}</p>}
-          <Button className="mt-3 bg-[#1E4D8C] hover:bg-[#1a4279] text-white" onClick={submit} disabled={saving || !form.rate || !form.effectiveDate}>
+          <Button className="mt-3 bg-[#4A8C1C] hover:bg-[#3a7016] text-white" onClick={submit} disabled={saving || !form.rate || !form.effectiveDate}>
             {saving ? "Saving…" : "Add commission"}
           </Button>
         </Card>
@@ -849,7 +849,7 @@ function CommissionsTab({ customer }: { customer: Customer }) {
         <Card className="overflow-hidden border-[#E2E8F0]">
           <Table>
             <TableHeader>
-              <TableRow className="bg-[#F7F9FC] hover:bg-[#F7F9FC]">
+              <TableRow className="bg-[#F8FBEF] hover:bg-[#F8FBEF]">
                 <TableHead className="text-[#64748B] font-medium">Type</TableHead>
                 <TableHead className="text-[#64748B] font-medium">Rate</TableHead>
                 <TableHead className="text-[#64748B] font-medium">Currency</TableHead>
@@ -961,7 +961,7 @@ function AccountsTab({ customer }: { customer: Customer }) {
     <div className="space-y-4">
       <div className="flex justify-end">
         <Button
-          className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white"
+          className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white"
           size="sm"
           onClick={() => setOpenDialog(true)}
         >
@@ -977,7 +977,7 @@ function AccountsTab({ customer }: { customer: Customer }) {
         <Card className="overflow-hidden border-[#E2E8F0]">
           <Table>
             <TableHeader>
-              <TableRow className="bg-[#F7F9FC] hover:bg-[#F7F9FC]">
+              <TableRow className="bg-[#F8FBEF] hover:bg-[#F8FBEF]">
                 <TableHead className="text-[#64748B] font-medium">Account number</TableHead>
                 <TableHead className="text-[#64748B] font-medium">Type</TableHead>
                 <TableHead className="text-[#64748B] font-medium">Currency</TableHead>
@@ -1054,7 +1054,7 @@ function AccountsTab({ customer }: { customer: Customer }) {
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpenDialog(false)}>Cancel</Button>
             <Button
-              className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white"
+              className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white"
               onClick={openAccount}
               disabled={saving || form.currency.length !== 3}
             >
@@ -1099,7 +1099,7 @@ function AccountsTab({ customer }: { customer: Customer }) {
           <DialogFooter>
             <Button variant="outline" onClick={() => setStatusDialog(false)}>Cancel</Button>
             <Button
-              className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white"
+              className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white"
               onClick={changeStatus}
               disabled={saving || !statusForm.status || !statusForm.reason}
             >
@@ -1173,7 +1173,7 @@ function BeneficiariesTab({ customer }: { customer: Customer }) {
         <Card className="overflow-hidden border-[#E2E8F0]">
           <Table>
             <TableHeader>
-              <TableRow className="bg-[#F7F9FC] hover:bg-[#F7F9FC]">
+              <TableRow className="bg-[#F8FBEF] hover:bg-[#F8FBEF]">
                 <TableHead className="text-[#64748B] font-medium">Name</TableHead>
                 <TableHead className="text-[#64748B] font-medium">Bank</TableHead>
                 <TableHead className="text-[#64748B] font-medium">Account / IBAN</TableHead>
@@ -1257,7 +1257,7 @@ function BeneficiariesTab({ customer }: { customer: Customer }) {
           <DialogFooter>
             <Button variant="outline" onClick={() => setActionDialog(false)}>Cancel</Button>
             <Button
-              className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white"
+              className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white"
               onClick={applyAction}
               disabled={saving || !form.status || ((form.status === "flagged" || form.status === "blocked") && !form.flagReason)}
             >
@@ -1299,7 +1299,7 @@ function AuditTab({ customer }: { customer: Customer }) {
           <Card className="overflow-hidden border-[#E2E8F0]">
             <Table>
               <TableHeader>
-                <TableRow className="bg-[#F7F9FC] hover:bg-[#F7F9FC]">
+                <TableRow className="bg-[#F8FBEF] hover:bg-[#F8FBEF]">
                   <TableHead className="text-[#64748B] font-medium">Action</TableHead>
                   <TableHead className="text-[#64748B] font-medium">Actor</TableHead>
                   <TableHead className="text-[#64748B] font-medium">Changes</TableHead>
@@ -1457,7 +1457,7 @@ export default function CustomerDetailPage() {
 
       {/* Tabs */}
       <Tabs defaultValue="profile">
-        <TabsList className="mb-4 bg-[#F7F9FC] border border-[#E2E8F0]">
+        <TabsList className="mb-4 bg-[#F8FBEF] border border-[#E2E8F0]">
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="documents">Documents</TabsTrigger>
           <TabsTrigger value="risk">Risk</TabsTrigger>
@@ -1550,7 +1550,7 @@ export default function CustomerDetailPage() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setStatusDialog(false)}>Cancel</Button>
             <Button
-              className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white"
+              className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white"
               onClick={changeStatus}
               disabled={saving || (!statusForm.status && !statusForm.onboardingStatus)}
             >
@@ -1595,7 +1595,7 @@ export default function CustomerDetailPage() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setBlacklistDialog(false)}>Cancel</Button>
             <Button
-              className={customer.isBlacklisted ? "bg-[#1E4D8C] hover:bg-[#1a4279] text-white" : "bg-red-600 hover:bg-red-700 text-white"}
+              className={customer.isBlacklisted ? "bg-[#4A8C1C] hover:bg-[#3a7016] text-white" : "bg-red-600 hover:bg-red-700 text-white"}
               onClick={toggleBlacklist}
               disabled={saving || (!customer.isBlacklisted && !blacklistForm.reason)}
             >

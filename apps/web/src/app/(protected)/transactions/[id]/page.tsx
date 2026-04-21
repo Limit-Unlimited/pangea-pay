@@ -161,7 +161,7 @@ export default function TransactionDetailPage({ params }: { params: Promise<{ id
             {history.map((h, i) => (
               <div key={h.id} className="flex gap-3">
                 <div className="flex flex-col items-center">
-                  <div className="w-2 h-2 rounded-full bg-[#1E4D8C] mt-1.5 shrink-0" />
+                  <div className="w-2 h-2 rounded-full bg-[#4A8C1C] mt-1.5 shrink-0" />
                   {i < history.length - 1 && <div className="w-px flex-1 bg-[#E2E8F0] my-1" />}
                 </div>
                 <div className="pb-4 flex-1">

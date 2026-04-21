@@ -113,7 +113,7 @@ export default function VerifyEmailForm() {
               value={digit}
               onChange={(e) => handleChange(i, e.target.value)}
               onKeyDown={(e) => handleKeyDown(i, e)}
-              className="w-12 h-14 text-center text-xl font-semibold rounded-lg border border-[#CBD5E1] bg-white outline-none focus:border-[#1E4D8C] focus:ring-2 focus:ring-[#1E4D8C]/20 transition-colors"
+              className="w-12 h-14 text-center text-xl font-semibold rounded-lg border border-[#CBD5E1] bg-white outline-none focus:border-[#4A8C1C] focus:ring-2 focus:ring-[#4A8C1C]/20 transition-colors"
             />
           ))}
         </div>
@@ -121,7 +121,7 @@ export default function VerifyEmailForm() {
         <Button
           type="submit"
           disabled={loading || otp.join("").length !== 6}
-          className="w-full h-10 bg-[#1E4D8C] hover:bg-[#1a4279] text-white"
+          className="w-full h-10 bg-[#4A8C1C] hover:bg-[#3a7016] text-white"
         >
           {loading ? "Verifying…" : "Verify email"}
         </Button>
@@ -133,7 +133,7 @@ export default function VerifyEmailForm() {
           type="button"
           onClick={handleResend}
           disabled={resending}
-          className="text-[#1E4D8C] hover:underline font-medium disabled:opacity-50"
+          className="text-[#4A8C1C] hover:underline font-medium disabled:opacity-50"
         >
           {resending ? "Sending…" : "Resend code"}
         </button>

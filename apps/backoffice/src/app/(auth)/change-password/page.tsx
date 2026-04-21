@@ -132,7 +132,7 @@ export default function ChangePasswordPage() {
             )}
           </div>
 
-          <Button type="submit" className="w-full bg-[#1E4D8C] hover:bg-[#1a4279] text-white" disabled={isLoading}>
+          <Button type="submit" className="w-full bg-[#4A8C1C] hover:bg-[#3a7016] text-white" disabled={isLoading}>
             {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Setting password…</> : "Set new password"}
           </Button>
         </form>

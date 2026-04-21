@@ -117,7 +117,7 @@ export default function CasesPage() {
           <p className="text-sm text-[#64748B] mt-1">Investigation cases for suspicious activity.</p>
         </div>
         <Button
-          className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white h-9"
+          className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white h-9"
           onClick={() => { setShowCreate(true); setCreateError(""); setForm(initForm()); }}
         >
           <Plus className="w-4 h-4 mr-1.5" /> New case
@@ -156,7 +156,7 @@ export default function CasesPage() {
       ) : (
         <div className="bg-white border border-[#E2E8F0] rounded-xl overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-[#F7F9FC] border-b border-[#E2E8F0]">
+            <thead className="bg-[#F8FBEF] border-b border-[#E2E8F0]">
               <tr>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-[#64748B] uppercase tracking-wide">Ref</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-[#64748B] uppercase tracking-wide">Title</th>
@@ -170,7 +170,7 @@ export default function CasesPage() {
               {rows.map((c) => (
                 <tr
                   key={c.id}
-                  className="hover:bg-[#F7F9FC] cursor-pointer transition-colors"
+                  className="hover:bg-[#F8FBEF] cursor-pointer transition-colors"
                   onClick={() => router.push(`/compliance/cases/${c.id}`)}
                 >
                   <td className="px-4 py-3 font-mono text-xs text-[#1A2332]">{c.caseRef}</td>
@@ -194,7 +194,7 @@ export default function CasesPage() {
           </table>
 
           {pages > 1 && (
-            <div className="flex items-center justify-between px-4 py-3 border-t border-[#E2E8F0] bg-[#F7F9FC]">
+            <div className="flex items-center justify-between px-4 py-3 border-t border-[#E2E8F0] bg-[#F8FBEF]">
               <p className="text-xs text-[#64748B]">{total} case{total !== 1 ? "s" : ""}</p>
               <div className="flex items-center gap-2">
                 <Button variant="outline" size="sm" className="h-7 px-2" onClick={() => { setPage((p) => Math.max(1, p - 1)); load(); }} disabled={page === 1}>
@@ -274,7 +274,7 @@ export default function CasesPage() {
             </div>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setShowCreate(false)}>Cancel</Button>
-              <Button type="submit" disabled={saving} className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white">
+              <Button type="submit" disabled={saving} className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white">
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Create case"}
               </Button>
             </DialogFooter>

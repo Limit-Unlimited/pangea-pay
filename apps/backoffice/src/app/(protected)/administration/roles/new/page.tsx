@@ -153,7 +153,7 @@ export default function NewRolePage() {
         </Card>
 
         <div className="flex gap-3">
-          <Button type="submit" className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white" disabled={isLoading}>
+          <Button type="submit" className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white" disabled={isLoading}>
             {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Creating…</> : "Create role"}
           </Button>
           <Button type="button" variant="outline" onClick={() => router.back()}>Cancel</Button>

@@ -145,7 +145,7 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
 
                 <div className="space-y-1.5">
                   <Label>Email address</Label>
-                  <Input value={user.email} disabled className="bg-[#F7F9FC]" />
+                  <Input value={user.email} disabled className="bg-[#F8FBEF]" />
                   <p className="text-xs text-[#64748B]">Email address cannot be changed.</p>
                 </div>
 
@@ -176,7 +176,7 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
                   </Select>
                 </div>
 
-                <Button type="submit" className="bg-[#1E4D8C] hover:bg-[#1a4279] text-white" disabled={isSaving}>
+                <Button type="submit" className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white" disabled={isSaving}>
                   {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving…</> : "Save changes"}
                 </Button>
               </form>

@@ -27,6 +27,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   account_suspended:   "Your account has been suspended. Contact your administrator.",
   mfa_invalid:         "The authentication code is incorrect or has expired.",
   CredentialsSignin:   "Email or password is incorrect.",
+  CallbackRouteError:  "Email or password is incorrect.",
   default:             "Something went wrong. Please try again.",
 };
 
@@ -113,7 +114,7 @@ function LoginForm() {
                   <Label htmlFor="password">Password</Label>
                   <a
                     href="/forgot-password"
-                    className="text-xs text-[#1E4D8C] hover:underline"
+                    className="text-xs text-[#4A8C1C] hover:underline"
                   >
                     Forgot password?
                   </a>
@@ -160,7 +161,7 @@ function LoginForm() {
 
           <Button
             type="submit"
-            className="w-full bg-[#1E4D8C] hover:bg-[#1a4279] text-white"
+            className="w-full bg-[#4A8C1C] hover:bg-[#3a7016] text-white"
             disabled={isLoading}
           >
             {isLoading ? (

@@ -42,7 +42,7 @@ export default function ForgotPasswordPage() {
           <p className="text-sm text-[#64748B]">
             If an account exists for that email address, you will receive a password reset link shortly.
           </p>
-          <a href="/login" className="text-sm text-[#1E4D8C] hover:underline block mt-4">
+          <a href="/login" className="text-sm text-[#4A8C1C] hover:underline block mt-4">
             Back to sign in
           </a>
         </CardContent>
@@ -75,7 +75,7 @@ export default function ForgotPasswordPage() {
           </div>
           <Button
             type="submit"
-            className="w-full bg-[#1E4D8C] hover:bg-[#1a4279] text-white"
+            className="w-full bg-[#4A8C1C] hover:bg-[#3a7016] text-white"
             disabled={isLoading}
           >
             {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending…</> : "Send reset link"}
