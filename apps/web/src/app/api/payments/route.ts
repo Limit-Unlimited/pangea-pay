@@ -79,6 +79,85 @@ export async function POST(req: NextRequest) {
   const available = parseFloat(fromAccount.availableBalance ?? "0");
   if (d.sendAmount > available) return err("Insufficient available balance", 422);
 
+  // ── Internal Pangea-to-Pangea transfer ──────────────────────────────────
+  if (beneficiary.pangeaAccountId) {
+    const [toAccount] = await db
+      .select()
+      .from(accounts)
+      .where(eq(accounts.id, beneficiary.pangeaAccountId))
+      .limit(1);
+
+    if (!toAccount) return err("Destination account not found", 404);
+    if (toAccount.status !== "active") return err("Destination account is not active", 422);
+    if (toAccount.currency !== d.sendCurrency.toUpperCase()) {
+      return err("Currency mismatch with destination account", 422);
+    }
+
+    const referenceNumber = await generateTxnRef(webUser.tenantId);
+    const providerRef     = `INT-${referenceNumber.replace("TXN-", "")}`;
+
+    // Debit sender
+    const senderCurrent   = parseFloat(fromAccount.currentBalance ?? "0");
+    const senderAvailable = parseFloat(fromAccount.availableBalance ?? "0");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (db.update(accounts) as any).set({
+      currentBalance:   (senderCurrent   - d.sendAmount).toFixed(4),
+      availableBalance: (senderAvailable - d.sendAmount).toFixed(4),
+    }).where(eq(accounts.id, d.fromAccountId));
+
+    // Credit recipient
+    const recipientCurrent   = parseFloat(toAccount.currentBalance ?? "0");
+    const recipientAvailable = parseFloat(toAccount.availableBalance ?? "0");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (db.update(accounts) as any).set({
+      currentBalance:   (recipientCurrent   + d.sendAmount).toFixed(4),
+      availableBalance: (recipientAvailable + d.sendAmount).toFixed(4),
+    }).where(eq(accounts.id, beneficiary.pangeaAccountId));
+
+    // Record the transaction as completed (internal — no provider latency)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (db.insert(transactions) as any).values({
+      tenantId:        webUser.tenantId,
+      customerId:      webUser.customerId,
+      referenceNumber,
+      type:            "send",
+      status:          "completed",
+      fromAccountId:   d.fromAccountId,
+      beneficiaryId:   d.beneficiaryId,
+      sendAmount:      String(d.sendAmount),
+      sendCurrency:    d.sendCurrency.toUpperCase(),
+      receiveAmount:   String(d.sendAmount),
+      receiveCurrency: d.sendCurrency.toUpperCase(),
+      fxRate:          "1",
+      fee:             "0",
+      feeCurrency:     d.sendCurrency.toUpperCase(),
+      payoutMethod:    "internal",
+      purposeCode:     d.purposeCode ?? null,
+      customerRef:     d.customerRef ?? null,
+      providerRef,
+      providerName:    "pangea_internal",
+    });
+
+    const [created] = await db
+      .select({ id: transactions.id })
+      .from(transactions)
+      .where(eq(transactions.referenceNumber, referenceNumber))
+      .limit(1);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (db.insert(transactionStatusHistory) as any).values({
+      transactionId: created.id,
+      tenantId:      webUser.tenantId,
+      fromStatus:    null,
+      toStatus:      "completed",
+      reason:        "Internal Pangea transfer — settled immediately",
+      performedBy:   null,
+    });
+
+    return ok({ referenceNumber, transactionId: created.id, providerRef }, 201);
+  }
+  // ── End internal transfer ────────────────────────────────────────────────
+
   // Resolve FX details from quote if provided
   let receiveAmount: number | null = null;
   let receiveCurrency: string | null = null;

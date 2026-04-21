@@ -1,9 +1,10 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { auth } from "@/auth";
-import { db, webUsers, customers, accounts } from "@pangea/db";
+import { db, webUsers, customers, accounts, currencies } from "@pangea/db";
 import { eq, and, desc } from "drizzle-orm";
 import { Card } from "@/components/ui/card";
+import { OpenAccountButton } from "@/components/accounts/open-account-button";
 
 function fmt(n: string | null) {
   if (!n) return "0.00";
@@ -38,19 +39,33 @@ export default async function AccountsPage() {
 
   if (customer?.onboardingStatus !== "approved") redirect("/dashboard");
 
-  const customerAccounts = await db
-    .select()
-    .from(accounts)
-    .where(and(eq(accounts.customerId, webUser.customerId), eq(accounts.tenantId, webUser.tenantId)))
-    .orderBy(desc(accounts.createdAt));
+  const [customerAccounts, activeCurrencies] = await Promise.all([
+    db.select()
+      .from(accounts)
+      .where(and(eq(accounts.customerId, webUser.customerId!), eq(accounts.tenantId, webUser.tenantId)))
+      .orderBy(desc(accounts.createdAt)),
+    db.select({ code: currencies.code, name: currencies.name, symbol: currencies.symbol })
+      .from(currencies)
+      .where(eq(currencies.status, "active")),
+  ]);
+
+  // Filter out currencies the customer already has an open (non-closed) account for
+  const usedCurrencies = new Set(
+    customerAccounts.filter((a) => a.status !== "closed").map((a) => a.currency)
+  );
+  const availableCurrencies = activeCurrencies.filter((c) => !usedCurrencies.has(c.code));
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold text-[#1A2332]">Your accounts</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-[#1A2332]">Your accounts</h1>
+        <OpenAccountButton currencies={availableCurrencies} />
+      </div>
 
       {customerAccounts.length === 0 ? (
         <Card className="p-8 border-[#E2E8F0] bg-white text-center">
-          <p className="text-[#64748B]">No accounts yet. Your account manager will open your account shortly.</p>
+          <p className="text-[#64748B] mb-1">No accounts yet.</p>
+          <p className="text-sm text-[#64748B]">Use the button above to open your first account.</p>
         </Card>
       ) : (
         <div className="space-y-3">

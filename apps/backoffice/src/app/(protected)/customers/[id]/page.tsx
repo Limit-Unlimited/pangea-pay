@@ -1447,7 +1447,10 @@ export default function CustomerDetailPage() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setStatusDialog(true)}
+            onClick={() => {
+              setStatusForm({ status: customer.status ?? "", onboardingStatus: customer.onboardingStatus ?? "", reason: "" });
+              setStatusDialog(true);
+            }}
           >
             <Activity className="h-3.5 w-3.5 mr-1.5" />
             Change status
@@ -1457,49 +1460,53 @@ export default function CustomerDetailPage() {
 
       {/* Tabs */}
       <Tabs defaultValue="profile">
-        <TabsList className="mb-4 bg-[#F8FBEF] border border-[#E2E8F0]">
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="documents">Documents</TabsTrigger>
-          <TabsTrigger value="risk">Risk</TabsTrigger>
-          <TabsTrigger value="screening">Screening</TabsTrigger>
-          {customer.type === "business" && <TabsTrigger value="users">Linked users</TabsTrigger>}
-          <TabsTrigger value="accounts">Accounts</TabsTrigger>
-          <TabsTrigger value="beneficiaries">Beneficiaries</TabsTrigger>
-          <TabsTrigger value="sar">SAR</TabsTrigger>
-          <TabsTrigger value="commissions">Commissions</TabsTrigger>
-          <TabsTrigger value="audit">Audit trail</TabsTrigger>
+        <TabsList variant="line" className="mb-0 w-full border-b-2 border-[#D1E8B8] bg-transparent rounded-none pb-0 h-11 gap-0">
+          {(["profile","documents","risk","screening","accounts","beneficiaries","sar","commissions","audit"] as const).map((v) => (
+            <TabsTrigger key={v} value={v}
+              className="px-4 capitalize text-[#64748B] font-medium data-active:text-[#4A8C1C] data-active:font-semibold data-active:border-b-2 data-active:border-[#4A8C1C] rounded-none flex-none"
+            >
+              {v === "sar" ? "SAR" : v === "audit" ? "Audit trail" : v.charAt(0).toUpperCase() + v.slice(1)}
+            </TabsTrigger>
+          ))}
+          {customer.type === "business" && (
+            <TabsTrigger value="users"
+              className="px-4 text-[#64748B] font-medium data-active:text-[#4A8C1C] data-active:font-semibold data-active:border-b-2 data-active:border-[#4A8C1C] rounded-none flex-none"
+            >
+              Linked users
+            </TabsTrigger>
+          )}
         </TabsList>
 
-        <TabsContent value="profile">
+        <TabsContent className="mt-4" value="profile">
           <ProfileTab customer={customer} onRefresh={load} />
         </TabsContent>
-        <TabsContent value="documents">
+        <TabsContent className="mt-4" value="documents">
           <DocumentsTab customerId={id} />
         </TabsContent>
-        <TabsContent value="risk">
+        <TabsContent className="mt-4" value="risk">
           <RiskTab customer={customer} onRefresh={load} />
         </TabsContent>
-        <TabsContent value="screening">
+        <TabsContent className="mt-4" value="screening">
           <ScreeningTab customer={customer} onRefresh={load} />
         </TabsContent>
         {customer.type === "business" && (
-          <TabsContent value="users">
+          <TabsContent className="mt-4" value="users">
             <LinkedUsersTab customer={customer} />
           </TabsContent>
         )}
-        <TabsContent value="accounts">
+        <TabsContent className="mt-4" value="accounts">
           <AccountsTab customer={customer} />
         </TabsContent>
-        <TabsContent value="beneficiaries">
+        <TabsContent className="mt-4" value="beneficiaries">
           <BeneficiariesTab customer={customer} />
         </TabsContent>
-        <TabsContent value="sar">
+        <TabsContent className="mt-4" value="sar">
           <SarTab customer={customer} />
         </TabsContent>
-        <TabsContent value="commissions">
+        <TabsContent className="mt-4" value="commissions">
           <CommissionsTab customer={customer} />
         </TabsContent>
-        <TabsContent value="audit">
+        <TabsContent className="mt-4" value="audit">
           <AuditTab customer={customer} />
         </TabsContent>
       </Tabs>

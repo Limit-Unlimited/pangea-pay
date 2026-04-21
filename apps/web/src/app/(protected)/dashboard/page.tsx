@@ -5,6 +5,7 @@ import { db, webUsers, customers, accounts } from "@pangea/db";
 import { eq, and, desc } from "drizzle-orm";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { SendHorizontal, ArrowLeftRight, History, FileDown } from "lucide-react";
 
 function fmt(n: string | null) {
   if (!n) return "0.00";
@@ -145,27 +146,28 @@ export default async function DashboardPage() {
         <h2 className="text-sm font-semibold text-[#1A2332] mb-3">Quick actions</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <Link href="/send">
-            <div className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-lg border border-[#E2E8F0] hover:border-[#4A8C1C]/40 hover:bg-[#F8FBEF] text-xs text-[#1A2332] transition-colors cursor-pointer">
-              <span className="text-lg">↑</span>
+            <div className="flex flex-col items-center justify-center gap-2 p-4 rounded-lg border border-[#E2E8F0] hover:border-[#4A8C1C]/40 hover:bg-[#F8FBEF] text-xs text-[#1A2332] transition-colors cursor-pointer">
+              <SendHorizontal className="h-5 w-5 text-[#4A8C1C]" strokeWidth={1.75} />
               <span>Send money</span>
             </div>
           </Link>
           <Link href="/convert">
-            <div className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-lg border border-[#E2E8F0] hover:border-[#4A8C1C]/40 hover:bg-[#F8FBEF] text-xs text-[#1A2332] transition-colors cursor-pointer">
-              <span className="text-lg">↔</span>
+            <div className="flex flex-col items-center justify-center gap-2 p-4 rounded-lg border border-[#E2E8F0] hover:border-[#4A8C1C]/40 hover:bg-[#F8FBEF] text-xs text-[#1A2332] transition-colors cursor-pointer">
+              <ArrowLeftRight className="h-5 w-5 text-[#4A8C1C]" strokeWidth={1.75} />
               <span>Get a quote</span>
             </div>
           </Link>
           <Link href="/transactions">
-            <div className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-lg border border-[#E2E8F0] hover:border-[#4A8C1C]/40 hover:bg-[#F8FBEF] text-xs text-[#1A2332] transition-colors cursor-pointer">
-              <span className="text-lg">≡</span>
+            <div className="flex flex-col items-center justify-center gap-2 p-4 rounded-lg border border-[#E2E8F0] hover:border-[#4A8C1C]/40 hover:bg-[#F8FBEF] text-xs text-[#1A2332] transition-colors cursor-pointer">
+              <History className="h-5 w-5 text-[#4A8C1C]" strokeWidth={1.75} />
               <span>History</span>
             </div>
           </Link>
           <button
             disabled
-            className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-lg border border-[#E2E8F0] text-xs text-[#64748B] opacity-50 cursor-not-allowed"
+            className="flex flex-col items-center justify-center gap-2 p-4 rounded-lg border border-[#E2E8F0] text-xs text-[#64748B] opacity-40 cursor-not-allowed"
           >
+            <FileDown className="h-5 w-5" strokeWidth={1.75} />
             <span>Get statement</span>
             <span className="text-[10px]">Coming soon</span>
           </button>

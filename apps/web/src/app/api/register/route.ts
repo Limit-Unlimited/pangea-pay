@@ -5,6 +5,7 @@ import { db, webUsers, emailVerifications } from "@pangea/db";
 import { hashPassword } from "@/lib/auth/password";
 import { sendEmailVerificationOtp } from "@/lib/email/mailer";
 import { ok, err } from "@/lib/api/response";
+import { checkVpn, getClientIp, vpnBlockMessage } from "@/lib/vpn/detect";
 import { randomInt } from "crypto";
 import bcrypt from "bcryptjs";
 
@@ -17,6 +18,9 @@ const schema = z.object({
 
 // POST /api/register
 export async function POST(req: NextRequest) {
+  const vpn = await checkVpn(getClientIp(req));
+  if (vpn.blocked) return err(vpnBlockMessage(), 403);
+
   const body = await req.json().catch(() => null);
   const parsed = schema.safeParse(body);
   if (!parsed.success) return err(parsed.error.issues[0]?.message ?? "Invalid request");

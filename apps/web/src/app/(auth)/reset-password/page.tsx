@@ -84,7 +84,7 @@ function ResetPasswordForm() {
                 value={confirm} onChange={(e) => setConfirm(e.target.value)} />
             </div>
             <Button type="submit" disabled={loading || !token}
-              className="w-full h-10 bg-[#4A8C1C] hover:bg-[#3a7016] text-white">
+              className="w-full bg-[#4A8C1C] hover:bg-[#3a7016] text-white">
               {loading ? "Saving…" : "Set new password"}
             </Button>
           </form>

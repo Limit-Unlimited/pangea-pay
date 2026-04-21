@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { db, webUsers, customers, customerDocuments } from "@pangea/db";
 import { auth } from "@/auth";
 import { ok, err, unauthorized } from "@/lib/api/response";
+import { checkVpn, getClientIp, vpnBlockMessage } from "@/lib/vpn/detect";
 
 const schema = z.object({
   // Personal details
@@ -34,6 +35,9 @@ const schema = z.object({
 
 // POST /api/onboarding — submit KYC details
 export async function POST(req: NextRequest) {
+  const vpn = await checkVpn(getClientIp(req));
+  if (vpn.blocked) return err(vpnBlockMessage(), 403);
+
   const session = await auth();
   if (!session?.user) return unauthorized();
 

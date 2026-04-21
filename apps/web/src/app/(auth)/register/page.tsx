@@ -34,7 +34,7 @@ export default function RegisterPage() {
       return;
     }
     if (!form.tcAccepted) {
-      setError("You must accept the Terms and Conditions to continue.");
+      setError("You must agree to the Terms and Conditions to continue.");
       return;
     }
 
@@ -132,20 +132,20 @@ export default function RegisterPage() {
             id="tc"
             checked={form.tcAccepted}
             onChange={(e) => f("tcAccepted", e.target.checked)}
-            className="mt-0.5 h-4 w-4 rounded border-[#CBD5E1] accent-[#4A8C1C]"
+            className="mt-0.5 h-4 w-4 rounded border-[#CBD5E1] accent-[#4A8C1C] shrink-0"
           />
-          <Label htmlFor="tc" className="text-sm font-normal text-[#64748B] leading-snug cursor-pointer">
-            I have read and agree to the{" "}
-            <a href="#" className="text-[#4A8C1C] hover:underline">Terms and Conditions</a>{" "}
-            and{" "}
+          <label htmlFor="tc" className="text-sm font-normal text-[#64748B] leading-snug cursor-pointer">
+            I agree to the{" "}
+            <a href="#" className="text-[#4A8C1C] hover:underline">Terms and Conditions</a>
+            {" "}and{" "}
             <a href="#" className="text-[#4A8C1C] hover:underline">Privacy Policy</a>
-          </Label>
+          </label>
         </div>
 
         <Button
           type="submit"
           disabled={loading}
-          className="w-full h-10 bg-[#4A8C1C] hover:bg-[#3a7016] text-white"
+          className="w-full bg-[#4A8C1C] hover:bg-[#3a7016] text-white"
         >
           {loading ? "Creating account…" : "Create account"}
         </Button>

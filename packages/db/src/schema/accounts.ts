@@ -79,6 +79,9 @@ export const beneficiaries = mysqlTable("beneficiaries", {
   currency:         varchar("currency", { length: 3 }).notNull(),
   country:          varchar("country", { length: 2 }).notNull(),
 
+  // Internal Pangea account link — set when this beneficiary is another Pangea account
+  pangeaAccountId:  varchar("pangea_account_id", { length: 36 }).references(() => accounts.id),
+
   status:           mysqlEnum("status", ["active", "flagged", "blocked"]).notNull().default("active"),
   flagReason:       text("flag_reason"),
   flaggedBy:        varchar("flagged_by", { length: 36 }).references(() => users.id),
@@ -95,5 +98,5 @@ export type Account              = typeof accounts.$inferSelect;
 export type NewAccount           = typeof accounts.$inferInsert;
 export type AccountStatusHistory = typeof accountStatusHistory.$inferSelect;
 export type NewAccountStatusHistory = typeof accountStatusHistory.$inferInsert;
-export type Beneficiary          = typeof beneficiaries.$inferSelect;
-export type NewBeneficiary       = typeof beneficiaries.$inferInsert;
+export type Beneficiary    = typeof beneficiaries.$inferSelect;
+export type NewBeneficiary = typeof beneficiaries.$inferInsert;

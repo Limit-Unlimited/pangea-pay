@@ -62,7 +62,7 @@ export default function ForgotPasswordPage() {
                 value={email} onChange={(e) => setEmail(e.target.value)}
               />
             </div>
-            <Button type="submit" disabled={loading} className="w-full h-10 bg-[#4A8C1C] hover:bg-[#3a7016] text-white">
+            <Button type="submit" disabled={loading} className="w-full bg-[#4A8C1C] hover:bg-[#3a7016] text-white">
               {loading ? "Sending…" : "Send reset link"}
             </Button>
           </form>

@@ -78,6 +78,13 @@
       "when": 1776030600000,
       "tag": "0010_performance_indexes",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "5",
+      "when": 1776117000000,
+      "tag": "0011_pangea_beneficiary",
+      "breakpoints": true
     }
   ]
 }

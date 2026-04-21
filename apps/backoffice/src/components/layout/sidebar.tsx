@@ -57,7 +57,15 @@ const NAV: NavItem[] = [
   { label: "Payments",           href: "/payments",         icon: CreditCard },
   { label: "Messages",           href: "/messages",         icon: MessageSquare },
   { label: "Documents",          href: "/documents",        icon: FileText },
-  { label: "Wallets & Accounts", href: "/accounts",         icon: Wallet },
+  {
+    label: "Wallets & Accounts",
+    href:  "/accounts",
+    icon:  Wallet,
+    children: [
+      { label: "All accounts",      href: "/accounts",          icon: Wallet },
+      { label: "Account requests",  href: "/accounts/requests", icon: ClipboardList },
+    ],
+  },
   { label: "Currency Exchange",  href: "/fx",               icon: ArrowLeftRight },
   {
     label: "Compliance",

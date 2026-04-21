@@ -47,6 +47,11 @@ function LoginForm() {
     defaultValues: { email: "", password: "", mfaToken: "" },
   });
 
+  const watchedEmail    = form.watch("email");
+  const watchedPassword = form.watch("password");
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(watchedEmail);
+  const canSubmit  = !isLoading && (requiresMfa || (emailValid && watchedPassword.length >= 12));
+
   async function onSubmit(data: LoginForm) {
     setIsLoading(true);
     setError(null);
@@ -92,7 +97,16 @@ function LoginForm() {
           </Alert>
         )}
 
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          onKeyDown={(e: React.KeyboardEvent<HTMLFormElement>) => {
+            if (e.key === "Enter" && canSubmit) {
+              e.preventDefault();
+              form.handleSubmit(onSubmit)();
+            }
+          }}
+          className="space-y-4"
+        >
           {!requiresMfa ? (
             <>
               <div className="space-y-1.5">
@@ -110,15 +124,7 @@ function LoginForm() {
               </div>
 
               <div className="space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="password">Password</Label>
-                  <a
-                    href="/forgot-password"
-                    className="text-xs text-[#4A8C1C] hover:underline"
-                  >
-                    Forgot password?
-                  </a>
-                </div>
+                <Label htmlFor="password">Password</Label>
                 <div className="relative">
                   <Input
                     id="password"
@@ -138,6 +144,16 @@ function LoginForm() {
                 {form.formState.errors.password && (
                   <p className="text-xs text-destructive">{form.formState.errors.password.message}</p>
                 )}
+              </div>
+
+              <div className="flex justify-end">
+                <a
+                  href="/forgot-password"
+                  className="text-xs text-[#4A8C1C] hover:underline"
+                  tabIndex={0}
+                >
+                  Forgot password?
+                </a>
               </div>
             </>
           ) : (
@@ -162,7 +178,7 @@ function LoginForm() {
           <Button
             type="submit"
             className="w-full bg-[#4A8C1C] hover:bg-[#3a7016] text-white"
-            disabled={isLoading}
+            disabled={!canSubmit}
           >
             {isLoading ? (
               <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Signing in…</>

@@ -19,12 +19,15 @@ const ERROR_MESSAGES: Record<string, string> = {
 
 export default function LoginPage() {
   const router = useRouter();
-  const [form, setForm]     = useState({ email: "", password: "" });
-  const [error, setError]   = useState("");
+  const [form, setForm]       = useState({ email: "", password: "" });
+  const [error, setError]     = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email);
+  const canSubmit  = !loading && emailValid && form.password.length >= 12;
+
+  async function submit() {
+    if (!canSubmit) return;
     setLoading(true);
     setError("");
 
@@ -45,6 +48,18 @@ export default function LoginPage() {
     router.refresh();
   }
 
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    void submit();
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent<HTMLFormElement>) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      void submit();
+    }
+  }
+
   return (
     <Card className="p-8 shadow-sm border-[#E2E8F0] bg-white">
       <h1 className="text-2xl font-bold text-[#1A2332] mb-1">Sign in</h1>
@@ -56,14 +71,13 @@ export default function LoginPage() {
         </Alert>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} onKeyDown={handleKeyDown} className="space-y-4">
         <div className="space-y-1.5">
           <Label htmlFor="email">Email</Label>
           <Input
             id="email"
             type="email"
             autoComplete="email"
-            required
             placeholder="you@example.com"
             value={form.email}
             onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
@@ -76,7 +90,6 @@ export default function LoginPage() {
             id="password"
             type="password"
             autoComplete="current-password"
-            required
             placeholder="••••••••••••"
             value={form.password}
             onChange={(e) => setForm((p) => ({ ...p, password: e.target.value }))}
@@ -91,8 +104,8 @@ export default function LoginPage() {
 
         <Button
           type="submit"
-          disabled={loading}
-          className="w-full h-10 bg-[#4A8C1C] hover:bg-[#3a7016] text-white"
+          disabled={!canSubmit}
+          className="w-full bg-[#4A8C1C] hover:bg-[#3a7016] text-white"
         >
           {loading ? "Signing in…" : "Sign in"}
         </Button>

@@ -1,9 +1,11 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
 import { eq, and, desc } from "drizzle-orm";
-import { db, webUsers, customers, beneficiaries } from "@pangea/db";
+import { db, webUsers, customers, beneficiaries, accounts } from "@pangea/db";
 import { auth } from "@/auth";
 import { ok, err, unauthorized } from "@/lib/api/response";
+
+const PANGEA_ACCOUNT_RE = /^ACC-\d+$/i;
 
 const schema = z.object({
   displayName:   z.string().min(1).max(255),
@@ -65,22 +67,56 @@ export async function POST(req: NextRequest) {
 
   const d = parsed.data;
 
+  // Resolve Pangea internal account if account number matches the ACC-XXXXXX pattern
+  let pangeaAccountId: string | null = null;
+  if (d.accountNumber && PANGEA_ACCOUNT_RE.test(d.accountNumber)) {
+    const [target] = await db
+      .select({ id: accounts.id, currency: accounts.currency, status: accounts.status })
+      .from(accounts)
+      .where(and(
+        eq(accounts.accountNumber, d.accountNumber.toUpperCase()),
+        eq(accounts.tenantId, webUser.tenantId),
+      ))
+      .limit(1);
+
+    if (!target) return err("Pangea account not found", 404);
+    if (target.status !== "active") return err("The destination account is not active", 422);
+    if (target.currency !== d.currency.toUpperCase()) {
+      return err(`Account currency is ${target.currency} but you selected ${d.currency.toUpperCase()}`, 422);
+    }
+
+    // Prevent adding own accounts as beneficiaries
+    const [ownAccount] = await db
+      .select({ id: accounts.id })
+      .from(accounts)
+      .where(and(
+        eq(accounts.id, target.id),
+        eq(accounts.customerId, webUser.customerId),
+      ))
+      .limit(1);
+
+    if (ownAccount) return err("You cannot add your own account as a beneficiary", 422);
+
+    pangeaAccountId = target.id;
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   await (db.insert(beneficiaries) as any).values({
-    tenantId:      webUser.tenantId,
-    customerId:    webUser.customerId,
-    displayName:   d.displayName,
-    firstName:     d.firstName ?? null,
-    lastName:      d.lastName  ?? null,
-    bankName:      d.bankName  ?? null,
-    accountNumber: d.accountNumber ?? null,
-    iban:          d.iban      ?? null,
-    sortCode:      d.sortCode  ?? null,
-    swiftBic:      d.swiftBic  ?? null,
-    currency:      d.currency.toUpperCase(),
-    country:       d.country.toUpperCase(),
-    status:        "active",
+    tenantId:         webUser.tenantId,
+    customerId:       webUser.customerId,
+    displayName:      d.displayName,
+    firstName:        d.firstName ?? null,
+    lastName:         d.lastName  ?? null,
+    bankName:         pangeaAccountId ? "Pangea Pay" : (d.bankName ?? null),
+    accountNumber:    d.accountNumber ?? null,
+    iban:             d.iban      ?? null,
+    sortCode:         d.sortCode  ?? null,
+    swiftBic:         d.swiftBic  ?? null,
+    currency:         d.currency.toUpperCase(),
+    country:          d.country.toUpperCase(),
+    pangeaAccountId,
+    status:           "active",
   });
 
-  return ok({ message: "Beneficiary added" }, 201);
+  return ok({ message: "Beneficiary added", isPangea: !!pangeaAccountId }, 201);
 }

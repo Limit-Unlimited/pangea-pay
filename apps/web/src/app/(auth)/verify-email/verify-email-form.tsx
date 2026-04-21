@@ -45,11 +45,7 @@ export default function VerifyEmailForm() {
     }
   }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    const code = otp.join("");
-    if (code.length !== 6) { setError("Please enter the 6-digit code."); return; }
-
+  async function verify(code: string) {
     setLoading(true);
     setError("");
 
@@ -67,6 +63,19 @@ export default function VerifyEmailForm() {
     }
 
     router.push("/login?verified=1");
+  }
+
+  useEffect(() => {
+    const code = otp.join("");
+    if (code.length === 6 && !loading) verify(code);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [otp]);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const code = otp.join("");
+    if (code.length !== 6) { setError("Please enter the 6-digit code."); return; }
+    await verify(code);
   }
 
   async function handleResend() {
@@ -121,7 +130,7 @@ export default function VerifyEmailForm() {
         <Button
           type="submit"
           disabled={loading || otp.join("").length !== 6}
-          className="w-full h-10 bg-[#4A8C1C] hover:bg-[#3a7016] text-white"
+          className="w-full bg-[#4A8C1C] hover:bg-[#3a7016] text-white"
         >
           {loading ? "Verifying…" : "Verify email"}
         </Button>

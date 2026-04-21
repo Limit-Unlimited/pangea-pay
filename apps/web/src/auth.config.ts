@@ -8,6 +8,15 @@ export const authConfig: NextAuthConfig = {
     error:  "/login",
   },
 
+  // Distinct cookie name prevents session collision with other Pangea apps
+  // that share the same localhost domain in development.
+  cookies: {
+    sessionToken: {
+      name: "pangea.web.session-token",
+      options: { httpOnly: true, sameSite: "lax", path: "/", secure: false },
+    },
+  },
+
   providers: [],
 
   callbacks: {

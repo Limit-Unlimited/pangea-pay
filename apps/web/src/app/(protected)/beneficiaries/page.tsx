@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Trash2, Plus, Loader2, Building2, Globe } from "lucide-react";
+import { Trash2, Plus, Loader2, Building2, Globe, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,19 +12,20 @@ import {
 } from "@/components/ui/dialog";
 
 type Beneficiary = {
-  id:            string;
-  displayName:   string;
-  firstName:     string | null;
-  lastName:      string | null;
-  bankName:      string | null;
-  accountNumber: string | null;
-  iban:          string | null;
-  sortCode:      string | null;
-  swiftBic:      string | null;
-  currency:      string;
-  country:       string;
-  status:        string;
-  createdAt:     string;
+  id:               string;
+  displayName:      string;
+  firstName:        string | null;
+  lastName:         string | null;
+  bankName:         string | null;
+  accountNumber:    string | null;
+  iban:             string | null;
+  sortCode:         string | null;
+  swiftBic:         string | null;
+  currency:         string;
+  country:          string;
+  status:           string;
+  createdAt:        string;
+  pangeaAccountId:  string | null;
 };
 
 const COUNTRIES: Record<string, string> = {
@@ -39,11 +40,15 @@ const CURRENCIES = [
   "PKR", "PHP", "XOF", "UGX", "TZS", "CAD", "AUD",
 ];
 
+type BeneficiaryType = "external" | "pangea";
+
 function initForm() {
   return {
+    beneficiaryType: "external" as BeneficiaryType,
     displayName: "", firstName: "", lastName: "", bankName: "",
     accountNumber: "", iban: "", sortCode: "", swiftBic: "",
     currency: "GBP", country: "GB",
+    pangeaAccountNumber: "",
   };
 }
 
@@ -79,20 +84,31 @@ export default function BeneficiariesPage() {
     e.preventDefault();
     setSaving(true);
     setError("");
+
+    const isPangea = form.beneficiaryType === "pangea";
+    const payload = isPangea
+      ? {
+          displayName:   form.displayName,
+          accountNumber: form.pangeaAccountNumber.toUpperCase(),
+          currency:      form.currency,
+          country:       "GB",
+        }
+      : {
+          displayName:   form.displayName,
+          firstName:     form.firstName  || null,
+          lastName:      form.lastName   || null,
+          bankName:      form.bankName   || null,
+          accountNumber: form.accountNumber || null,
+          iban:          form.iban       || null,
+          sortCode:      form.sortCode   || null,
+          swiftBic:      form.swiftBic   || null,
+          currency:      form.currency,
+          country:       form.country,
+        };
+
     const res  = await fetch("/api/beneficiaries", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        displayName:   form.displayName,
-        firstName:     form.firstName  || null,
-        lastName:      form.lastName   || null,
-        bankName:      form.bankName   || null,
-        accountNumber: form.accountNumber || null,
-        iban:          form.iban       || null,
-        sortCode:      form.sortCode   || null,
-        swiftBic:      form.swiftBic   || null,
-        currency:      form.currency,
-        country:       form.country,
-      }),
+      body: JSON.stringify(payload),
     });
     const json = await res.json();
     setSaving(false);
@@ -139,11 +155,20 @@ export default function BeneficiariesPage() {
           {rows.map((b) => (
             <Card key={b.id} className="p-4 border-[#E2E8F0] bg-white flex items-center justify-between gap-4">
               <div className="flex items-center gap-3 min-w-0">
-                <div className="w-9 h-9 rounded-full bg-[#F8FBEF] border border-[#E2E8F0] flex items-center justify-center shrink-0">
-                  <Building2 className="w-4 h-4 text-[#64748B]" />
+                <div className={`w-9 h-9 rounded-full border flex items-center justify-center shrink-0 ${b.pangeaAccountId ? "bg-[#F0F7E6] border-[#B0D980]" : "bg-[#F8FBEF] border-[#E2E8F0]"}`}>
+                  {b.pangeaAccountId
+                    ? <Zap className="w-4 h-4 text-[#4A8C1C]" />
+                    : <Building2 className="w-4 h-4 text-[#64748B]" />}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-[#1A2332] truncate">{b.displayName}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium text-[#1A2332] truncate">{b.displayName}</p>
+                    {b.pangeaAccountId && (
+                      <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-[#F0F7E6] text-[#4A8C1C] border border-[#B0D980] shrink-0">
+                        Pangea
+                      </span>
+                    )}
+                  </div>
                   <div className="flex items-center gap-2 mt-0.5">
                     <span className="text-xs text-[#64748B]">{b.bankName ?? "—"}</span>
                     {(b.iban || b.accountNumber) && (
@@ -184,68 +209,113 @@ export default function BeneficiariesPage() {
           <form onSubmit={handleAdd} className="space-y-4 py-1">
             {error && <Alert className="text-sm text-red-700 bg-red-50 border-red-200">{error}</Alert>}
 
+            {/* Beneficiary type toggle */}
+            <div className="flex gap-2 p-1 bg-[#F8FBEF] rounded-lg border border-[#E2E8F0]">
+              <button
+                type="button"
+                onClick={() => setForm((p) => ({ ...p, beneficiaryType: "external" }))}
+                className={`flex-1 flex items-center justify-center gap-1.5 text-xs font-medium py-1.5 px-3 rounded-md transition-colors ${form.beneficiaryType === "external" ? "bg-white shadow-sm text-[#1A2332] border border-[#E2E8F0]" : "text-[#64748B] hover:text-[#1A2332]"}`}
+              >
+                <Building2 className="w-3.5 h-3.5" /> Bank account
+              </button>
+              <button
+                type="button"
+                onClick={() => setForm((p) => ({ ...p, beneficiaryType: "pangea" }))}
+                className={`flex-1 flex items-center justify-center gap-1.5 text-xs font-medium py-1.5 px-3 rounded-md transition-colors ${form.beneficiaryType === "pangea" ? "bg-white shadow-sm text-[#4A8C1C] border border-[#B0D980]" : "text-[#64748B] hover:text-[#1A2332]"}`}
+              >
+                <Zap className="w-3.5 h-3.5" /> Pangea account
+              </button>
+            </div>
+
             <div className="space-y-1.5">
               <Label htmlFor="displayName">Display name <span className="text-red-500">*</span></Label>
-              <Input id="displayName" required value={form.displayName} onChange={field("displayName")} placeholder="e.g. John Smith — Barclays" />
+              <Input id="displayName" required value={form.displayName} onChange={field("displayName")} placeholder={form.beneficiaryType === "pangea" ? "e.g. Jane's Pangea account" : "e.g. John Smith — Barclays"} />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label htmlFor="firstName">First name</Label>
-                <Input id="firstName" value={form.firstName} onChange={field("firstName")} placeholder="John" />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="lastName">Last name</Label>
-                <Input id="lastName" value={form.lastName} onChange={field("lastName")} placeholder="Smith" />
-              </div>
-            </div>
+            {form.beneficiaryType === "pangea" ? (
+              <>
+                <div className="space-y-1.5">
+                  <Label htmlFor="pangeaAccountNumber">Pangea account number <span className="text-red-500">*</span></Label>
+                  <Input
+                    id="pangeaAccountNumber"
+                    required
+                    value={form.pangeaAccountNumber}
+                    onChange={field("pangeaAccountNumber")}
+                    placeholder="ACC-000001"
+                    className="font-mono text-sm uppercase"
+                  />
+                  <p className="text-xs text-[#64748B]">Enter the recipient&apos;s Pangea account number (e.g. ACC-000001).</p>
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="pangea-currency">Currency <span className="text-red-500">*</span></Label>
+                  <select id="pangea-currency" required value={form.currency} onChange={field("currency")}
+                    className="w-full h-9 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus:border-ring">
+                    {CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                  <p className="text-xs text-[#64748B]">Must match the currency of the destination account.</p>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="firstName">First name</Label>
+                    <Input id="firstName" value={form.firstName} onChange={field("firstName")} placeholder="John" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="lastName">Last name</Label>
+                    <Input id="lastName" value={form.lastName} onChange={field("lastName")} placeholder="Smith" />
+                  </div>
+                </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label htmlFor="currency">Currency <span className="text-red-500">*</span></Label>
-                <select id="currency" required value={form.currency} onChange={field("currency")}
-                  className="w-full h-9 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus:border-ring">
-                  {CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
-                </select>
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="country">Country <span className="text-red-500">*</span></Label>
-                <select id="country" required value={form.country} onChange={field("country")}
-                  className="w-full h-9 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus:border-ring">
-                  {Object.entries(COUNTRIES).map(([code, name]) => (
-                    <option key={code} value={code}>{name}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="currency">Currency <span className="text-red-500">*</span></Label>
+                    <select id="currency" required value={form.currency} onChange={field("currency")}
+                      className="w-full h-9 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus:border-ring">
+                      {CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="country">Country <span className="text-red-500">*</span></Label>
+                    <select id="country" required value={form.country} onChange={field("country")}
+                      className="w-full h-9 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus:border-ring">
+                      {Object.entries(COUNTRIES).map(([code, name]) => (
+                        <option key={code} value={code}>{name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="bankName">Bank name</Label>
-              <Input id="bankName" value={form.bankName} onChange={field("bankName")} placeholder="e.g. Barclays" />
-            </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="bankName">Bank name</Label>
+                  <Input id="bankName" value={form.bankName} onChange={field("bankName")} placeholder="e.g. Barclays" />
+                </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="iban">IBAN</Label>
-              <Input id="iban" value={form.iban} onChange={field("iban")} placeholder="GB29NWBK60161331926819" className="font-mono text-sm" />
-            </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="iban">IBAN</Label>
+                  <Input id="iban" value={form.iban} onChange={field("iban")} placeholder="GB29NWBK60161331926819" className="font-mono text-sm" />
+                </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label htmlFor="accountNumber">Account number</Label>
-                <Input id="accountNumber" value={form.accountNumber} onChange={field("accountNumber")} placeholder="31926819" className="font-mono text-sm" />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="sortCode">Sort code</Label>
-                <Input id="sortCode" value={form.sortCode} onChange={field("sortCode")} placeholder="60-16-13" className="font-mono text-sm" />
-              </div>
-            </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="accountNumber">Account number</Label>
+                    <Input id="accountNumber" value={form.accountNumber} onChange={field("accountNumber")} placeholder="31926819" className="font-mono text-sm" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="sortCode">Sort code</Label>
+                    <Input id="sortCode" value={form.sortCode} onChange={field("sortCode")} placeholder="60-16-13" className="font-mono text-sm" />
+                  </div>
+                </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="swiftBic">SWIFT / BIC</Label>
-              <Input id="swiftBic" value={form.swiftBic} onChange={field("swiftBic")} placeholder="NWBKGB2L" className="font-mono text-sm" />
-            </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="swiftBic">SWIFT / BIC</Label>
+                  <Input id="swiftBic" value={form.swiftBic} onChange={field("swiftBic")} placeholder="NWBKGB2L" className="font-mono text-sm" />
+                </div>
 
-            <p className="text-xs text-[#64748B]">Either IBAN or account number is required.</p>
+                <p className="text-xs text-[#64748B]">Either IBAN or account number is required.</p>
+              </>
+            )}
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setShowAdd(false)}>Cancel</Button>
