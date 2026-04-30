@@ -292,6 +292,8 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 | Sprint 6 | Compliance, Treasury & Accounting Basics | Completed | 2026-04-11 |
 | Sprint 7 | Payment Rail API & Integration Hardening | Completed | 2026-04-11 |
 | Sprint 8 | Security Audit, UAT & Go-Live | In Progress | — |
+| Sprint 9 | Fund Flows, Account Ops & Security Hardening | Completed | 2026-04-22 |
+| Sprint 10 | Web App Public Homepage | Completed | 2026-04-30 |
 
 ---
 
@@ -808,6 +810,87 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 
 ---
 
+### Sprint 9 — Fund Flows, Account Ops & Security Hardening
+**Completed:** 2026-04-22
+**Goal:** Close the fund lifecycle loop (nostro funding → customer account), add Pangea-to-Pangea internal transfers, harden login and session handling, and surface account operations in the Backoffice.
+
+#### Deliverables
+
+**Backoffice — Wallets & Accounts**
+- [x] All Accounts page (`/accounts`) — stats strip (total accounts, active, pending, total balance), search by account number or customer name, status filter
+- [x] Account Requests queue (`/accounts/requests`) — list of pending account open requests with review/approve/reject dialog and audit log
+- [x] `POST /api/accounts/[id]/adjust` — manual balance adjustment with mandatory reason and audit log
+- [x] `POST /api/accounts/[id]/fund` — atomic nostro-to-account funding: debits nostro account, credits customer account, writes double-entry journal entries
+- [x] Adjust Balance and Fund from Nostro action dialogs on the Accounts page
+- [x] Sidebar: Wallets & Accounts expanded to collapsible group with All Accounts and Account Requests sub-links
+
+**Web App — Beneficiaries & Payments**
+- [x] Beneficiaries: Add dialog — customer type toggle (bank account vs. Pangea account)
+- [x] Beneficiaries: Pangea account detection — ACC-XXXXXX reference stored as `pangeaAccountId` FK on beneficiary record
+- [x] Payments: Pangea-to-Pangea internal transfer path — immediate settlement, no external payout provider required, double-entry journal posted in same transaction
+- [x] Dashboard: Lucide icons on quick action buttons
+
+**Security & Session**
+- [x] VPN/proxy/Tor detection utility (`lib/vpn/detect.ts`) using IPQualityScore API — wired into `/api/register` and `/api/onboarding`; fails open if API is down or key not configured
+- [x] Open account button component (`components/accounts/open-account-button.tsx`) — inline card UI, calls `POST /api/accounts`, refreshes on success
+- [x] Login forms (Backoffice and Web App): Enter key submits form; Sign In button disabled until email is valid and password meets minimum length
+- [x] Distinct session cookie names per app (`pangea.bo` for Backoffice, `pangea.web` for Web App) — prevents session collision on shared localhost domain during development
+
+**Database**
+- [x] Migration 0011: `pangea_account_id` nullable FK on `beneficiaries` table — supports Pangea-to-Pangea beneficiary type
+
+#### Definition of Done
+- Fund from Nostro creates balanced ledger entries
+- Pangea-to-Pangea transfer settles immediately with no external provider call
+- VPN detection blocks registration and onboarding from flagged IPs when key is configured; fails open otherwise
+
+---
+
+### Sprint 10 — Web App Public Homepage
+**Completed:** 2026-04-30
+**Goal:** Replace the login redirect at `/` with a fully designed, customer-facing public homepage. Localise content to the visitor's geography. Provide a live FX calculator as the primary conversion tool.
+
+#### Deliverables
+
+**Public Homepage (`/`)**
+- [x] Sticky navigation bar — Pangea Pay logo, How it works / Send money anchor links, Sign in text link, Get started CTA button
+- [x] Hero section — two-column layout on desktop (headline left, FX calculator right); single column on mobile
+- [x] Geo-localised headline — "Send money from [country]" when location is detected; falls back to "Send money globally"
+- [x] Two primary CTAs: "Create free account" and "See how it works"
+- [x] Trust strip — four items: real exchange rates, fast transfers, regulated & secure, 50+ countries
+- [x] Popular corridors section — six geo-localised corridor cards with live mid-market rates fetched server-side; section title updates to "Popular routes from [country]"
+- [x] How it works — three-step section with numbered steps
+- [x] Bottom CTA banner — deep forest green, drives registration
+- [x] Footer — logo, nav links, regulatory disclaimer, copyright
+
+**FX Calculator (`components/home/fx-calculator.tsx`)**
+- [x] Server-hydrated initial quote — no loading flash on first render; rate fetched in the page server component and passed as props
+- [x] Amount input with currency flag overlay; receive field is read-only and calculated
+- [x] 30-currency dropdown (Frankfurter ECB subset, curated for remittance relevance)
+- [x] Swap button — swaps from/to currencies instantly
+- [x] Debounced rate refresh (400 ms) on amount or currency change
+- [x] Rate and fee breakdown displayed inline: "1 GBP = 1.2731 USD · Fee: 15.00 GBP (1.50%)"
+- [x] "Get started — it's free" CTA links to `/register`
+- [x] Indicative rate disclaimer below CTA
+
+**Geolocation**
+- [x] Detection order: `x-vercel-ip-country` header → `cf-ipcountry` header → ipapi.co IP lookup (1.5 s timeout, 1 hr Next.js cache) → default GB
+- [x] GEO_MAP covers 40+ countries with appropriate default send currency and initial receive currency
+- [x] CORRIDORS map covers 8 origin currencies (GBP, USD, EUR, PHP, INR, AUD, CAD, SGD) with 6 popular destinations each
+- [x] Corridor rates fetched with `Promise.allSettled` — unsupported pairs fail silently; remaining corridors still display
+
+**Public Rate API**
+- [x] `GET /api/fx/indicative?from=GBP&to=USD&amount=1000` — no authentication required; reuses Frankfurter adapter and applies same 1.5% fee schedule as authenticated quote service
+- [x] Middleware updated: `/` and `/api/fx/indicative` added to public path list
+
+#### Definition of Done
+- Homepage accessible at `/` without authentication; logged-in users redirect to `/dashboard`
+- FX calculator displays a live rate on first render with no client-side loading state
+- Corridor cards show correct live rates for the detected send currency
+- Indicative endpoint returns rate, fee, and receive amount; no auth required
+
+---
+
 ## Deferred to Phase 2 (Post-MVP)
 
 | Feature | Target Sprint | Notes |
@@ -847,19 +930,21 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 
 ## Key Milestones
 
-*Revised 2026-04-06. Original dates shown in strikethrough where superseded.*
+*Revised 2026-04-30. Original dates shown in strikethrough where superseded.*
 
 | Original Date | Revised Date | Milestone | Status |
 |---|---|---|---|
 | Apr 18 | ~~Apr 18~~ **2026-04-06** | Infrastructure live; design system; CI pipeline | Done |
 | May 2 | ~~May 2~~ **2026-04-06** | Authentication and Backoffice shell production-ready | Done |
-| May 16 | **Apr 11** | Global settings and user/role management complete | Upcoming |
-| May 30 | **Apr 18** | Customer and onboarding operations complete | Upcoming |
-| Jun 13 | **Apr 30** | First end-to-end account visible in Web App | Upcoming |
-| Jun 27 | **May 13** | First end-to-end payment processed in sandbox | Upcoming |
-| Jul 11 | **May 28** | Compliance, treasury, and accounting baseline operational | Upcoming |
-| Jul 25 | **Jun 9** | Payment Rail API live; all integrations production-hardened | Upcoming |
-| Aug 7 | **Jun 26** | Go-live: production environment live, first tenant operational | Upcoming |
+| May 16 | ~~Apr 11~~ **2026-04-06** | Global settings and user/role management complete | Done |
+| May 30 | ~~Apr 18~~ **2026-04-07** | Customer and onboarding operations complete | Done |
+| Jun 13 | ~~Apr 30~~ **2026-04-10** | First end-to-end account visible in Web App | Done |
+| Jun 27 | ~~May 13~~ **2026-04-10** | First end-to-end payment processed in sandbox | Done |
+| Jul 11 | ~~May 28~~ **2026-04-11** | Compliance, treasury, and accounting baseline operational | Done |
+| Jul 25 | ~~Jun 9~~ **2026-04-11** | Payment Rail API live; all integrations production-hardened | Done |
+| — | **2026-04-22** | Fund lifecycle complete: nostro funding → customer account; Pangea-to-Pangea transfers live | Done |
+| — | **2026-04-30** | Public-facing web homepage live with geo-localised content and live FX calculator | Done |
+| Aug 7 | **2026-06-26** | Go-live: production environment live, first tenant operational | Upcoming |
 
 ---
 

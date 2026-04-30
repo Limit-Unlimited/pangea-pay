@@ -62,8 +62,11 @@ export default auth((req) => {
     "/api/forgot-password",
     "/api/reset-password",
     "/api/resend-verification",
+    "/api/fx/indicative",
   ];
-  const isPublic = PUBLIC_PATHS.some((p) => nextUrl.pathname.startsWith(p));
+  const isPublic =
+    nextUrl.pathname === "/" ||
+    PUBLIC_PATHS.some((p) => nextUrl.pathname.startsWith(p));
 
   if (!session && !isPublic) {
     return NextResponse.redirect(new URL("/login", nextUrl));
