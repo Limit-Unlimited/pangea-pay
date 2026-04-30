@@ -294,6 +294,7 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 | Sprint 8 | Security Audit, UAT & Go-Live | In Progress | — |
 | Sprint 9 | Fund Flows, Account Ops & Security Hardening | Completed | 2026-04-22 |
 | Sprint 10 | Web App Public Homepage | Completed | 2026-04-30 |
+| Sprint 11 | Business Onboarding, UX Fixes & Beneficiary Search | Completed | 2026-04-30 |
 
 ---
 
@@ -891,6 +892,44 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 
 ---
 
+### Sprint 11 — Business Onboarding, UX Fixes & Beneficiary Search
+**Completed:** 2026-04-30
+**Goal:** Add business customer onboarding to the web app, fix UI presentation issues in the backoffice and web app, and replace the Pangea account number text field with a live search picker.
+
+#### Deliverables
+
+**Web App — Business Customer Onboarding**
+- [x] Onboarding entry screen — type selector: "Personal account" (individual) vs "Business account" with description, step count, and estimated time; "← Change account type" link on both forms returns to selector
+- [x] `individual-form.tsx` — existing 4-step individual flow extracted from `page.tsx` into a standalone component; imports countries from shared `lib/data/countries.ts`
+- [x] `business-form.tsx` — new 5-step business onboarding form:
+  - Step 1: Company details (legal entity name, trading name, registration number, country and date of incorporation, business type, business sector)
+  - Step 2: Registered address + source of business funds
+  - Step 3: Authorised signatory (name, DOB, nationality, job title)
+  - Step 4: Documents (proof of incorporation, proof of registered address; UBO/director requirements listed as advisory)
+  - Step 5: Review & submit with full summary
+- [x] `lib/data/countries.ts` — shared country list extracted from onboarding page; used by both individual and business forms
+- [x] `POST /api/onboarding` — updated to Zod discriminated union on `type: "individual" | "business"`; business handler creates `type="business"` customer record, stores authorised signatory personal details in individual fields (consistent with backoffice business customer model), records document metadata, advances status to `under_review`
+
+**Backoffice — StatusBadge**
+- [x] `status-badge.tsx` — expanded STATUS_CONFIG to cover all statuses that were falling through to plain gray:
+  - Document review: `pending` (amber), `accepted` (green), `rejected` (red)
+  - Screening: `clear` (green), `match` (red), `review` (amber), `not_screened` (gray)
+  - Beneficiary: `flagged` (amber), `blocked` (red)
+
+**Web App — Beneficiary Search**
+- [x] `GET /api/accounts/search?q=<query>` — authenticated endpoint; searches active Pangea accounts by name (first, last, or legal entity), email prefix, or account number; excludes the requesting customer's own accounts; returns up to 6 results with display name, account number, and currency
+- [x] Add Beneficiary dialog — Pangea account tab: plain text input replaced with live search-as-you-type picker; 300 ms debounce; results dropdown shows name, account number, and currency badge; selection confirmed with a green card showing recipient details and an × to clear; currency auto-fills from selected account; submission blocked without a confirmed selection
+
+**Web App — Business Onboarding Review Fix**
+- [x] Business form review step: document type enum values capitalised correctly (e.g. "Certificate of incorporation" not "certificate of incorporation")
+
+#### Definition of Done
+- Business customer submitted via web app appears in backoffice onboarding queue as `type: business` with correct fields populated
+- Pangea account search returns relevant results and prevents adding an unconfirmed account
+- StatusBadge renders correct colour for all document, screening, and beneficiary statuses
+
+---
+
 ## Deferred to Phase 2 (Post-MVP)
 
 | Feature | Target Sprint | Notes |
@@ -944,6 +983,7 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 | Jul 25 | ~~Jun 9~~ **2026-04-11** | Payment Rail API live; all integrations production-hardened | Done |
 | — | **2026-04-22** | Fund lifecycle complete: nostro funding → customer account; Pangea-to-Pangea transfers live | Done |
 | — | **2026-04-30** | Public-facing web homepage live with geo-localised content and live FX calculator | Done |
+| — | **2026-04-30** | Business customer onboarding live; Pangea account search picker; backoffice status badges complete | Done |
 | Aug 7 | **2026-06-26** | Go-live: production environment live, first tenant operational | Upcoming |
 
 ---
