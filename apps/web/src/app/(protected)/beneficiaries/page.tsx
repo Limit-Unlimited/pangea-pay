@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Trash2, Plus, Loader2, Building2, Globe, Zap } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Trash2, Plus, Loader2, Building2, Globe, Zap, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -63,6 +63,15 @@ export default function BeneficiariesPage() {
   const [deleteId, setDeleteId]   = useState<string | null>(null);
   const [deleting, setDeleting]   = useState(false);
 
+  // Pangea account search
+  type PangeaResult = { accountNumber: string; currency: string; displayName: string };
+  const [pangeaQuery,     setPangeaQuery]     = useState("");
+  const [pangeaResults,   setPangeaResults]   = useState<PangeaResult[]>([]);
+  const [pangeaSearching, setPangeaSearching] = useState(false);
+  const [pangeaSelected,  setPangeaSelected]  = useState<PangeaResult | null>(null);
+  const [pangeaOpen,      setPangeaOpen]      = useState(false);
+  const pangeaTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   // Trigger a refresh — set loading synchronously in caller (not inside effect)
   function load() { setLoading(true); setRefresh((n) => n + 1); }
 
@@ -75,6 +84,44 @@ export default function BeneficiariesPage() {
     return () => { cancelled = true; };
   }, [refresh]);
 
+  // Debounced Pangea account search
+  useEffect(() => {
+    if (pangeaSelected || pangeaQuery.length < 2) { setPangeaResults([]); setPangeaOpen(false); return; }
+    if (pangeaTimerRef.current) clearTimeout(pangeaTimerRef.current);
+    pangeaTimerRef.current = setTimeout(async () => {
+      setPangeaSearching(true);
+      try {
+        const res  = await fetch(`/api/accounts/search?q=${encodeURIComponent(pangeaQuery)}`);
+        const data = await res.json();
+        setPangeaResults(Array.isArray(data) ? data : []);
+        setPangeaOpen(true);
+      } finally {
+        setPangeaSearching(false);
+      }
+    }, 300);
+    return () => { if (pangeaTimerRef.current) clearTimeout(pangeaTimerRef.current); };
+  }, [pangeaQuery, pangeaSelected]);
+
+  function selectPangea(r: PangeaResult) {
+    setPangeaSelected(r);
+    setPangeaOpen(false);
+    setPangeaResults([]);
+    setForm((p) => ({
+      ...p,
+      pangeaAccountNumber: r.accountNumber,
+      currency:            r.currency,
+      displayName:         p.displayName || r.displayName,
+    }));
+  }
+
+  function clearPangea() {
+    setPangeaSelected(null);
+    setPangeaQuery("");
+    setPangeaResults([]);
+    setPangeaOpen(false);
+    setForm((p) => ({ ...p, pangeaAccountNumber: "", currency: "GBP" }));
+  }
+
   function field(key: keyof typeof form) {
     return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
       setForm((p) => ({ ...p, [key]: e.target.value }));
@@ -86,10 +133,17 @@ export default function BeneficiariesPage() {
     setError("");
 
     const isPangea = form.beneficiaryType === "pangea";
+
+    if (isPangea && !pangeaSelected) {
+      setError("Please search for and select a Pangea account holder.");
+      setSaving(false);
+      return;
+    }
+
     const payload = isPangea
       ? {
-          displayName:   form.displayName,
-          accountNumber: form.pangeaAccountNumber.toUpperCase(),
+          displayName:   form.displayName || pangeaSelected!.displayName,
+          accountNumber: pangeaSelected!.accountNumber,
           currency:      form.currency,
           country:       "GB",
         }
@@ -136,7 +190,7 @@ export default function BeneficiariesPage() {
         </div>
         <Button
           className="bg-[#4A8C1C] hover:bg-[#3a7016] text-white h-9"
-          onClick={() => { setShowAdd(true); setError(""); setForm(initForm()); }}
+          onClick={() => { setShowAdd(true); setError(""); setForm(initForm()); clearPangea(); }}
         >
           <Plus className="w-4 h-4 mr-1.5" /> Add beneficiary
         </Button>
@@ -220,7 +274,7 @@ export default function BeneficiariesPage() {
               </button>
               <button
                 type="button"
-                onClick={() => setForm((p) => ({ ...p, beneficiaryType: "pangea" }))}
+                onClick={() => { setForm((p) => ({ ...p, beneficiaryType: "pangea" })); clearPangea(); }}
                 className={`flex-1 flex items-center justify-center gap-1.5 text-xs font-medium py-1.5 px-3 rounded-md transition-colors ${form.beneficiaryType === "pangea" ? "bg-white shadow-sm text-[#4A8C1C] border border-[#B0D980]" : "text-[#64748B] hover:text-[#1A2332]"}`}
               >
                 <Zap className="w-3.5 h-3.5" /> Pangea account
@@ -235,25 +289,85 @@ export default function BeneficiariesPage() {
             {form.beneficiaryType === "pangea" ? (
               <>
                 <div className="space-y-1.5">
-                  <Label htmlFor="pangeaAccountNumber">Pangea account number <span className="text-red-500">*</span></Label>
-                  <Input
-                    id="pangeaAccountNumber"
-                    required
-                    value={form.pangeaAccountNumber}
-                    onChange={field("pangeaAccountNumber")}
-                    placeholder="ACC-000001"
-                    className="font-mono text-sm uppercase"
-                  />
-                  <p className="text-xs text-[#64748B]">Enter the recipient&apos;s Pangea account number (e.g. ACC-000001).</p>
+                  <Label>Recipient <span className="text-red-500">*</span></Label>
+
+                  {pangeaSelected ? (
+                    /* ── Selected state ── */
+                    <div className="flex items-center justify-between gap-3 rounded-lg border border-[#B0D980] bg-[#F0F7E6] px-4 py-3">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <Zap className="w-4 h-4 text-[#4A8C1C] shrink-0" />
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-[#1A2332] truncate">{pangeaSelected.displayName}</p>
+                          <p className="text-xs text-[#64748B] font-mono">{pangeaSelected.accountNumber} · {pangeaSelected.currency}</p>
+                        </div>
+                      </div>
+                      <button type="button" onClick={clearPangea} className="text-[#64748B] hover:text-[#1A2332] shrink-0">
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    /* ── Search input + dropdown ── */
+                    <div className="relative">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#64748B] pointer-events-none" />
+                        {pangeaSearching && (
+                          <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#64748B] animate-spin" />
+                        )}
+                        <Input
+                          value={pangeaQuery}
+                          onChange={(e) => { setPangeaSelected(null); setPangeaQuery(e.target.value); }}
+                          onFocus={() => { if (pangeaResults.length > 0) setPangeaOpen(true); }}
+                          onBlur={() => setTimeout(() => setPangeaOpen(false), 150)}
+                          placeholder="Search by name, email or account number…"
+                          className="pl-9"
+                          autoComplete="off"
+                        />
+                      </div>
+
+                      {pangeaOpen && pangeaResults.length > 0 && (
+                        <div className="absolute z-50 mt-1 w-full rounded-lg border border-[#D1E8B8] bg-white shadow-lg overflow-hidden">
+                          {pangeaResults.map((r) => (
+                            <button
+                              key={r.accountNumber}
+                              type="button"
+                              onMouseDown={() => selectPangea(r)}
+                              className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-[#F8FBEF] transition-colors border-b border-[#F0F4F8] last:border-0"
+                            >
+                              <div>
+                                <p className="text-sm font-medium text-[#1A2332]">{r.displayName}</p>
+                                <p className="text-xs text-[#64748B] font-mono">{r.accountNumber}</p>
+                              </div>
+                              <span className="text-xs font-medium text-[#4A8C1C] bg-[#F0F7E6] px-2 py-0.5 rounded">
+                                {r.currency}
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+
+                      {pangeaOpen && !pangeaSearching && pangeaQuery.length >= 2 && pangeaResults.length === 0 && (
+                        <div className="absolute z-50 mt-1 w-full rounded-lg border border-[#E2E8F0] bg-white shadow-lg px-4 py-3">
+                          <p className="text-sm text-[#64748B]">No active Pangea accounts found.</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {!pangeaSelected && (
+                    <p className="text-xs text-[#64748B]">Search by the recipient&apos;s name, email address, or Pangea account number.</p>
+                  )}
                 </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="pangea-currency">Currency <span className="text-red-500">*</span></Label>
-                  <select id="pangea-currency" required value={form.currency} onChange={field("currency")}
-                    className="w-full h-9 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus:border-ring">
-                    {CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
-                  </select>
-                  <p className="text-xs text-[#64748B]">Must match the currency of the destination account.</p>
-                </div>
+
+                {pangeaSelected && (
+                  <div className="space-y-1.5">
+                    <Label htmlFor="pangea-currency">Currency <span className="text-red-500">*</span></Label>
+                    <select id="pangea-currency" required value={form.currency} onChange={field("currency")}
+                      className="w-full h-9 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus:border-ring">
+                      {CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                    <p className="text-xs text-[#64748B]">Must match the currency of the destination account.</p>
+                  </div>
+                )}
               </>
             ) : (
               <>
