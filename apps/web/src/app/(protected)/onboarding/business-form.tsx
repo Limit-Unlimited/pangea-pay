@@ -237,6 +237,7 @@ export function BusinessForm({ onBack }: { onBack: () => void }) {
   }
 
   const countryName = (code: string) => COUNTRIES.find((c) => c.code === code)?.name ?? code;
+  const fmt = (s: string) => { const t = s.replace(/_/g, " "); return t.charAt(0).toUpperCase() + t.slice(1); };
 
   return (
     <div className="max-w-xl mx-auto">
@@ -530,8 +531,8 @@ export function BusinessForm({ onBack }: { onBack: () => void }) {
               </ReviewSection>
 
               <ReviewSection title="Documents">
-                <ReviewField label="Incorporation" value={form.incorporationDocType.replace(/_/g, " ")} />
-                {form.poaDocType && <ReviewField label="Proof of address" value={form.poaDocType.replace(/_/g, " ")} />}
+                <ReviewField label="Incorporation" value={fmt(form.incorporationDocType)} />
+                {form.poaDocType && <ReviewField label="Proof of address" value={fmt(form.poaDocType)} />}
               </ReviewSection>
             </div>
 
