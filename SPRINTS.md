@@ -295,6 +295,7 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 | Sprint 9 | Fund Flows, Account Ops & Security Hardening | Completed | 2026-04-22 |
 | Sprint 10 | Web App Public Homepage | Completed | 2026-04-30 |
 | Sprint 11 | Business Onboarding, UX Fixes & Beneficiary Search | Completed | 2026-04-30 |
+| Sprint 12 | Multi-Customer Accounts & Context Switching | Completed | 2026-05-01 |
 
 ---
 
@@ -930,6 +931,61 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 
 ---
 
+### Sprint 12 — Multi-Customer Accounts & Context Switching
+**Completed:** 2026-05-01
+**Goal:** Allow a single web app login to be linked to multiple customer profiles (individual + one or more businesses), with a context switcher in the nav to operate as any of them. Also resolves the same-currency Pangea-to-Pangea send bug and other UX fixes.
+
+#### Deliverables
+
+**Database — Migrations 0012 & 0013**
+- [x] New table `web_user_customer_links` — junction table between `web_users` and `customers`; columns: `userId`, `customerId`, `role` (owner / admin / standard / view_only), `isPrimary`, `status` (active / suspended / removed), `createdAt`; unique constraint on `(userId, customerId)`
+- [x] New column `web_users.activeCustomerId` — nullable FK to `customers`; tracks which customer context the user is currently operating as
+- [x] Backfill: all existing `web_users.customerId` values migrated to `web_user_customer_links` as `isPrimary: true, role: "owner"`; `activeCustomerId` set to match `customerId` for all existing users
+
+**Shared Helper**
+- [x] `lib/auth/context.ts` — `resolveCustomerId(webUser)` returns `activeCustomerId ?? customerId ?? null`; used throughout all API routes and server pages instead of directly accessing `webUser.customerId`
+
+**Context API**
+- [x] `POST /api/context` — validates user has an active junction table link for the requested `customerId`; updates `activeCustomerId`; returns 403 if no access
+- [x] `GET /api/context` — returns all linked customers (customerId, role, isPrimary) for the current user
+
+**All Protected API Routes Updated**
+- [x] `GET /POST /api/accounts` — uses resolved customer context
+- [x] `GET /api/accounts/[id]` — uses resolved customer context
+- [x] `GET /api/accounts/search` — uses resolved customer context for exclusion filter
+- [x] `GET /POST /api/beneficiaries` — uses resolved customer context
+- [x] `DELETE /PATCH /api/beneficiaries/[id]` — uses resolved customer context
+- [x] `POST /api/payments` — uses resolved customer context
+- [x] `GET /api/transactions` — uses resolved customer context
+- [x] `GET /api/transactions/[id]` — uses resolved customer context
+
+**Onboarding API**
+- [x] Detects active customer status to determine action: `pending`/`rejected` → update existing record (resubmission); `under_review` → block with 409; `approved`/none → create new customer record
+- [x] On every submission, writes to `web_user_customer_links` (upsert via `onDuplicateKeyUpdate`); sets `activeCustomerId` to the new/updated customer; only sets `customerId` (primary) when this is the user's first ever customer
+
+**Context Switcher UI**
+- [x] `components/layout/context-switcher.tsx` — client component rendered in the protected nav; shows active customer name + type icon (person / building); dropdown lists all linked accounts with type, active check mark, and an "Add another account" entry linking to `/onboarding`
+- [x] On account selection, calls `POST /api/context` then `router.refresh()` to re-render server components in the new context
+- [x] Protected layout (`(protected)/layout.tsx`) — fetches all linked customers server-side with names and types; passes to the switcher; switcher only rendered when at least one customer is linked
+
+**Protected Pages Updated**
+- [x] `dashboard/page.tsx`, `accounts/page.tsx`, `accounts/[id]/page.tsx` — all use `resolveCustomerId(webUser)` for the active context
+
+**Onboarding Page**
+- [x] Headline updated to "Add an account" — works for first-time onboarding and adding additional accounts; no redirect blocking for users who already have approved customers
+
+**Bug Fixes**
+- [x] Same-currency Pangea-to-Pangea send: `getQuote()` now detects `from === to`, creates a synthetic quote (rate 1, fee 0), and skips the FX API; `acceptAndConfirm()` skips the quote accept step when `quote.id` is empty; quote and confirm screens show "No fee — Pangea internal transfer" instead of rate row
+- [x] "Review and confirm" button colour corrected from soft lime `#D4EDAA` to Forest Green `#4A8C1C`
+- [x] Account re-open after closure: `POST /api/accounts` now allows opening a currency account if the only existing account for that currency is `closed` (was incorrectly blocking all cases)
+
+#### Definition of Done
+- A user can complete individual onboarding, then switch to the Pangea account tab → Add another account → complete business onboarding; the context switcher in the nav shows both profiles; switching contexts changes which accounts, beneficiaries, and transactions are shown
+- Same-currency Pangea-to-Pangea transfers submit and complete without error
+- All API routes serve data for the active customer context, not the primary one
+
+---
+
 ## Deferred to Phase 2 (Post-MVP)
 
 | Feature | Target Sprint | Notes |
@@ -969,7 +1025,7 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 
 ## Key Milestones
 
-*Revised 2026-04-30. Original dates shown in strikethrough where superseded.*
+*Revised 2026-05-01. Original dates shown in strikethrough where superseded.*
 
 | Original Date | Revised Date | Milestone | Status |
 |---|---|---|---|
@@ -984,6 +1040,7 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 | — | **2026-04-22** | Fund lifecycle complete: nostro funding → customer account; Pangea-to-Pangea transfers live | Done |
 | — | **2026-04-30** | Public-facing web homepage live with geo-localised content and live FX calculator | Done |
 | — | **2026-04-30** | Business customer onboarding live; Pangea account search picker; backoffice status badges complete | Done |
+| — | **2026-05-01** | Multi-customer support live: one login, multiple business/individual profiles, context switcher in nav | Done |
 | Aug 7 | **2026-06-26** | Go-live: production environment live, first tenant operational | Upcoming |
 
 ---

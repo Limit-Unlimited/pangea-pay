@@ -3,6 +3,7 @@ import { eq, and, or, like, ne } from "drizzle-orm";
 import { db, webUsers, customers, accounts } from "@pangea/db";
 import { auth } from "@/auth";
 import { ok, unauthorized } from "@/lib/api/response";
+import { resolveCustomerId } from "@/lib/auth/context";
 
 // GET /api/accounts/search?q=<query>
 // Returns active Pangea accounts matching name, email prefix, or account number.
@@ -22,6 +23,7 @@ export async function GET(req: NextRequest) {
 
   if (!webUser) return unauthorized();
 
+  const customerId = resolveCustomerId(webUser);
   const pattern = `%${q}%`;
 
   const rows = await db
@@ -39,7 +41,7 @@ export async function GET(req: NextRequest) {
       and(
         eq(accounts.tenantId, webUser.tenantId),
         eq(accounts.status, "active"),
-        webUser.customerId ? ne(accounts.customerId, webUser.customerId) : undefined,
+        customerId ? ne(accounts.customerId, customerId) : undefined,
         or(
           like(accounts.accountNumber, pattern),
           like(customers.firstName,    pattern),

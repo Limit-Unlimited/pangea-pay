@@ -4,6 +4,7 @@ import { eq, and, desc } from "drizzle-orm";
 import { db, webUsers, customers, beneficiaries, accounts } from "@pangea/db";
 import { auth } from "@/auth";
 import { ok, err, unauthorized } from "@/lib/api/response";
+import { resolveCustomerId } from "@/lib/auth/context";
 
 const PANGEA_ACCOUNT_RE = /^ACC-\d+$/i;
 
@@ -29,14 +30,15 @@ export async function GET() {
   if (!session?.user) return unauthorized();
 
   const [webUser] = await db.select().from(webUsers).where(eq(webUsers.id, session.user.id)).limit(1);
-  if (!webUser?.customerId) return ok([]);
+  const customerId = resolveCustomerId(webUser);
+  if (!customerId) return ok([]);
 
   const rows = await db
     .select()
     .from(beneficiaries)
     .where(
       and(
-        eq(beneficiaries.customerId, webUser.customerId),
+        eq(beneficiaries.customerId, customerId),
         eq(beneficiaries.tenantId, webUser.tenantId),
       )
     )
@@ -51,12 +53,13 @@ export async function POST(req: NextRequest) {
   if (!session?.user) return unauthorized();
 
   const [webUser] = await db.select().from(webUsers).where(eq(webUsers.id, session.user.id)).limit(1);
-  if (!webUser?.customerId) return err("No active customer account", 403);
+  const customerId = resolveCustomerId(webUser);
+  if (!customerId) return err("No active customer account", 403);
 
   const [customer] = await db
     .select({ onboardingStatus: customers.onboardingStatus })
     .from(customers)
-    .where(eq(customers.id, webUser.customerId))
+    .where(eq(customers.id, customerId))
     .limit(1);
 
   if (customer?.onboardingStatus !== "approved") return err("Account not yet approved", 403);
@@ -91,7 +94,7 @@ export async function POST(req: NextRequest) {
       .from(accounts)
       .where(and(
         eq(accounts.id, target.id),
-        eq(accounts.customerId, webUser.customerId),
+        eq(accounts.customerId, customerId),
       ))
       .limit(1);
 
@@ -103,7 +106,7 @@ export async function POST(req: NextRequest) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   await (db.insert(beneficiaries) as any).values({
     tenantId:         webUser.tenantId,
-    customerId:       webUser.customerId,
+    customerId,
     displayName:      d.displayName,
     firstName:        d.firstName ?? null,
     lastName:         d.lastName  ?? null,

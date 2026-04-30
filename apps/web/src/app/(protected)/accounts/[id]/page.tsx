@@ -1,6 +1,7 @@
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { auth } from "@/auth";
+import { resolveCustomerId } from "@/lib/auth/context";
 import { db, webUsers, accounts } from "@pangea/db";
 import { eq, and } from "drizzle-orm";
 import { Card } from "@/components/ui/card";
@@ -37,7 +38,9 @@ export default async function AccountDetailPage({ params }: Params) {
     .where(eq(webUsers.id, session.user.id))
     .limit(1);
 
-  if (!webUser?.customerId) redirect("/dashboard");
+  const customerId = resolveCustomerId(webUser);
+
+  if (!customerId) redirect("/dashboard");
 
   const [account] = await db
     .select()
@@ -45,7 +48,7 @@ export default async function AccountDetailPage({ params }: Params) {
     .where(
       and(
         eq(accounts.id, id),
-        eq(accounts.customerId, webUser.customerId),
+        eq(accounts.customerId, customerId),
         eq(accounts.tenantId, webUser.tenantId)
       )
     )

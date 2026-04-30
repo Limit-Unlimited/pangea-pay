@@ -107,6 +107,26 @@ export default function SendPage() {
     if (amt > parseFloat(selectedAccount.availableBalance)) { setError("Insufficient available balance."); return; }
 
     setLoading(true); setError("");
+
+    // Same-currency transfer — no FX quote needed
+    if (selectedAccount.currency === selectedBenef.currency) {
+      setQuote({
+        id:               "",   // empty signals no FX quote to accept
+        base:             selectedAccount.currency,
+        quote:            selectedBenef.currency,
+        rate:             1,
+        sendAmount:       amt,
+        fee:              0,
+        receiveAmount:    amt,
+        rateDate:         new Date().toISOString().split("T")[0],
+        expiresAt:        new Date(Date.now() + 300_000).toISOString(),
+        expiresInSeconds: 300,
+      });
+      setLoading(false);
+      setStage("quote");
+      return;
+    }
+
     const res  = await fetch("/api/fx/quote", {
       method: "POST", headers: { "Content-Type": "application/json" },
       body:   JSON.stringify({ from: selectedAccount.currency, to: selectedBenef.currency, amount: amt }),
@@ -122,17 +142,19 @@ export default function SendPage() {
     if (!quote) return;
     setLoading(true); setError("");
 
-    // Accept the FX quote first
-    const acceptRes = await fetch("/api/fx/accept", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body:   JSON.stringify({ quoteId: quote.id }),
-    });
-    if (!acceptRes.ok) {
-      const j = await acceptRes.json();
-      setLoading(false);
-      setError(j.error ?? "Failed to confirm rate.");
-      if (j.error?.includes("expired")) { setQuote(null); setStage("amount"); }
-      return;
+    // Accept the FX quote first (skip for same-currency — no real quote)
+    if (quote.id) {
+      const acceptRes = await fetch("/api/fx/accept", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body:   JSON.stringify({ quoteId: quote.id }),
+      });
+      if (!acceptRes.ok) {
+        const j = await acceptRes.json();
+        setLoading(false);
+        setError(j.error ?? "Failed to confirm rate.");
+        if (j.error?.includes("expired")) { setQuote(null); setStage("amount"); }
+        return;
+      }
     }
 
     // Submit payment
@@ -143,7 +165,7 @@ export default function SendPage() {
         beneficiaryId: selectedBenef!.id,
         sendAmount:    quote.sendAmount,
         sendCurrency:  selectedAccount!.currency,
-        quoteId:       quote.id,
+        quoteId:       quote.id || undefined,  // omit for same-currency
         customerRef:   customerRef || undefined,
       }),
     });
@@ -328,14 +350,22 @@ export default function SendPage() {
             </button>
           </div>
 
-          <div className="flex items-center justify-between">
-            <Countdown expiresAt={quote.expiresAt} totalSeconds={quote.expiresInSeconds} onExpired={handleExpired} />
-          </div>
+          {quote.id && (
+            <div className="flex items-center justify-between">
+              <Countdown expiresAt={quote.expiresAt} totalSeconds={quote.expiresInSeconds} onExpired={handleExpired} />
+            </div>
+          )}
 
           <div className="rounded-lg bg-[#F8FBEF] border border-[#E2E8F0] p-4 space-y-3">
-            <QuoteLine label="You send"       value={fmt(quote.sendAmount,    selectedAccount.currency)} />
-            <QuoteLine label="Fee"            value={fmt(quote.fee,           selectedAccount.currency)} muted />
-            <QuoteLine label="Exchange rate"  value={`1 ${selectedAccount.currency} = ${quote.rate.toFixed(4)} ${selectedBenef.currency}`} muted />
+            <QuoteLine label="You send" value={fmt(quote.sendAmount, selectedAccount.currency)} />
+            {quote.id ? (
+              <>
+                <QuoteLine label="Fee"           value={fmt(quote.fee, selectedAccount.currency)} muted />
+                <QuoteLine label="Exchange rate" value={`1 ${selectedAccount.currency} = ${quote.rate.toFixed(4)} ${selectedBenef.currency}`} muted />
+              </>
+            ) : (
+              <QuoteLine label="Fee" value="No fee — Pangea internal transfer" muted />
+            )}
             <div className="border-t border-[#E2E8F0] pt-3">
               <QuoteLine label="Recipient gets" value={fmt(quote.receiveAmount, selectedBenef.currency)} bold highlight />
             </div>
@@ -347,7 +377,7 @@ export default function SendPage() {
           </div>
 
           <Button
-            className="w-full h-11 bg-[#D4EDAA] hover:bg-[#d4971d] text-white font-semibold"
+            className="w-full h-11 bg-[#4A8C1C] hover:bg-[#3a7016] text-white font-semibold"
             onClick={() => { setStage("confirm"); setError(""); }}
           >
             Review and confirm
@@ -363,9 +393,15 @@ export default function SendPage() {
           <div className="rounded-lg bg-[#F8FBEF] border border-[#E2E8F0] p-4 space-y-3">
             <QuoteLine label="Sending to"     value={selectedBenef.displayName} />
             <QuoteLine label="From account"   value={`${selectedAccount.currency} · ${selectedAccount.accountNumber}`} muted />
-            <QuoteLine label="You send"       value={fmt(quote.sendAmount,    selectedAccount.currency)} />
-            <QuoteLine label="Fee"            value={fmt(quote.fee,           selectedAccount.currency)} muted />
-            <QuoteLine label="Exchange rate"  value={`1 ${selectedAccount.currency} = ${quote.rate.toFixed(4)} ${selectedBenef.currency}`} muted />
+            <QuoteLine label="You send" value={fmt(quote.sendAmount, selectedAccount.currency)} />
+            {quote.id ? (
+              <>
+                <QuoteLine label="Fee"           value={fmt(quote.fee, selectedAccount.currency)} muted />
+                <QuoteLine label="Exchange rate" value={`1 ${selectedAccount.currency} = ${quote.rate.toFixed(4)} ${selectedBenef.currency}`} muted />
+              </>
+            ) : (
+              <QuoteLine label="Fee" value="No fee — Pangea internal transfer" muted />
+            )}
             {customerRef && <QuoteLine label="Your reference" value={customerRef} muted />}
             <div className="border-t border-[#E2E8F0] pt-3">
               <QuoteLine label="Recipient gets" value={fmt(quote.receiveAmount, selectedBenef.currency)} bold highlight />
@@ -380,7 +416,7 @@ export default function SendPage() {
           <div className="flex gap-3">
             <Button variant="outline" className="flex-1" onClick={() => { setStage("quote"); setError(""); }}>Back</Button>
             <Button
-              className="flex-1 h-10 bg-[#D4EDAA] hover:bg-[#d4971d] text-white font-semibold"
+              className="flex-1 h-10 bg-[#4A8C1C] hover:bg-[#3a7016] text-white font-semibold"
               disabled={loading}
               onClick={acceptAndConfirm}
             >

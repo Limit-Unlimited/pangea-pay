@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { auth } from "@/auth";
+import { resolveCustomerId } from "@/lib/auth/context";
 import { db, webUsers, customers, accounts, currencies } from "@pangea/db";
 import { eq, and, desc } from "drizzle-orm";
 import { Card } from "@/components/ui/card";
@@ -29,12 +30,14 @@ export default async function AccountsPage() {
     .where(eq(webUsers.id, session.user.id))
     .limit(1);
 
-  if (!webUser?.customerId) redirect("/dashboard");
+  const customerId = resolveCustomerId(webUser);
+
+  if (!customerId) redirect("/dashboard");
 
   const [customer] = await db
     .select({ onboardingStatus: customers.onboardingStatus })
     .from(customers)
-    .where(eq(customers.id, webUser.customerId))
+    .where(eq(customers.id, customerId))
     .limit(1);
 
   if (customer?.onboardingStatus !== "approved") redirect("/dashboard");
@@ -42,7 +45,7 @@ export default async function AccountsPage() {
   const [customerAccounts, activeCurrencies] = await Promise.all([
     db.select()
       .from(accounts)
-      .where(and(eq(accounts.customerId, webUser.customerId!), eq(accounts.tenantId, webUser.tenantId)))
+      .where(and(eq(accounts.customerId, customerId), eq(accounts.tenantId, webUser.tenantId)))
       .orderBy(desc(accounts.createdAt)),
     db.select({ code: currencies.code, name: currencies.name, symbol: currencies.symbol })
       .from(currencies)

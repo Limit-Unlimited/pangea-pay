@@ -17,9 +17,9 @@ export default function OnboardingPage() {
   return (
     <div className="max-w-xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-[#1A2332]">Let&apos;s get started</h1>
+        <h1 className="text-2xl font-bold text-[#1A2332]">Add an account</h1>
         <p className="text-[#64748B] mt-1">
-          Are you opening an account for yourself or on behalf of a business?
+          Open a personal account or register a business to get started.
         </p>
       </div>
 

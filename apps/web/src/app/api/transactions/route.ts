@@ -2,6 +2,7 @@ import { eq, and, desc } from "drizzle-orm";
 import { db, webUsers, customers, transactions } from "@pangea/db";
 import { auth } from "@/auth";
 import { ok, unauthorized } from "@/lib/api/response";
+import { resolveCustomerId } from "@/lib/auth/context";
 
 // GET /api/transactions — list transactions for the logged-in customer
 export async function GET() {
@@ -9,12 +10,13 @@ export async function GET() {
   if (!session?.user) return unauthorized();
 
   const [webUser] = await db.select().from(webUsers).where(eq(webUsers.id, session.user.id)).limit(1);
-  if (!webUser?.customerId) return ok([]);
+  const customerId = resolveCustomerId(webUser);
+  if (!customerId) return ok([]);
 
   const [customer] = await db
     .select({ onboardingStatus: customers.onboardingStatus })
     .from(customers)
-    .where(eq(customers.id, webUser.customerId))
+    .where(eq(customers.id, customerId))
     .limit(1);
 
   if (customer?.onboardingStatus !== "approved") return ok([]);
@@ -23,7 +25,7 @@ export async function GET() {
     .select()
     .from(transactions)
     .where(and(
-      eq(transactions.customerId, webUser.customerId),
+      eq(transactions.customerId, customerId),
       eq(transactions.tenantId,   webUser.tenantId),
     ))
     .orderBy(desc(transactions.createdAt))

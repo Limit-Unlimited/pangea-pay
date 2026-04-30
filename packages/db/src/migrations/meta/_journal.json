@@ -85,6 +85,20 @@
       "when": 1776117000000,
       "tag": "0011_pangea_beneficiary",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "5",
+      "when": 1746057600000,
+      "tag": "0012_multi_customer",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "5",
+      "when": 1746061200000,
+      "tag": "0013_active_customer_id",
+      "breakpoints": true
     }
   ]
 }

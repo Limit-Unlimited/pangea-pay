@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { auth } from "@/auth";
+import { resolveCustomerId } from "@/lib/auth/context";
 import { db, webUsers, customers, accounts } from "@pangea/db";
 import { eq, and, desc } from "drizzle-orm";
 import { Card } from "@/components/ui/card";
@@ -39,15 +40,17 @@ export default async function DashboardPage() {
 
   if (!webUser) redirect("/login");
 
+  const customerId = resolveCustomerId(webUser);
+
   // No customer linked yet — send to onboarding
-  if (!webUser.customerId) {
+  if (!customerId) {
     redirect("/onboarding");
   }
 
   const [customer] = await db
     .select()
     .from(customers)
-    .where(eq(customers.id, webUser.customerId))
+    .where(eq(customers.id, customerId))
     .limit(1);
 
   if (!customer) redirect("/onboarding");
@@ -91,7 +94,7 @@ export default async function DashboardPage() {
   const customerAccounts = await db
     .select()
     .from(accounts)
-    .where(and(eq(accounts.customerId, webUser.customerId), eq(accounts.tenantId, webUser.tenantId)))
+    .where(and(eq(accounts.customerId, customerId), eq(accounts.tenantId, webUser.tenantId)))
     .orderBy(desc(accounts.createdAt));
 
   return (

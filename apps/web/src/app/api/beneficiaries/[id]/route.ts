@@ -3,6 +3,7 @@ import { eq, and } from "drizzle-orm";
 import { db, webUsers, beneficiaries } from "@pangea/db";
 import { auth } from "@/auth";
 import { ok, err, unauthorized, notFound } from "@/lib/api/response";
+import { resolveCustomerId } from "@/lib/auth/context";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -14,12 +15,13 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
   const { id } = await params;
 
   const [webUser] = await db.select().from(webUsers).where(eq(webUsers.id, session.user.id)).limit(1);
-  if (!webUser?.customerId) return err("No active customer account", 403);
+  const customerId = resolveCustomerId(webUser);
+  if (!customerId) return err("No active customer account", 403);
 
   const [ben] = await db
     .select()
     .from(beneficiaries)
-    .where(and(eq(beneficiaries.id, id), eq(beneficiaries.customerId, webUser.customerId)))
+    .where(and(eq(beneficiaries.id, id), eq(beneficiaries.customerId, customerId)))
     .limit(1);
 
   if (!ben) return notFound("Beneficiary");

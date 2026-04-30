@@ -3,6 +3,7 @@ import { eq, and } from "drizzle-orm";
 import { db, webUsers, accounts } from "@pangea/db";
 import { auth } from "@/auth";
 import { ok, unauthorized, notFound } from "@/lib/api/response";
+import { resolveCustomerId } from "@/lib/auth/context";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -19,7 +20,8 @@ export async function GET(_req: NextRequest, { params }: Params) {
     .where(eq(webUsers.id, session.user.id))
     .limit(1);
 
-  if (!webUser?.customerId) return notFound("Account");
+  const customerId = resolveCustomerId(webUser);
+  if (!customerId) return notFound("Account");
 
   const [account] = await db
     .select()
@@ -27,7 +29,7 @@ export async function GET(_req: NextRequest, { params }: Params) {
     .where(
       and(
         eq(accounts.id, id),
-        eq(accounts.customerId, webUser.customerId),
+        eq(accounts.customerId, customerId),
         eq(accounts.tenantId, webUser.tenantId)
       )
     )

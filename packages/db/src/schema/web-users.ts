@@ -18,8 +18,10 @@ export const webUsers = mysqlTable("web_users", {
   id:               varchar("id", { length: 36 }).$defaultFn(() => randomUUID()).primaryKey(),
   tenantId:         varchar("tenant_id", { length: 36 }).notNull().references(() => tenants.id),
 
-  // May be null until linked after KYC approval
-  customerId:       varchar("customer_id", { length: 36 }).references(() => customers.id),
+  // Primary customer link — set on first onboarding completion, never changed
+  customerId:         varchar("customer_id",        { length: 36 }).references(() => customers.id),
+  // Active customer context — which profile the user is currently operating as
+  activeCustomerId:   varchar("active_customer_id", { length: 36 }).references(() => customers.id),
 
   email:            varchar("email", { length: 255 }).notNull().unique(),
   emailVerified:    boolean("email_verified").notNull().default(false),
@@ -38,6 +40,19 @@ export const webUsers = mysqlTable("web_users", {
   lastLoginAt:      timestamp("last_login_at"),
   createdAt:        timestamp("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
   updatedAt:        timestamp("updated_at").notNull().default(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`),
+});
+
+// ---------------------------------------------------------------------------
+// Web user ↔ customer junction (supports multiple linked business accounts)
+// ---------------------------------------------------------------------------
+export const webUserCustomerLinks = mysqlTable("web_user_customer_links", {
+  id:         varchar("id",          { length: 36 }).$defaultFn(() => randomUUID()).primaryKey(),
+  userId:     varchar("user_id",     { length: 36 }).notNull().references(() => webUsers.id, { onDelete: "cascade" }),
+  customerId: varchar("customer_id", { length: 36 }).notNull().references(() => customers.id),
+  role:       varchar("role",        { length: 50 }).notNull().default("owner"),  // owner | admin | standard | view_only
+  isPrimary:  boolean("is_primary").notNull().default(false),
+  status:     mysqlEnum("status", ["active", "suspended", "removed"]).notNull().default("active"),
+  createdAt:  timestamp("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 });
 
 // ---------------------------------------------------------------------------
@@ -81,6 +96,8 @@ export const webUserSessions = mysqlTable("web_user_sessions", {
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
+export type WebUserCustomerLink    = typeof webUserCustomerLinks.$inferSelect;
+export type NewWebUserCustomerLink = typeof webUserCustomerLinks.$inferInsert;
 export type WebUser              = typeof webUsers.$inferSelect;
 export type NewWebUser           = typeof webUsers.$inferInsert;
 export type EmailVerification    = typeof emailVerifications.$inferSelect;

@@ -5,6 +5,7 @@ import { db, webUsers, customers, accounts, beneficiaries, transactions, transac
 import { auth } from "@/auth";
 import { ok, err, unauthorized } from "@/lib/api/response";
 import { sendPaymentSubmittedEmail } from "@/lib/email/mailer";
+import { resolveCustomerId } from "@/lib/auth/context";
 
 const schema = z.object({
   fromAccountId: z.string().uuid(),
@@ -32,12 +33,13 @@ export async function POST(req: NextRequest) {
   if (!session?.user) return unauthorized();
 
   const [webUser] = await db.select().from(webUsers).where(eq(webUsers.id, session.user.id)).limit(1);
-  if (!webUser?.customerId) return err("No active customer account", 403);
+  const customerId = resolveCustomerId(webUser);
+  if (!customerId) return err("No active customer account", 403);
 
   const [customer] = await db
     .select({ onboardingStatus: customers.onboardingStatus, firstName: customers.firstName, lastName: customers.lastName, email: customers.email })
     .from(customers)
-    .where(eq(customers.id, webUser.customerId))
+    .where(eq(customers.id, customerId))
     .limit(1);
 
   if (customer?.onboardingStatus !== "approved") return err("Account not yet approved", 403);
@@ -54,7 +56,7 @@ export async function POST(req: NextRequest) {
     .from(accounts)
     .where(and(
       eq(accounts.id, d.fromAccountId),
-      eq(accounts.customerId, webUser.customerId),
+      eq(accounts.customerId, customerId),
     ))
     .limit(1);
 
@@ -68,7 +70,7 @@ export async function POST(req: NextRequest) {
     .from(beneficiaries)
     .where(and(
       eq(beneficiaries.id, d.beneficiaryId),
-      eq(beneficiaries.customerId, webUser.customerId),
+      eq(beneficiaries.customerId, customerId),
     ))
     .limit(1);
 
@@ -118,7 +120,7 @@ export async function POST(req: NextRequest) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (db.insert(transactions) as any).values({
       tenantId:        webUser.tenantId,
-      customerId:      webUser.customerId,
+      customerId,
       referenceNumber,
       type:            "send",
       status:          "completed",
@@ -168,7 +170,7 @@ export async function POST(req: NextRequest) {
     const [quote] = await db
       .select()
       .from(fxQuotes)
-      .where(and(eq(fxQuotes.id, d.quoteId), eq(fxQuotes.customerId, webUser.customerId)))
+      .where(and(eq(fxQuotes.id, d.quoteId), eq(fxQuotes.customerId, customerId)))
       .limit(1);
 
     if (!quote) return err("Quote not found", 404);
@@ -195,7 +197,7 @@ export async function POST(req: NextRequest) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   await (db.insert(transactions) as any).values({
     tenantId:        webUser.tenantId,
-    customerId:      webUser.customerId,
+    customerId,
     referenceNumber,
     type:            "send",
     status:          "pending",

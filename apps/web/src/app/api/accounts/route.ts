@@ -1,9 +1,10 @@
 import { NextRequest } from "next/server";
-import { eq, and, desc } from "drizzle-orm";
+import { eq, and, desc, ne } from "drizzle-orm";
 import { z } from "zod";
 import { db, webUsers, accounts, customers, currencies } from "@pangea/db";
 import { auth } from "@/auth";
 import { ok, err, unauthorized } from "@/lib/api/response";
+import { resolveCustomerId } from "@/lib/auth/context";
 
 // GET /api/accounts — get accounts for the logged-in customer
 export async function GET() {
@@ -16,12 +17,13 @@ export async function GET() {
     .where(eq(webUsers.id, session.user.id))
     .limit(1);
 
-  if (!webUser?.customerId) return ok([]);
+  const customerId = resolveCustomerId(webUser);
+  if (!customerId) return ok([]);
 
   const [customer] = await db
     .select({ onboardingStatus: customers.onboardingStatus })
     .from(customers)
-    .where(eq(customers.id, webUser.customerId))
+    .where(eq(customers.id, customerId))
     .limit(1);
 
   if (customer?.onboardingStatus !== "approved") return ok([]);
@@ -31,7 +33,7 @@ export async function GET() {
     .from(accounts)
     .where(
       and(
-        eq(accounts.customerId, webUser.customerId),
+        eq(accounts.customerId, customerId),
         eq(accounts.tenantId, webUser.tenantId)
       )
     )
@@ -56,12 +58,13 @@ export async function POST(req: NextRequest) {
     .where(eq(webUsers.id, session.user.id))
     .limit(1);
 
-  if (!webUser?.customerId) return err("No customer profile found", 400);
+  const customerId = resolveCustomerId(webUser);
+  if (!customerId) return err("No customer profile found", 400);
 
   const [customer] = await db
     .select({ onboardingStatus: customers.onboardingStatus })
     .from(customers)
-    .where(eq(customers.id, webUser.customerId))
+    .where(eq(customers.id, customerId))
     .limit(1);
 
   if (customer?.onboardingStatus !== "approved")
@@ -82,20 +85,20 @@ export async function POST(req: NextRequest) {
 
   if (!cur) return err("Currency not available", 400);
 
-  // Prevent duplicate currency accounts
+  // Prevent duplicate active/pending/blocked/suspended accounts for the same currency
   const [existing] = await db
     .select({ id: accounts.id })
     .from(accounts)
     .where(
       and(
-        eq(accounts.customerId, webUser.customerId),
+        eq(accounts.customerId, customerId),
         eq(accounts.currency, currency),
-        // Allow re-opening only if previous was closed
+        ne(accounts.status, "closed"),
       )
     )
     .limit(1);
 
-  if (existing) return err(`You already have a ${currency} account`, 409);
+  if (existing) return err(`You already have an open ${currency} account`, 409);
 
   // Generate account number
   const all = await db.select({ id: accounts.id }).from(accounts).where(eq(accounts.tenantId, webUser.tenantId));
@@ -105,7 +108,7 @@ export async function POST(req: NextRequest) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   await (db.insert(accounts) as any).values({
     tenantId:    webUser.tenantId,
-    customerId:  webUser.customerId,
+    customerId,
     accountNumber,
     accountType,
     currency,
