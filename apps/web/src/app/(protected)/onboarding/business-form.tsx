@@ -10,6 +10,7 @@ import { Alert } from "@/components/ui/alert";
 import { Select } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { COUNTRIES } from "@/lib/data/countries";
+import { CompaniesHouseSearch, type CompanyData } from "./companies-house-search";
 
 const STEPS = [
   { id: 1, label: "Company" },
@@ -134,6 +135,7 @@ export function BusinessForm({ onBack }: { onBack: () => void }) {
   const [step, setStep] = useState(1);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [directors, setDirectors] = useState<CompanyData["directors"]>([]);
   const [form, setForm] = useState<FormData>({
     legalEntityName:      "",
     tradingName:          "",
@@ -154,11 +156,59 @@ export function BusinessForm({ onBack }: { onBack: () => void }) {
     nationality: "",
     jobTitle:    "",
     incorporationDocType: "certificate_of_incorporation",
-    poaDocType:           "proof_of_address",
+    poaDocType:           "",
   });
 
   function f(field: keyof FormData, value: string) {
     setForm((p) => ({ ...p, [field]: value }));
+  }
+
+  function populateFromCH(data: CompanyData) {
+    const TYPE_MAP: Record<string, string> = {
+      "ltd":                                          "Private Limited Company (Ltd)",
+      "plc":                                          "Public Limited Company (PLC)",
+      "old-public-company":                           "Public Limited Company (PLC)",
+      "llp":                                          "Limited Liability Partnership (LLP)",
+      "limited-partnership":                          "Partnership",
+      "lp":                                           "Partnership",
+      "scottish-partnership":                         "Partnership",
+      "charitable-incorporated-organisation":         "Non-profit / Charity",
+      "scottish-charitable-incorporated-organisation":"Non-profit / Charity",
+      "registered-society-non-jurisdictional":        "Non-profit / Charity",
+      "industrial-and-provident-society":             "Non-profit / Charity",
+    };
+
+    const COUNTRY_MAP: Record<string, string> = {
+      "england": "GB", "scotland": "GB", "wales": "GB",
+      "northern ireland": "GB", "united kingdom": "GB",
+      "england/wales": "GB", "england & wales": "GB",
+    };
+
+    const incorporationCountry = data.jurisdiction
+      ? (["england-wales", "scotland", "northern-ireland", "wales", "united-kingdom"].some((j) =>
+          data.jurisdiction!.includes(j)
+        ) ? "GB" : "GB")
+      : "GB";
+
+    const country = data.address.country
+      ? (COUNTRY_MAP[data.address.country.toLowerCase()] ?? "GB")
+      : "GB";
+
+    setForm((prev) => ({
+      ...prev,
+      legalEntityName:      data.companyName,
+      registrationNumber:   data.companyNumber,
+      incorporationCountry,
+      incorporationDate:    data.dateOfCreation ?? "",
+      businessType:         TYPE_MAP[data.companyType] ?? "Other",
+      addressLine1:         data.address.addressLine1 ?? "",
+      addressLine2:         data.address.addressLine2 ?? "",
+      city:                 data.address.locality ?? "",
+      postCode:             data.address.postalCode ?? "",
+      country,
+    }));
+
+    setDirectors(data.directors);
   }
 
   function validateStep(s: number): string | null {
@@ -268,6 +318,16 @@ export function BusinessForm({ onBack }: { onBack: () => void }) {
             <h2 className="text-base font-semibold text-[#1A2332]">Company details</h2>
 
             <div className="space-y-1.5">
+              <Label>Look up your company</Label>
+              <CompaniesHouseSearch onSelect={populateFromCH} />
+              <p className="text-xs text-[#64748B]">
+                Search UK Companies House to auto-fill your company details, or fill in manually below.
+              </p>
+            </div>
+
+            <Separator />
+
+            <div className="space-y-1.5">
               <Label>Legal entity name <span className="text-red-500">*</span></Label>
               <Input
                 value={form.legalEntityName}
@@ -309,6 +369,7 @@ export function BusinessForm({ onBack }: { onBack: () => void }) {
                 type="date"
                 value={form.incorporationDate}
                 onChange={(e) => f("incorporationDate", e.target.value)}
+                max={new Date().toISOString().split("T")[0]}
               />
             </div>
 
@@ -413,6 +474,8 @@ export function BusinessForm({ onBack }: { onBack: () => void }) {
                 type="date"
                 value={form.dateOfBirth}
                 onChange={(e) => f("dateOfBirth", e.target.value)}
+                max={new Date().toISOString().split("T")[0]}
+                min={new Date(new Date().setFullYear(new Date().getFullYear() - 120)).toISOString().split("T")[0]}
               />
             </div>
 
@@ -433,6 +496,28 @@ export function BusinessForm({ onBack }: { onBack: () => void }) {
                 />
               </div>
             </div>
+
+            {directors.length > 0 && (
+              <div className="rounded-lg border border-[#D1E8B8] bg-[#F8FBEF] p-3 space-y-2">
+                <p className="text-xs font-semibold text-[#64748B] uppercase tracking-wide">
+                  Directors from Companies House
+                </p>
+                <div className="space-y-1.5">
+                  {directors.map((d) => (
+                    <button
+                      key={d.name}
+                      type="button"
+                      className="w-full text-left px-3 py-2 rounded-md border border-[#E2E8F0] bg-white hover:bg-[#F0F7E6] text-sm transition-colors flex items-center justify-between"
+                      onClick={() => { f("firstName", d.firstName); f("lastName", d.lastName); }}
+                    >
+                      <span className="font-medium text-[#1A2332]">{d.firstName} {d.lastName}</span>
+                      <span className="text-xs text-[#64748B]">Select</span>
+                    </button>
+                  ))}
+                </div>
+                <p className="text-xs text-[#64748B]">Tap a director to pre-fill the name fields above.</p>
+              </div>
+            )}
 
             <div className="rounded-lg border border-[#D1E8B8] bg-[#F8FBEF] p-4">
               <p className="text-sm text-[#64748B]">

@@ -3,14 +3,19 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { User, Building2, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert } from "@/components/ui/alert";
 import { Card } from "@/components/ui/card";
 
+type AccountType = "individual" | "business";
+
 export default function RegisterPage() {
   const router = useRouter();
+  const [step, setStep]             = useState<0 | 1>(0);
+  const [accountType, setAccountType] = useState<AccountType>("individual");
   const [form, setForm] = useState({
     email:       "",
     password:    "",
@@ -23,6 +28,11 @@ export default function RegisterPage() {
 
   function f(field: string, value: string | boolean) {
     setForm((p) => ({ ...p, [field]: value }));
+  }
+
+  function selectType(type: AccountType) {
+    setAccountType(type);
+    setStep(1);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -59,12 +69,87 @@ export default function RegisterPage() {
       return;
     }
 
+    sessionStorage.setItem("pendingAccountType", accountType);
     router.push(`/verify-email?email=${encodeURIComponent(form.email)}`);
   }
 
+  // ── Step 0: Account type selection ──────────────────────────────────────────
+  if (step === 0) {
+    return (
+      <div className="max-w-md mx-auto">
+        <div className="mb-8 text-center">
+          <h1 className="text-2xl font-bold text-[#1A2332]">Open an account</h1>
+          <p className="text-sm text-[#64748B] mt-1">What type of account do you need?</p>
+        </div>
+
+        <div className="grid gap-4">
+          {([
+            {
+              type: "individual" as AccountType,
+              icon: <User className="h-6 w-6 text-[#4A8C1C]" />,
+              title: "Personal account",
+              description: "For individuals sending money internationally — to family, friends, or for personal payments abroad.",
+              tags: ["ID verification", "4 steps", "~5 minutes"],
+            },
+            {
+              type: "business" as AccountType,
+              icon: <Building2 className="h-6 w-6 text-[#4A8C1C]" />,
+              title: "Business account",
+              description: "For companies, partnerships, and sole traders. Cross-border payments, supplier payments, and FX conversions.",
+              tags: ["Company verification", "5 steps", "~10 minutes"],
+            },
+          ] as const).map((opt) => (
+            <button key={opt.type} onClick={() => selectType(opt.type)} className="group text-left w-full">
+              <Card className="p-6 border-[#D1E8B8] bg-white hover:border-[#4A8C1C] hover:shadow-md transition-all cursor-pointer">
+                <div className="flex items-start gap-5">
+                  <div className="w-12 h-12 rounded-xl bg-[#F0F7E6] flex items-center justify-center shrink-0 group-hover:bg-[#B0D980]/40 transition-colors">
+                    {opt.icon}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-3">
+                      <h2 className="text-base font-semibold text-[#1A2332]">{opt.title}</h2>
+                      <ArrowRight className="h-4 w-4 text-[#64748B] group-hover:text-[#4A8C1C] shrink-0 transition-colors" />
+                    </div>
+                    <p className="text-sm text-[#64748B] mt-1">{opt.description}</p>
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {opt.tags.map((tag) => (
+                        <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-[#F0F7E6] text-[#4A8C1C] font-medium">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </button>
+          ))}
+        </div>
+
+        <p className="text-sm text-center text-[#64748B] mt-6">
+          Already have an account?{" "}
+          <Link href="/login" className="text-[#4A8C1C] hover:underline font-medium">Sign in</Link>
+        </p>
+      </div>
+    );
+  }
+
+  // ── Step 1: Registration form ────────────────────────────────────────────────
   return (
     <Card className="p-8 shadow-sm border-[#E2E8F0] bg-white">
-      <h1 className="text-2xl font-bold text-[#1A2332] mb-1">Create account</h1>
+      <button
+        type="button"
+        onClick={() => { setStep(0); setError(""); }}
+        className="text-sm text-[#64748B] hover:text-[#4A8C1C] transition-colors mb-4 flex items-center gap-1"
+      >
+        ← Change account type
+      </button>
+
+      <div className="flex items-center justify-between mb-1">
+        <h1 className="text-2xl font-bold text-[#1A2332]">Create account</h1>
+        <span className="text-xs px-2.5 py-1 rounded-full bg-[#F0F7E6] text-[#4A8C1C] font-medium capitalize">
+          {accountType === "business" ? "Business" : "Personal"}
+        </span>
+      </div>
       <p className="text-sm text-[#64748B] mb-6">Join Pangea Pay and start sending money globally</p>
 
       {error && (
