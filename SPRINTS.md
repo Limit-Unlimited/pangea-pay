@@ -296,6 +296,7 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 | Sprint 10 | Web App Public Homepage | Completed | 2026-04-30 |
 | Sprint 11 | Business Onboarding, UX Fixes & Beneficiary Search | Completed | 2026-04-30 |
 | Sprint 12 | Multi-Customer Accounts & Context Switching | Completed | 2026-05-01 |
+| Sprint 13 | Business Team Management, Profile & UX Polish | Completed | 2026-05-11 |
 
 ---
 
@@ -987,6 +988,7 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 ---
 
 ### Sprint 13 — Business Team Management, Profile & UX Polish
+**Completed:** 2026-05-11
 **Goal:** Allow business account owners and admins to invite team members, assign roles, and manage access — mirroring how platforms like Wise handle multi-user business accounts. Also ships the user profile page and Companies House lookup built during Sprint 12 testing.
 
 #### Deliverables
@@ -1071,7 +1073,7 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 
 ## Key Milestones
 
-*Revised 2026-05-01. Original dates shown in strikethrough where superseded.*
+*Revised 2026-05-11. Original dates shown in strikethrough where superseded.*
 
 | Original Date | Revised Date | Milestone | Status |
 |---|---|---|---|
@@ -1087,6 +1089,7 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 | — | **2026-04-30** | Public-facing web homepage live with geo-localised content and live FX calculator | Done |
 | — | **2026-04-30** | Business customer onboarding live; Pangea account search picker; backoffice status badges complete | Done |
 | — | **2026-05-01** | Multi-customer support live: one login, multiple business/individual profiles, context switcher in nav | Done |
+| — | **2026-05-11** | Business team management live: invite members, role enforcement, profile page, Companies House lookup, sidebar redesign | Done |
 | Aug 7 | **2026-06-26** | Go-live: production environment live, first tenant operational | Upcoming |
 
 ---
