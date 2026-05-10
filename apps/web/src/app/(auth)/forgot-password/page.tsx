@@ -30,7 +30,7 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <Card className="p-8 shadow-sm border-[#E2E8F0] bg-white">
+    <Card className="p-8 shadow-sm border-gray-200 bg-white">
       {sent ? (
         <>
           <h1 className="text-2xl font-bold text-[#1A2332] mb-1">Check your email</h1>

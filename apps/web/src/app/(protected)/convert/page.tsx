@@ -195,7 +195,7 @@ export default function ConvertPage() {
           <Alert className="text-sm text-red-700 bg-red-50 border-red-200">{error}</Alert>
         )}
 
-        <Card className="p-6 border-[#E2E8F0] bg-white space-y-4">
+        <Card className="p-6 border-gray-200 bg-white space-y-4">
           <div className="space-y-1.5">
             <Label>You send</Label>
             <div className="flex gap-2">
@@ -225,7 +225,7 @@ export default function ConvertPage() {
             <div className="flex-1 h-px bg-[#E2E8F0]" />
             <button
               onClick={() => { setFrom(to); setTo(from); }}
-              className="mx-3 w-8 h-8 rounded-full border border-[#E2E8F0] bg-white flex items-center justify-center text-[#64748B] hover:bg-[#F8FBEF] transition-colors"
+              className="mx-3 w-8 h-8 rounded-full border border-gray-200 bg-white flex items-center justify-center text-[#64748B] hover:bg-white transition-colors"
               title="Swap currencies"
             >
               ⇅
@@ -272,7 +272,7 @@ export default function ConvertPage() {
           <Alert className="text-sm text-red-700 bg-red-50 border-red-200">{error}</Alert>
         )}
 
-        <Card className="p-6 border-[#E2E8F0] bg-white space-y-5">
+        <Card className="p-6 border-gray-200 bg-white space-y-5">
           {/* Rate validity countdown */}
           <div className="flex items-center justify-between">
             <Countdown
@@ -289,11 +289,11 @@ export default function ConvertPage() {
           </div>
 
           {/* Quote breakdown */}
-          <div className="rounded-lg bg-[#F8FBEF] border border-[#E2E8F0] p-4 space-y-3">
+          <div className="rounded-lg bg-white border border-gray-200 p-4 space-y-3">
             <QuoteLine label="You send"    value={`${quote.base} ${fmt(quote.sendAmount)}`} />
             <QuoteLine label="Fee"         value={`${quote.base} ${fmt(quote.fee)}`} muted />
             <QuoteLine label="Exchange rate" value={`1 ${quote.base} = ${fmt(quote.rate, 4)} ${quote.quote}`} muted />
-            <div className="border-t border-[#E2E8F0] pt-3">
+            <div className="border-t border-gray-200 pt-3">
               <QuoteLine
                 label="Recipient gets"
                 value={`${quote.quote} ${fmt(quote.receiveAmount)}`}
@@ -335,14 +335,14 @@ export default function ConvertPage() {
         </p>
       </div>
 
-      <Card className="p-5 border-[#E2E8F0] bg-white text-left space-y-3">
+      <Card className="p-5 border-gray-200 bg-white text-left space-y-3">
         <QuoteLine label="You sent"       value={`${quote.base} ${fmt(quote.sendAmount)}`} />
         <QuoteLine label="Fee"            value={`${quote.base} ${fmt(quote.fee)}`} muted />
         <QuoteLine label="Rate"           value={`1 ${quote.base} = ${fmt(quote.rate, 4)} ${quote.quote}`} muted />
-        <div className="border-t border-[#E2E8F0] pt-3">
+        <div className="border-t border-gray-200 pt-3">
           <QuoteLine label="Amount received" value={`${quote.quote} ${fmt(quote.receiveAmount)}`} bold highlight />
         </div>
-        <div className="border-t border-[#E2E8F0] pt-3">
+        <div className="border-t border-gray-200 pt-3">
           <QuoteLine label="Quote reference" value={quote.id.slice(0, 8).toUpperCase()} mono muted />
         </div>
       </Card>

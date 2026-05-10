@@ -1,6 +1,6 @@
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <main className="flex flex-1 min-h-screen items-center justify-center bg-[#F8FBEF] px-4 py-12">
+    <main className="flex flex-1 min-h-screen items-center justify-center bg-white px-4 py-12">
       <div className="w-full max-w-md">
         {/* Brand mark */}
         <div className="flex items-center gap-3 mb-8 justify-center">

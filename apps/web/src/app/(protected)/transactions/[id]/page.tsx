@@ -61,7 +61,7 @@ function formatDate(iso: string | null) {
 
 function Row({ label, value, mono }: { label: string; value: React.ReactNode; mono?: boolean }) {
   return (
-    <div className="flex justify-between items-start gap-4 py-2.5 border-b border-[#E2E8F0] last:border-0">
+    <div className="flex justify-between items-start gap-4 py-2.5 border-b border-gray-200 last:border-0">
       <span className="text-sm text-[#64748B] shrink-0">{label}</span>
       <span className={`text-sm font-medium text-right text-[#1A2332] ${mono ? "font-mono" : ""}`}>{value}</span>
     </div>
@@ -128,7 +128,7 @@ export default function TransactionDetailPage({ params }: { params: Promise<{ id
       </div>
 
       {/* Details */}
-      <Card className="p-5 border-[#E2E8F0] bg-white">
+      <Card className="p-5 border-gray-200 bg-white">
         <h2 className="text-sm font-semibold text-[#1A2332] mb-2">Payment details</h2>
         <Row label="Amount sent"    value={fmt(txn.sendAmount, txn.sendCurrency)} mono />
         <Row label="Fee"            value={fmt(txn.fee, txn.feeCurrency)} mono />
@@ -155,7 +155,7 @@ export default function TransactionDetailPage({ params }: { params: Promise<{ id
 
       {/* Status timeline */}
       {history.length > 0 && (
-        <Card className="p-5 border-[#E2E8F0] bg-white">
+        <Card className="p-5 border-gray-200 bg-white">
           <h2 className="text-sm font-semibold text-[#1A2332] mb-4">Status history</h2>
           <div className="space-y-0">
             {history.map((h, i) => (

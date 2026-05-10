@@ -36,9 +36,9 @@ export default function OnboardingPage() {
           onClick={() => setCustomerType("individual")}
           className="group text-left w-full"
         >
-          <Card className="p-6 border-[#D1E8B8] bg-white hover:border-[#4A8C1C] hover:shadow-md transition-all cursor-pointer">
+          <Card className="p-6 border-gray-200 bg-white hover:border-[#4A8C1C] hover:shadow-md transition-all cursor-pointer">
             <div className="flex items-start gap-5">
-              <div className="w-12 h-12 rounded-xl bg-[#F0F7E6] flex items-center justify-center shrink-0 group-hover:bg-[#B0D980]/40 transition-colors">
+              <div className="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center shrink-0 group-hover:bg-[#B0D980]/40 transition-colors">
                 <User className="h-6 w-6 text-[#4A8C1C]" />
               </div>
               <div className="flex-1 min-w-0">
@@ -51,7 +51,7 @@ export default function OnboardingPage() {
                 </p>
                 <div className="flex flex-wrap gap-2 mt-3">
                   {["ID verification", "4 steps", "~5 minutes"].map((tag) => (
-                    <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-[#F0F7E6] text-[#4A8C1C] font-medium">
+                    <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-gray-50 text-[#4A8C1C] font-medium">
                       {tag}
                     </span>
                   ))}
@@ -65,9 +65,9 @@ export default function OnboardingPage() {
           onClick={() => setCustomerType("business")}
           className="group text-left w-full"
         >
-          <Card className="p-6 border-[#D1E8B8] bg-white hover:border-[#4A8C1C] hover:shadow-md transition-all cursor-pointer">
+          <Card className="p-6 border-gray-200 bg-white hover:border-[#4A8C1C] hover:shadow-md transition-all cursor-pointer">
             <div className="flex items-start gap-5">
-              <div className="w-12 h-12 rounded-xl bg-[#F0F7E6] flex items-center justify-center shrink-0 group-hover:bg-[#B0D980]/40 transition-colors">
+              <div className="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center shrink-0 group-hover:bg-[#B0D980]/40 transition-colors">
                 <Building2 className="h-6 w-6 text-[#4A8C1C]" />
               </div>
               <div className="flex-1 min-w-0">
@@ -80,7 +80,7 @@ export default function OnboardingPage() {
                 </p>
                 <div className="flex flex-wrap gap-2 mt-3">
                   {["Company verification", "5 steps", "~10 minutes"].map((tag) => (
-                    <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-[#F0F7E6] text-[#4A8C1C] font-medium">
+                    <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-gray-50 text-[#4A8C1C] font-medium">
                       {tag}
                     </span>
                   ))}

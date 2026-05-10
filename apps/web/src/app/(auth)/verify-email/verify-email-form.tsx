@@ -93,7 +93,7 @@ export default function VerifyEmailForm() {
   }
 
   return (
-    <Card className="p-8 shadow-sm border-[#E2E8F0] bg-white">
+    <Card className="p-8 shadow-sm border-gray-200 bg-white">
       <h1 className="text-2xl font-bold text-[#1A2332] mb-1">Verify your email</h1>
       <p className="text-sm text-[#64748B] mb-6">
         We sent a 6-digit code to <strong>{email || "your email"}</strong>. Enter it below to continue.

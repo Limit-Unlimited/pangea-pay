@@ -102,12 +102,12 @@ export function CompaniesHouseSearch({ onSelect }: { onSelect: (data: CompanyDat
       )}
 
       {open && (
-        <div className="absolute z-50 w-full bg-white rounded-lg border border-[#E2E8F0] shadow-lg overflow-hidden">
+        <div className="absolute z-50 w-full bg-white rounded-lg border border-gray-200 shadow-lg overflow-hidden">
           {results.length > 0 ? results.map((item) => (
             <button
               key={item.companyNumber}
               type="button"
-              className="w-full text-left px-4 py-3 hover:bg-[#F8FBEF] border-b border-[#F0F4F8] last:border-0 transition-colors"
+              className="w-full text-left px-4 py-3 hover:bg-white border-b border-[#F0F4F8] last:border-0 transition-colors"
               onMouseDown={(e) => { e.preventDefault(); pick(item); }}
             >
               <div className="flex items-start justify-between gap-3">
@@ -122,7 +122,7 @@ export function CompaniesHouseSearch({ onSelect }: { onSelect: (data: CompanyDat
                 <span className={`shrink-0 mt-0.5 text-xs px-1.5 py-0.5 rounded-full font-medium capitalize ${
                   item.companyStatus === "active"
                     ? "bg-green-100 text-green-700"
-                    : "bg-[#F0F7E6] text-[#64748B]"
+                    : "bg-gray-50 text-[#64748B]"
                 }`}>
                   {item.companyStatus}
                 </span>

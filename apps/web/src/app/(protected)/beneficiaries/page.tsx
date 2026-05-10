@@ -199,7 +199,7 @@ export default function BeneficiariesPage() {
       {loading ? (
         <div className="flex justify-center py-12"><Loader2 className="w-5 h-5 animate-spin text-[#64748B]" /></div>
       ) : rows.length === 0 ? (
-        <Card className="p-8 border-[#E2E8F0] bg-white text-center">
+        <Card className="p-8 border-gray-200 bg-white text-center">
           <Building2 className="w-8 h-8 text-[#CBD5E1] mx-auto mb-3" />
           <p className="text-[#1A2332] font-medium mb-1">No beneficiaries yet</p>
           <p className="text-sm text-[#64748B]">Add the bank accounts you send money to and they&apos;ll appear here.</p>
@@ -207,9 +207,9 @@ export default function BeneficiariesPage() {
       ) : (
         <div className="space-y-3">
           {rows.map((b) => (
-            <Card key={b.id} className="p-4 border-[#E2E8F0] bg-white flex items-center justify-between gap-4">
+            <Card key={b.id} className="p-4 border-gray-200 bg-white flex items-center justify-between gap-4">
               <div className="flex items-center gap-3 min-w-0">
-                <div className={`w-9 h-9 rounded-full border flex items-center justify-center shrink-0 ${b.pangeaAccountId ? "bg-[#F0F7E6] border-[#B0D980]" : "bg-[#F8FBEF] border-[#E2E8F0]"}`}>
+                <div className={`w-9 h-9 rounded-full border flex items-center justify-center shrink-0 ${b.pangeaAccountId ? "bg-gray-50 border-[#B0D980]" : "bg-white border-gray-200"}`}>
                   {b.pangeaAccountId
                     ? <Zap className="w-4 h-4 text-[#4A8C1C]" />
                     : <Building2 className="w-4 h-4 text-[#64748B]" />}
@@ -218,7 +218,7 @@ export default function BeneficiariesPage() {
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-medium text-[#1A2332] truncate">{b.displayName}</p>
                     {b.pangeaAccountId && (
-                      <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-[#F0F7E6] text-[#4A8C1C] border border-[#B0D980] shrink-0">
+                      <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-gray-50 text-[#4A8C1C] border border-[#B0D980] shrink-0">
                         Pangea
                       </span>
                     )}
@@ -264,11 +264,11 @@ export default function BeneficiariesPage() {
             {error && <Alert className="text-sm text-red-700 bg-red-50 border-red-200">{error}</Alert>}
 
             {/* Beneficiary type toggle */}
-            <div className="flex gap-2 p-1 bg-[#F8FBEF] rounded-lg border border-[#E2E8F0]">
+            <div className="flex gap-2 p-1 bg-white rounded-lg border border-gray-200">
               <button
                 type="button"
                 onClick={() => setForm((p) => ({ ...p, beneficiaryType: "external" }))}
-                className={`flex-1 flex items-center justify-center gap-1.5 text-xs font-medium py-1.5 px-3 rounded-md transition-colors ${form.beneficiaryType === "external" ? "bg-white shadow-sm text-[#1A2332] border border-[#E2E8F0]" : "text-[#64748B] hover:text-[#1A2332]"}`}
+                className={`flex-1 flex items-center justify-center gap-1.5 text-xs font-medium py-1.5 px-3 rounded-md transition-colors ${form.beneficiaryType === "external" ? "bg-white shadow-sm text-[#1A2332] border border-gray-200" : "text-[#64748B] hover:text-[#1A2332]"}`}
               >
                 <Building2 className="w-3.5 h-3.5" /> Bank account
               </button>
@@ -293,7 +293,7 @@ export default function BeneficiariesPage() {
 
                   {pangeaSelected ? (
                     /* ── Selected state ── */
-                    <div className="flex items-center justify-between gap-3 rounded-lg border border-[#B0D980] bg-[#F0F7E6] px-4 py-3">
+                    <div className="flex items-center justify-between gap-3 rounded-lg border border-[#B0D980] bg-gray-50 px-4 py-3">
                       <div className="flex items-center gap-2.5 min-w-0">
                         <Zap className="w-4 h-4 text-[#4A8C1C] shrink-0" />
                         <div className="min-w-0">
@@ -325,19 +325,19 @@ export default function BeneficiariesPage() {
                       </div>
 
                       {pangeaOpen && pangeaResults.length > 0 && (
-                        <div className="absolute z-50 mt-1 w-full rounded-lg border border-[#D1E8B8] bg-white shadow-lg overflow-hidden">
+                        <div className="absolute z-50 mt-1 w-full rounded-lg border border-gray-200 bg-white shadow-lg overflow-hidden">
                           {pangeaResults.map((r) => (
                             <button
                               key={r.accountNumber}
                               type="button"
                               onMouseDown={() => selectPangea(r)}
-                              className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-[#F8FBEF] transition-colors border-b border-[#F0F4F8] last:border-0"
+                              className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-white transition-colors border-b border-[#F0F4F8] last:border-0"
                             >
                               <div>
                                 <p className="text-sm font-medium text-[#1A2332]">{r.displayName}</p>
                                 <p className="text-xs text-[#64748B] font-mono">{r.accountNumber}</p>
                               </div>
-                              <span className="text-xs font-medium text-[#4A8C1C] bg-[#F0F7E6] px-2 py-0.5 rounded">
+                              <span className="text-xs font-medium text-[#4A8C1C] bg-gray-50 px-2 py-0.5 rounded">
                                 {r.currency}
                               </span>
                             </button>
@@ -346,7 +346,7 @@ export default function BeneficiariesPage() {
                       )}
 
                       {pangeaOpen && !pangeaSearching && pangeaQuery.length >= 2 && pangeaResults.length === 0 && (
-                        <div className="absolute z-50 mt-1 w-full rounded-lg border border-[#E2E8F0] bg-white shadow-lg px-4 py-3">
+                        <div className="absolute z-50 mt-1 w-full rounded-lg border border-gray-200 bg-white shadow-lg px-4 py-3">
                           <p className="text-sm text-[#64748B]">No active Pangea accounts found.</p>
                         </div>
                       )}

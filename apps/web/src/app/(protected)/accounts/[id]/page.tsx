@@ -68,7 +68,7 @@ export default async function AccountDetailPage({ params }: Params) {
       </div>
 
       {/* Balance card */}
-      <Card className="p-6 border-[#E2E8F0] bg-white">
+      <Card className="p-6 border-gray-200 bg-white">
         <div className="flex items-start justify-between mb-4">
           <div>
             <p className="text-sm text-[#64748B] mb-0.5">
@@ -94,19 +94,19 @@ export default async function AccountDetailPage({ params }: Params) {
       </Card>
 
       {/* Balance breakdown */}
-      <Card className="p-5 border-[#E2E8F0] bg-white">
+      <Card className="p-5 border-gray-200 bg-white">
         <h2 className="text-sm font-semibold text-[#1A2332] mb-4">Balance breakdown</h2>
         <div className="space-y-3">
           <BalanceLine label="Current balance" amount={fmt(account.currentBalance)} currency={account.currency} />
           <BalanceLine label="Reserved / pending" amount={fmt(account.reservedBalance)} currency={account.currency} highlight="amber" />
-          <div className="border-t border-[#E2E8F0] pt-3">
+          <div className="border-t border-gray-200 pt-3">
             <BalanceLine label="Available balance" amount={fmt(account.availableBalance)} currency={account.currency} highlight="primary" bold />
           </div>
         </div>
       </Card>
 
       {/* Account details */}
-      <Card className="p-5 border-[#E2E8F0] bg-white">
+      <Card className="p-5 border-gray-200 bg-white">
         <h2 className="text-sm font-semibold text-[#1A2332] mb-4">Account details</h2>
         <div className="space-y-3">
           <DetailRow label="Account number" value={account.accountNumber} mono />
@@ -120,7 +120,7 @@ export default async function AccountDetailPage({ params }: Params) {
       </Card>
 
       {/* Recent transactions — placeholder for Sprint 5 */}
-      <Card className="p-5 border-[#E2E8F0] bg-white">
+      <Card className="p-5 border-gray-200 bg-white">
         <h2 className="text-sm font-semibold text-[#1A2332] mb-3">Recent transactions</h2>
         <p className="text-sm text-[#64748B] py-4 text-center">Transaction history will be available in a future update.</p>
       </Card>

@@ -986,6 +986,47 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 
 ---
 
+### Sprint 13 — Business Team Management, Profile & UX Polish
+**Goal:** Allow business account owners and admins to invite team members, assign roles, and manage access — mirroring how platforms like Wise handle multi-user business accounts. Also ships the user profile page and Companies House lookup built during Sprint 12 testing.
+
+#### Deliverables
+
+**Already shipped (during Sprint 12 testing session)**
+- [x] User profile page (`/profile`) — header with initials avatar, KYC details (read-only), KYC document status, linked accounts list, change-password form
+- [x] `POST /api/profile/password` — verifies current password, validates strength, updates hash
+- [x] Profile icon in web app nav linking to `/profile`
+- [x] Account type selector (Personal / Business) added as step 0 of registration; selection carried via `sessionStorage` to auto-skip the onboarding type selector
+- [x] UK Companies House API integration on business onboarding — debounced company search auto-fills legal name, registration number, incorporation country/date, business type, and registered address; active directors listed in step 3 as a one-tap signatory picker; server-side proxy keeps API key off the client
+- [x] Date of birth pickers (individual and business signatory) capped to today; incorporation date also capped to today
+- [x] Proof-of-address document type default corrected to None (was pre-selecting "Other proof of address")
+
+**Business Team Management — Web App**
+- [ ] `GET /api/team` — returns all active `web_user_customer_links` for the active business customer; includes member email, name, role, status, joined date; owner/admin only
+- [ ] `POST /api/team/invite` — owner/admin sends an email invite to a new member with a chosen role; creates a `team_invitations` record (token, expiry, customerId, role); sends invitation email via SMTP
+- [ ] `PATCH /api/team/[userId]` — owner/admin updates a member's role or status (suspend/remove); cannot demote the last owner
+- [ ] `GET /api/team/accept/[token]` — validates invite token; if the invitee is already a registered web user, links them immediately; if not, redirects to registration with the token in the URL so the link is created on first login
+- [ ] `/team` page — business accounts only; lists active members with role badges, invite button, and per-member actions (change role, remove); read-only view for standard/view_only roles
+- [ ] Role enforcement middleware — `resolveRole(webUser, customerId)` helper; `owner` and `admin` can send payments, manage beneficiaries, open accounts; `standard` can view and initiate (pending approval); `view_only` can only read
+
+**Business Team Management — Backoffice**
+- [ ] Customer profile shows all linked web users with their role and login status (not just contact info)
+- [ ] Backoffice can suspend or remove a team member from a business customer
+
+**Database**
+- [ ] New table `team_invitations` — id, tenantId, customerId, invitedByUserId, email, role, token (unique), status (pending/accepted/expired), expiresAt, createdAt
+- [ ] Migration 0014
+
+**Audit Logging**
+- [ ] Team actions (invite sent, member joined, role changed, member removed/suspended) written to `audit_logs` with actor, target, and before/after values
+
+#### Definition of Done
+- A business account owner can invite a colleague by email; the colleague registers and lands on the business dashboard with their assigned role
+- Owner can change a member's role or remove them; actions appear in the audit log
+- A view_only member cannot reach the Send or open-account flows
+- Backoffice shows all team members on the customer profile
+
+---
+
 ## Deferred to Phase 2 (Post-MVP)
 
 | Feature | Target Sprint | Notes |

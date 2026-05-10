@@ -193,14 +193,14 @@ export default function SendPage() {
             and is being processed.
           </p>
         </div>
-        <Card className="p-5 border-[#E2E8F0] bg-white text-left space-y-3">
+        <Card className="p-5 border-gray-200 bg-white text-left space-y-3">
           <QuoteLine label="You sent"        value={fmt(quote!.sendAmount, selectedAccount?.currency)} />
           <QuoteLine label="Fee"             value={fmt(quote!.fee, selectedAccount?.currency)} muted />
           <QuoteLine label="Rate"            value={`1 ${selectedAccount?.currency} = ${quote!.rate.toFixed(4)} ${selectedBenef?.currency}`} muted />
-          <div className="border-t border-[#E2E8F0] pt-3">
+          <div className="border-t border-gray-200 pt-3">
             <QuoteLine label="Recipient gets" value={fmt(quote!.receiveAmount, selectedBenef?.currency)} bold highlight />
           </div>
-          <div className="border-t border-[#E2E8F0] pt-3">
+          <div className="border-t border-gray-200 pt-3">
             <QuoteLine label="Reference" value={result.referenceNumber} />
           </div>
         </Card>
@@ -244,7 +244,7 @@ export default function SendPage() {
 
       {/* ── Step 1: Select beneficiary ─────────────────────────────────── */}
       {stage === "beneficiary" && (
-        <Card className="p-6 border-[#E2E8F0] bg-white space-y-4">
+        <Card className="p-6 border-gray-200 bg-white space-y-4">
           <h2 className="text-sm font-semibold text-[#1A2332]">Who are you sending to?</h2>
           {beneficiaries.length === 0 ? (
             <div className="text-center py-6">
@@ -258,9 +258,9 @@ export default function SendPage() {
                   key={b.id}
                   onClick={() => { setSelBenef(b); setError(""); setStage("amount"); }}
                   className={`w-full flex items-center gap-3 p-3 rounded-lg border text-left transition-all
-                    ${selectedBenef?.id === b.id ? "border-[#4A8C1C] bg-[#F0F5FF]" : "border-[#E2E8F0] hover:border-[#4A8C1C]/40 hover:bg-[#F8FBEF]"}`}
+                    ${selectedBenef?.id === b.id ? "border-[#4A8C1C] bg-[#F0F5FF]" : "border-gray-200 hover:border-[#4A8C1C]/40 hover:bg-white"}`}
                 >
-                  <div className="w-9 h-9 rounded-full bg-[#F8FBEF] border border-[#E2E8F0] flex items-center justify-center shrink-0">
+                  <div className="w-9 h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center shrink-0">
                     <Building2 className="w-4 h-4 text-[#64748B]" />
                   </div>
                   <div className="min-w-0">
@@ -277,13 +277,13 @@ export default function SendPage() {
 
       {/* ── Step 2: Amount + funding account ──────────────────────────── */}
       {stage === "amount" && selectedBenef && (
-        <Card className="p-6 border-[#E2E8F0] bg-white space-y-4">
+        <Card className="p-6 border-gray-200 bg-white space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold text-[#1A2332]">How much are you sending?</h2>
             <button onClick={() => { setStage("beneficiary"); setError(""); }} className="text-xs text-[#64748B] hover:text-[#1A2332]">Change</button>
           </div>
 
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-[#F8FBEF] border border-[#E2E8F0]">
+          <div className="flex items-center gap-3 p-3 rounded-lg bg-white border border-gray-200">
             <Building2 className="w-4 h-4 text-[#64748B] shrink-0" />
             <div>
               <p className="text-sm font-medium text-[#1A2332]">{selectedBenef.displayName}</p>
@@ -310,7 +310,7 @@ export default function SendPage() {
           <div className="space-y-1.5">
             <Label>Amount to send</Label>
             <div className="flex gap-2">
-              <span className="flex items-center justify-center w-16 h-9 rounded-lg border border-[#E2E8F0] bg-[#F8FBEF] text-sm text-[#64748B] font-medium shrink-0">
+              <span className="flex items-center justify-center w-16 h-9 rounded-lg border border-gray-200 bg-white text-sm text-[#64748B] font-medium shrink-0">
                 {selectedAccount?.currency ?? "—"}
               </span>
               <Input
@@ -342,7 +342,7 @@ export default function SendPage() {
 
       {/* ── Step 3: Quote ──────────────────────────────────────────────── */}
       {stage === "quote" && quote && selectedBenef && selectedAccount && (
-        <Card className="p-6 border-[#E2E8F0] bg-white space-y-5">
+        <Card className="p-6 border-gray-200 bg-white space-y-5">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold text-[#1A2332]">Your quote</h2>
             <button onClick={() => { setStage("amount"); setError(""); }} className="text-xs text-[#64748B] hover:text-[#1A2332] flex items-center gap-1">
@@ -356,7 +356,7 @@ export default function SendPage() {
             </div>
           )}
 
-          <div className="rounded-lg bg-[#F8FBEF] border border-[#E2E8F0] p-4 space-y-3">
+          <div className="rounded-lg bg-white border border-gray-200 p-4 space-y-3">
             <QuoteLine label="You send" value={fmt(quote.sendAmount, selectedAccount.currency)} />
             {quote.id ? (
               <>
@@ -366,7 +366,7 @@ export default function SendPage() {
             ) : (
               <QuoteLine label="Fee" value="No fee — Pangea internal transfer" muted />
             )}
-            <div className="border-t border-[#E2E8F0] pt-3">
+            <div className="border-t border-gray-200 pt-3">
               <QuoteLine label="Recipient gets" value={fmt(quote.receiveAmount, selectedBenef.currency)} bold highlight />
             </div>
           </div>
@@ -387,10 +387,10 @@ export default function SendPage() {
 
       {/* ── Step 4: Confirm ────────────────────────────────────────────── */}
       {stage === "confirm" && quote && selectedBenef && selectedAccount && (
-        <Card className="p-6 border-[#E2E8F0] bg-white space-y-5">
+        <Card className="p-6 border-gray-200 bg-white space-y-5">
           <h2 className="text-sm font-semibold text-[#1A2332]">Confirm your payment</h2>
 
-          <div className="rounded-lg bg-[#F8FBEF] border border-[#E2E8F0] p-4 space-y-3">
+          <div className="rounded-lg bg-white border border-gray-200 p-4 space-y-3">
             <QuoteLine label="Sending to"     value={selectedBenef.displayName} />
             <QuoteLine label="From account"   value={`${selectedAccount.currency} · ${selectedAccount.accountNumber}`} muted />
             <QuoteLine label="You send" value={fmt(quote.sendAmount, selectedAccount.currency)} />
@@ -403,7 +403,7 @@ export default function SendPage() {
               <QuoteLine label="Fee" value="No fee — Pangea internal transfer" muted />
             )}
             {customerRef && <QuoteLine label="Your reference" value={customerRef} muted />}
-            <div className="border-t border-[#E2E8F0] pt-3">
+            <div className="border-t border-gray-200 pt-3">
               <QuoteLine label="Recipient gets" value={fmt(quote.receiveAmount, selectedBenef.currency)} bold highlight />
             </div>
           </div>

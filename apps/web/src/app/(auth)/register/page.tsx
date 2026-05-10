@@ -100,9 +100,9 @@ export default function RegisterPage() {
             },
           ] as const).map((opt) => (
             <button key={opt.type} onClick={() => selectType(opt.type)} className="group text-left w-full">
-              <Card className="p-6 border-[#D1E8B8] bg-white hover:border-[#4A8C1C] hover:shadow-md transition-all cursor-pointer">
+              <Card className="p-6 border-gray-200 bg-white hover:border-[#4A8C1C] hover:shadow-md transition-all cursor-pointer">
                 <div className="flex items-start gap-5">
-                  <div className="w-12 h-12 rounded-xl bg-[#F0F7E6] flex items-center justify-center shrink-0 group-hover:bg-[#B0D980]/40 transition-colors">
+                  <div className="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center shrink-0 group-hover:bg-[#B0D980]/40 transition-colors">
                     {opt.icon}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -113,7 +113,7 @@ export default function RegisterPage() {
                     <p className="text-sm text-[#64748B] mt-1">{opt.description}</p>
                     <div className="flex flex-wrap gap-2 mt-3">
                       {opt.tags.map((tag) => (
-                        <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-[#F0F7E6] text-[#4A8C1C] font-medium">
+                        <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-gray-50 text-[#4A8C1C] font-medium">
                           {tag}
                         </span>
                       ))}
@@ -135,7 +135,7 @@ export default function RegisterPage() {
 
   // ── Step 1: Registration form ────────────────────────────────────────────────
   return (
-    <Card className="p-8 shadow-sm border-[#E2E8F0] bg-white">
+    <Card className="p-8 shadow-sm border-gray-200 bg-white">
       <button
         type="button"
         onClick={() => { setStep(0); setError(""); }}
@@ -146,7 +146,7 @@ export default function RegisterPage() {
 
       <div className="flex items-center justify-between mb-1">
         <h1 className="text-2xl font-bold text-[#1A2332]">Create account</h1>
-        <span className="text-xs px-2.5 py-1 rounded-full bg-[#F0F7E6] text-[#4A8C1C] font-medium capitalize">
+        <span className="text-xs px-2.5 py-1 rounded-full bg-gray-50 text-[#4A8C1C] font-medium capitalize">
           {accountType === "business" ? "Business" : "Personal"}
         </span>
       </div>

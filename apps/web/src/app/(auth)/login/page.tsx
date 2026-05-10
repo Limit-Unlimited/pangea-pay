@@ -61,7 +61,7 @@ export default function LoginPage() {
   }
 
   return (
-    <Card className="p-8 shadow-sm border-[#E2E8F0] bg-white">
+    <Card className="p-8 shadow-sm border-gray-200 bg-white">
       <h1 className="text-2xl font-bold text-[#1A2332] mb-1">Sign in</h1>
       <p className="text-sm text-[#64748B] mb-6">Welcome back to Pangea Pay</p>
 

@@ -67,8 +67,8 @@ function StepIndicator({ current }: { current: number }) {
 
 function ReviewSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-lg border border-[#E2E8F0] overflow-hidden">
-      <div className="bg-[#F8FBEF] px-4 py-2.5 border-b border-[#E2E8F0]">
+    <div className="rounded-lg border border-gray-200 overflow-hidden">
+      <div className="bg-white px-4 py-2.5 border-b border-gray-200">
         <p className="text-xs font-semibold text-[#64748B] uppercase tracking-wide">{title}</p>
       </div>
       <div className="p-4 space-y-2.5">{children}</div>
@@ -203,7 +203,7 @@ export function IndividualForm({ onBack }: { onBack: () => void }) {
         <Alert className="mb-4 text-sm text-red-700 bg-red-50 border-red-200">{error}</Alert>
       )}
 
-      <Card className="p-6 border-[#E2E8F0] bg-white">
+      <Card className="p-6 border-gray-200 bg-white">
         {step === 1 && (
           <div className="space-y-4">
             <h2 className="text-base font-semibold text-[#1A2332]">Personal details</h2>
@@ -349,7 +349,7 @@ export function IndividualForm({ onBack }: { onBack: () => void }) {
               </Select>
             </div>
 
-            <div className="rounded-lg border border-dashed border-[#CBD5E1] p-4 bg-[#F8FBEF]">
+            <div className="rounded-lg border border-dashed border-[#CBD5E1] p-4 bg-white">
               <p className="text-sm text-[#64748B] text-center">
                 Document upload will be available once file storage is configured.
                 <br />Your document details have been recorded.
@@ -387,7 +387,7 @@ export function IndividualForm({ onBack }: { onBack: () => void }) {
               </ReviewSection>
             </div>
 
-            <div className="rounded-lg border border-[#E2E8F0] bg-[#F8FBEF] p-4">
+            <div className="rounded-lg border border-gray-200 bg-white p-4">
               <p className="text-sm text-[#64748B]">
                 By submitting this application, you confirm that all details are accurate and complete.
                 False information may result in your application being declined.

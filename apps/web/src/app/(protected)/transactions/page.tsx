@@ -69,7 +69,7 @@ export default function TransactionsPage() {
       {loading ? (
         <div className="flex justify-center py-12"><Loader2 className="w-5 h-5 animate-spin text-[#64748B]" /></div>
       ) : rows.length === 0 ? (
-        <Card className="p-8 border-[#E2E8F0] bg-white text-center">
+        <Card className="p-8 border-gray-200 bg-white text-center">
           <Clock className="w-8 h-8 text-[#CBD5E1] mx-auto mb-3" />
           <p className="text-[#1A2332] font-medium mb-1">No transactions yet</p>
           <p className="text-sm text-[#64748B]">Your payments and transfers will appear here.</p>
@@ -82,9 +82,9 @@ export default function TransactionsPage() {
               onClick={() => router.push(`/transactions/${txn.id}`)}
               className="w-full text-left"
             >
-              <Card className="p-4 border-[#E2E8F0] bg-white hover:border-[#4A8C1C]/40 hover:shadow-sm transition-all">
+              <Card className="p-4 border-gray-200 bg-white hover:border-[#4A8C1C]/40 hover:shadow-sm transition-all">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-[#F8FBEF] border border-[#E2E8F0] flex items-center justify-center shrink-0">
+                  <div className="w-9 h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center shrink-0">
                     {TYPE_ICON[txn.type] ?? <ArrowUpRight className="w-4 h-4 text-[#64748B]" />}
                   </div>
 

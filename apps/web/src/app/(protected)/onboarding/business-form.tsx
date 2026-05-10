@@ -112,8 +112,8 @@ function StepIndicator({ current }: { current: number }) {
 
 function ReviewSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-lg border border-[#E2E8F0] overflow-hidden">
-      <div className="bg-[#F8FBEF] px-4 py-2.5 border-b border-[#E2E8F0]">
+    <div className="rounded-lg border border-gray-200 overflow-hidden">
+      <div className="bg-white px-4 py-2.5 border-b border-gray-200">
         <p className="text-xs font-semibold text-[#64748B] uppercase tracking-wide">{title}</p>
       </div>
       <div className="p-4 space-y-2.5">{children}</div>
@@ -310,7 +310,7 @@ export function BusinessForm({ onBack }: { onBack: () => void }) {
         <Alert className="mb-4 text-sm text-red-700 bg-red-50 border-red-200">{error}</Alert>
       )}
 
-      <Card className="p-6 border-[#E2E8F0] bg-white">
+      <Card className="p-6 border-gray-200 bg-white">
 
         {/* ── Step 1: Company details ── */}
         {step === 1 && (
@@ -498,7 +498,7 @@ export function BusinessForm({ onBack }: { onBack: () => void }) {
             </div>
 
             {directors.length > 0 && (
-              <div className="rounded-lg border border-[#D1E8B8] bg-[#F8FBEF] p-3 space-y-2">
+              <div className="rounded-lg border border-gray-200 bg-white p-3 space-y-2">
                 <p className="text-xs font-semibold text-[#64748B] uppercase tracking-wide">
                   Directors from Companies House
                 </p>
@@ -507,7 +507,7 @@ export function BusinessForm({ onBack }: { onBack: () => void }) {
                     <button
                       key={d.name}
                       type="button"
-                      className="w-full text-left px-3 py-2 rounded-md border border-[#E2E8F0] bg-white hover:bg-[#F0F7E6] text-sm transition-colors flex items-center justify-between"
+                      className="w-full text-left px-3 py-2 rounded-md border border-gray-200 bg-white hover:bg-gray-50 text-sm transition-colors flex items-center justify-between"
                       onClick={() => { f("firstName", d.firstName); f("lastName", d.lastName); }}
                     >
                       <span className="font-medium text-[#1A2332]">{d.firstName} {d.lastName}</span>
@@ -519,7 +519,7 @@ export function BusinessForm({ onBack }: { onBack: () => void }) {
               </div>
             )}
 
-            <div className="rounded-lg border border-[#D1E8B8] bg-[#F8FBEF] p-4">
+            <div className="rounded-lg border border-gray-200 bg-white p-4">
               <p className="text-sm text-[#64748B]">
                 The signatory must be authorised by the business to open and manage accounts on its behalf.
                 You may be asked to provide a letter of authorisation during the review process.
@@ -571,7 +571,7 @@ export function BusinessForm({ onBack }: { onBack: () => void }) {
               </ul>
             </div>
 
-            <div className="rounded-lg border border-dashed border-[#CBD5E1] p-4 bg-[#F8FBEF]">
+            <div className="rounded-lg border border-dashed border-[#CBD5E1] p-4 bg-white">
               <p className="text-sm text-[#64748B] text-center">
                 Document upload will be available once file storage is configured.
                 <br />Our team will reach out to collect documents after your application is submitted.
@@ -621,7 +621,7 @@ export function BusinessForm({ onBack }: { onBack: () => void }) {
               </ReviewSection>
             </div>
 
-            <div className="rounded-lg border border-[#E2E8F0] bg-[#F8FBEF] p-4">
+            <div className="rounded-lg border border-gray-200 bg-white p-4">
               <p className="text-sm text-[#64748B]">
                 By submitting this application, you confirm that you are authorised to act on behalf of the business
                 and that all information provided is accurate and complete. Providing false information may result in
