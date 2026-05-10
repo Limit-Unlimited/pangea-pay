@@ -1001,23 +1001,28 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 - [x] Proof-of-address document type default corrected to None (was pre-selecting "Other proof of address")
 
 **Business Team Management — Web App**
-- [ ] `GET /api/team` — returns all active `web_user_customer_links` for the active business customer; includes member email, name, role, status, joined date; owner/admin only
-- [ ] `POST /api/team/invite` — owner/admin sends an email invite to a new member with a chosen role; creates a `team_invitations` record (token, expiry, customerId, role); sends invitation email via SMTP
-- [ ] `PATCH /api/team/[userId]` — owner/admin updates a member's role or status (suspend/remove); cannot demote the last owner
-- [ ] `GET /api/team/accept/[token]` — validates invite token; if the invitee is already a registered web user, links them immediately; if not, redirects to registration with the token in the URL so the link is created on first login
-- [ ] `/team` page — business accounts only; lists active members with role badges, invite button, and per-member actions (change role, remove); read-only view for standard/view_only roles
-- [ ] Role enforcement middleware — `resolveRole(webUser, customerId)` helper; `owner` and `admin` can send payments, manage beneficiaries, open accounts; `standard` can view and initiate (pending approval); `view_only` can only read
+- [x] `GET /api/team` — returns all active `web_user_customer_links` for the active business customer; includes member email, role, status, joined date, last login; owner/admin only
+- [x] `POST /api/team` — owner/admin sends an email invite; creates a `team_invitations` record; sends invitation email via SMTP; expires any previous pending invite for same email
+- [x] `PATCH /api/team/[userId]` — owner/admin updates a member's role or status (suspend/remove); cannot demote the last owner
+- [x] `POST /api/team/accept` — authenticated endpoint; validates token, checks email matches current user, creates `web_user_customer_links` entry, marks invitation accepted
+- [x] `/join/[token]` — public invite landing page; shows business name + role; two CTAs: "Sign in to accept" and "Create an account"; handles expired tokens gracefully
+- [x] `/team` page — business accounts only; member list with role badges and last-login; "Invite member" modal (email + role select); per-member actions modal (change role, remove); pending invitations section
+- [x] `resolveRole()` helper in `lib/auth/role.ts`; role enforcement on `POST /api/payments` (view_only blocked)
+- [x] "Team" nav item in sidebar — visible only when active account is a business
 
 **Business Team Management — Backoffice**
-- [ ] Customer profile shows all linked web users with their role and login status (not just contact info)
-- [ ] Backoffice can suspend or remove a team member from a business customer
+- [x] `GET /api/customers/[id]/web-team` — returns all web_user_customer_links with email, role, status, last login for the customer
+- [x] `PATCH /api/customers/[id]/web-team` — backoffice can suspend/reinstate/remove a web team member
+- [x] Customer profile → Linked Users tab now shows "Web app access" section for business customers; suspend/reinstate/remove actions per member
 
 **Database**
-- [ ] New table `team_invitations` — id, tenantId, customerId, invitedByUserId, email, role, token (unique), status (pending/accepted/expired), expiresAt, createdAt
-- [ ] Migration 0014
+- [x] New table `team_invitations` — id, tenantId, customerId, invitedByUserId, email, role, token (unique), status (pending/accepted/expired), expiresAt, createdAt
+- [x] Migration `0014_team_invitations.sql` — apply with: `mysql -u root pangea_pay < packages/db/src/migrations/0014_team_invitations.sql`
 
 **Audit Logging**
-- [ ] Team actions (invite sent, member joined, role changed, member removed/suspended) written to `audit_logs` with actor, target, and before/after values
+- [x] `team.member_invited` — logged when invite is sent
+- [x] `team.member_joined` — logged when invitation is accepted
+- [x] `team.member_updated` — logged on role or status change
 
 #### Definition of Done
 - A business account owner can invite a colleague by email; the colleague registers and lands on the business dashboard with their assigned role

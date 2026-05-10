@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard, CreditCard, SendHorizontal, Users, History,
-  UserCircle, Menu, X, ChevronDown, Building2, User, Plus, LogOut,
+  UserCircle, Menu, X, ChevronDown, Building2, User, Plus, LogOut, UsersRound,
 } from "lucide-react";
 import { signOutAction } from "@/app/(protected)/actions";
 
@@ -16,12 +16,16 @@ export type LinkedCustomer = {
   isActive: boolean;
 };
 
-const NAV = [
+const NAV_ALWAYS = [
   { href: "/dashboard",     label: "Home",          icon: LayoutDashboard },
   { href: "/accounts",      label: "Accounts",      icon: CreditCard },
   { href: "/send",          label: "Send",           icon: SendHorizontal },
   { href: "/beneficiaries", label: "Beneficiaries", icon: Users },
   { href: "/transactions",  label: "History",        icon: History },
+];
+
+const NAV_BUSINESS = [
+  { href: "/team", label: "Team", icon: UsersRound },
 ];
 
 type Props = {
@@ -109,28 +113,34 @@ export function Sidebar({ customers, userEmail, displayName }: Props) {
     </div>
   );
 
-  const NavLinks = () => (
-    <nav className="flex-1 px-3 py-2 space-y-0.5">
-      {NAV.map(({ href, label, icon: Icon }) => {
-        const active = pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
-        return (
-          <Link
-            key={href}
-            href={href}
-            onClick={() => setMobileOpen(false)}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-              active
-                ? "bg-[#4A8C1C] text-white"
-                : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-            }`}
-          >
-            <Icon className="h-4 w-4 shrink-0" strokeWidth={active ? 2.5 : 1.75} />
-            {label}
-          </Link>
-        );
-      })}
-    </nav>
-  );
+  const NavLinks = () => {
+    const nav = [
+      ...NAV_ALWAYS,
+      ...(activeCustomer?.type === "business" ? NAV_BUSINESS : []),
+    ];
+    return (
+      <nav className="flex-1 px-3 py-2 space-y-0.5">
+        {nav.map(({ href, label, icon: Icon }) => {
+          const active = pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
+          return (
+            <Link
+              key={href}
+              href={href}
+              onClick={() => setMobileOpen(false)}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                active
+                  ? "bg-[#4A8C1C] text-white"
+                  : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+              }`}
+            >
+              <Icon className="h-4 w-4 shrink-0" strokeWidth={active ? 2.5 : 1.75} />
+              {label}
+            </Link>
+          );
+        })}
+      </nav>
+    );
+  };
 
   const UserFooter = () => (
     <div className="px-3 pb-4 pt-2 border-t border-gray-100 space-y-0.5 shrink-0">

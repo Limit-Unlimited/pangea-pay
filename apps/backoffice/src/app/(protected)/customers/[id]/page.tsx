@@ -641,6 +641,113 @@ function LinkedUsersTab({ customer }: { customer: Customer }) {
           </Table>
         </Card>
       )}
+
+      {/* ── Web App Access ──────────────────────────────────────────────── */}
+      {customer.type === "business" && (
+        <WebTeamSection customerId={customer.id} />
+      )}
+    </div>
+  );
+}
+
+function WebTeamSection({ customerId }: { customerId: string }) {
+  const [members, setMembers] = useState<Record<string, any>[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState<string | null>(null);
+
+  const ROLE_LABELS: Record<string, string> = {
+    owner: "Owner", admin: "Admin", standard: "Member", view_only: "View only",
+  };
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const res  = await fetch(`/api/customers/${customerId}/web-team`);
+    const json = await res.json();
+    setMembers(Array.isArray(json.data) ? json.data : []);
+    setLoading(false);
+  }, [customerId]);
+
+  useEffect(() => { load(); }, [load]);
+
+  async function updateStatus(userId: string, status: string) {
+    setUpdating(userId);
+    await fetch(`/api/customers/${customerId}/web-team`, {
+      method:  "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ userId, status }),
+    });
+    setUpdating(null);
+    load();
+  }
+
+  return (
+    <div className="mt-6 pt-6 border-t border-[#E2E8F0]">
+      <h3 className="text-sm font-semibold text-[#1A2332] mb-3">Web app access</h3>
+      {loading ? (
+        <p className="text-sm text-[#64748B]">Loading…</p>
+      ) : !members.length ? (
+        <p className="text-sm text-[#64748B]">No web app users linked to this business.</p>
+      ) : (
+        <Card className="overflow-hidden border-[#E2E8F0]">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-[#F8FBEF] hover:bg-[#F8FBEF]">
+                <TableHead className="text-[#64748B] font-medium">Email</TableHead>
+                <TableHead className="text-[#64748B] font-medium">Role</TableHead>
+                <TableHead className="text-[#64748B] font-medium">Access status</TableHead>
+                <TableHead className="text-[#64748B] font-medium">Last login</TableHead>
+                <TableHead className="text-[#64748B] font-medium">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {members.map((m) => (
+                <TableRow key={m.userId}>
+                  <TableCell className="text-[#1A2332] font-medium">{m.email}</TableCell>
+                  <TableCell className="text-[#64748B]">{ROLE_LABELS[m.role] ?? m.role}</TableCell>
+                  <TableCell><StatusBadge status={m.status} /></TableCell>
+                  <TableCell className="text-[#64748B]">
+                    {m.lastLoginAt ? formatDate(m.lastLoginAt) : "Never"}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex gap-2">
+                      {m.status === "active" && (
+                        <Button
+                          variant="outline" size="sm"
+                          disabled={updating === m.userId}
+                          onClick={() => updateStatus(m.userId, "suspended")}
+                          className="text-amber-600 border-amber-200 hover:bg-amber-50 h-7 text-xs"
+                        >
+                          Suspend
+                        </Button>
+                      )}
+                      {m.status === "suspended" && (
+                        <Button
+                          variant="outline" size="sm"
+                          disabled={updating === m.userId}
+                          onClick={() => updateStatus(m.userId, "active")}
+                          className="h-7 text-xs"
+                        >
+                          Reinstate
+                        </Button>
+                      )}
+                      {m.status !== "removed" && (
+                        <Button
+                          variant="outline" size="sm"
+                          disabled={updating === m.userId}
+                          onClick={() => updateStatus(m.userId, "removed")}
+                          className="text-red-600 border-red-200 hover:bg-red-50 h-7 text-xs"
+                        >
+                          Remove
+                        </Button>
+                      )}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Card>
+      )}
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { auth } from "@/auth";
 import { ok, err, unauthorized } from "@/lib/api/response";
 import { sendPaymentSubmittedEmail } from "@/lib/email/mailer";
 import { resolveCustomerId } from "@/lib/auth/context";
+import { resolveRole, canInitiatePayments } from "@/lib/auth/role";
 
 const schema = z.object({
   fromAccountId: z.string().uuid(),
@@ -35,6 +36,9 @@ export async function POST(req: NextRequest) {
   const [webUser] = await db.select().from(webUsers).where(eq(webUsers.id, session.user.id)).limit(1);
   const customerId = resolveCustomerId(webUser);
   if (!customerId) return err("No active customer account", 403);
+
+  const memberRole = await resolveRole(webUser.id, customerId);
+  if (!canInitiatePayments(memberRole)) return err("You do not have permission to initiate payments on this account", 403);
 
   const [customer] = await db
     .select({ onboardingStatus: customers.onboardingStatus, firstName: customers.firstName, lastName: customers.lastName, email: customers.email })

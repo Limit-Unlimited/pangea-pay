@@ -96,6 +96,22 @@ export const webUserSessions = mysqlTable("web_user_sessions", {
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// Team invitations — business account owners/admins invite colleagues
+// ---------------------------------------------------------------------------
+export const teamInvitations = mysqlTable("team_invitations", {
+  id:              varchar("id",               { length: 36  }).$defaultFn(() => randomUUID()).primaryKey(),
+  tenantId:        varchar("tenant_id",        { length: 36  }).notNull().references(() => tenants.id),
+  customerId:      varchar("customer_id",      { length: 36  }).notNull().references(() => customers.id),
+  invitedByUserId: varchar("invited_by_user_id", { length: 36 }).notNull().references(() => webUsers.id),
+  email:           varchar("email",            { length: 255 }).notNull(),
+  role:            varchar("role",             { length: 50  }).notNull().default("standard"),
+  token:           varchar("token",            { length: 64  }).notNull().unique(),
+  status:          mysqlEnum("status", ["pending", "accepted", "expired"]).notNull().default("pending"),
+  expiresAt:       timestamp("expires_at").notNull(),
+  createdAt:       timestamp("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
 export type WebUserCustomerLink    = typeof webUserCustomerLinks.$inferSelect;
 export type NewWebUserCustomerLink = typeof webUserCustomerLinks.$inferInsert;
 export type WebUser              = typeof webUsers.$inferSelect;
@@ -106,3 +122,5 @@ export type PhoneVerification    = typeof phoneVerifications.$inferSelect;
 export type NewPhoneVerification = typeof phoneVerifications.$inferInsert;
 export type WebUserSession       = typeof webUserSessions.$inferSelect;
 export type NewWebUserSession    = typeof webUserSessions.$inferInsert;
+export type TeamInvitation       = typeof teamInvitations.$inferSelect;
+export type NewTeamInvitation    = typeof teamInvitations.$inferInsert;

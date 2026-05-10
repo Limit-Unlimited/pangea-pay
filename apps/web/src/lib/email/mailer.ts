@@ -148,3 +148,45 @@ export async function sendOnboardingStatusEmail(
     text:    body,
   });
 }
+
+export async function sendTeamInvitation(
+  inviteeEmail:  string,
+  businessName:  string,
+  inviterName:   string,
+  role:          string,
+  inviteUrl:     string,
+): Promise<void> {
+  const roleLabel: Record<string, string> = {
+    admin:     "Admin",
+    standard:  "Member",
+    view_only: "View only",
+  };
+  const roleDisplay = roleLabel[role] ?? role;
+
+  await transporter.sendMail({
+    from:    FROM,
+    to:      inviteeEmail,
+    subject: `You've been invited to join ${businessName} on Pangea Pay`,
+    text: `
+${inviterName} has invited you to join ${businessName} on Pangea Pay as ${roleDisplay}.
+
+Accept your invitation:
+${inviteUrl}
+
+This invitation expires in 7 days.
+
+If you did not expect this email, you can safely ignore it.
+
+The Pangea Pay team
+    `.trim(),
+    html: `
+      <p>${inviterName} has invited you to join <strong>${businessName}</strong> on Pangea Pay as <strong>${roleDisplay}</strong>.</p>
+      <p style="margin:24px 0;">
+        <a href="${inviteUrl}" style="background:#4A8C1C;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600;display:inline-block;">
+          Accept invitation
+        </a>
+      </p>
+      <p style="color:#64748B;font-size:13px;">This invitation expires in 7 days. If you did not expect this email, you can safely ignore it.</p>
+    `,
+  });
+}
