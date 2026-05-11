@@ -16,5 +16,5 @@ export default defineConfig({
   dialect: "mysql",
   dbCredentials: { url },
   verbose: true,
-  strict: true,
+  strict: false,
 });
