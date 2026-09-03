@@ -20,6 +20,9 @@ build/
 # Keep the example file
 !.env.example
 
+# Partner integration materials (credentials, API docs shared via email) — never commit
+mutual-trust-bank/
+
 # Package manager locks — commit only one; delete the others if switching
 # yarn.lock
 # package-lock.json
