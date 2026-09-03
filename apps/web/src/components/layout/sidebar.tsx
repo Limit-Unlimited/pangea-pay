@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState, type ReactNode, type Dispatch, type SetStateAction } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -34,48 +34,19 @@ type Props = {
   displayName: string;
 };
 
-type SidebarBodyProps = {
-  onLogoClick: () => void;
-  children: ReactNode;
+type AccountSwitcherProps = {
+  customers: LinkedCustomer[];
+  activeCustomer: LinkedCustomer | undefined;
+  accountOpen: boolean;
+  setAccountOpen: Dispatch<SetStateAction<boolean>>;
+  switchAccount: (customerId: string) => void;
+  setMobileOpen: Dispatch<SetStateAction<boolean>>;
 };
 
-function SidebarBody({ onLogoClick, children }: SidebarBodyProps) {
+function AccountSwitcher({
+  customers, activeCustomer, accountOpen, setAccountOpen, switchAccount, setMobileOpen,
+}: AccountSwitcherProps) {
   return (
-    <div className="flex flex-col h-full">
-      {/* Logo */}
-      <div className="h-16 flex items-center px-5 shrink-0">
-        <Link href="/dashboard" className="flex items-center gap-2.5" onClick={onLogoClick}>
-          <div className="w-8 h-8 rounded-lg bg-[#4A8C1C] flex items-center justify-center shrink-0">
-            <span className="text-white font-bold text-sm">P</span>
-          </div>
-          <span className="font-bold text-gray-900 text-lg" style={{ fontFamily: "var(--font-lato)" }}>
-            Pangea Pay
-          </span>
-        </Link>
-      </div>
-      {children}
-    </div>
-  );
-}
-
-export function Sidebar({ customers, userEmail, displayName }: Props) {
-  const pathname                      = usePathname();
-  const router                        = useRouter();
-  const [mobileOpen, setMobileOpen]   = useState(false);
-  const [accountOpen, setAccountOpen] = useState(false);
-  const activeCustomer                = customers.find((c) => c.isActive);
-
-  async function switchAccount(customerId: string) {
-    setAccountOpen(false);
-    await fetch("/api/context", {
-      method:  "POST",
-      headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({ customerId }),
-    });
-    router.refresh();
-  }
-
-  const AccountSwitcher = () => (
     <div className="mx-3 mb-2 relative">
       <button
         onClick={() => setAccountOpen((v) => !v)}
@@ -136,37 +107,51 @@ export function Sidebar({ customers, userEmail, displayName }: Props) {
       )}
     </div>
   );
+}
 
-  const NavLinks = () => {
-    const nav = [
-      ...NAV_ALWAYS,
-      ...(activeCustomer?.type === "business" ? NAV_BUSINESS : []),
-    ];
-    return (
-      <nav className="flex-1 px-3 py-2 space-y-0.5">
-        {nav.map(({ href, label, icon: Icon }) => {
-          const active = pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
-          return (
-            <Link
-              key={href}
-              href={href}
-              onClick={() => setMobileOpen(false)}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                active
-                  ? "bg-[#4A8C1C] text-white"
-                  : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-              }`}
-            >
-              <Icon className="h-4 w-4 shrink-0" strokeWidth={active ? 2.5 : 1.75} />
-              {label}
-            </Link>
-          );
-        })}
-      </nav>
-    );
-  };
+type NavLinksProps = {
+  pathname: string;
+  activeCustomerType: "individual" | "business" | undefined;
+  setMobileOpen: Dispatch<SetStateAction<boolean>>;
+};
 
-  const UserFooter = () => (
+function NavLinks({ pathname, activeCustomerType, setMobileOpen }: NavLinksProps) {
+  const nav = [
+    ...NAV_ALWAYS,
+    ...(activeCustomerType === "business" ? NAV_BUSINESS : []),
+  ];
+  return (
+    <nav className="flex-1 px-3 py-2 space-y-0.5">
+      {nav.map(({ href, label, icon: Icon }) => {
+        const active = pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
+        return (
+          <Link
+            key={href}
+            href={href}
+            onClick={() => setMobileOpen(false)}
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+              active
+                ? "bg-[#4A8C1C] text-white"
+                : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+            }`}
+          >
+            <Icon className="h-4 w-4 shrink-0" strokeWidth={active ? 2.5 : 1.75} />
+            {label}
+          </Link>
+        );
+      })}
+    </nav>
+  );
+}
+
+type UserFooterProps = {
+  displayName: string;
+  userEmail: string;
+  setMobileOpen: Dispatch<SetStateAction<boolean>>;
+};
+
+function UserFooter({ displayName, userEmail, setMobileOpen }: UserFooterProps) {
+  return (
     <div className="px-3 pb-4 pt-2 border-t border-gray-100 space-y-0.5 shrink-0">
       <Link
         href="/profile"
@@ -193,12 +178,63 @@ export function Sidebar({ customers, userEmail, displayName }: Props) {
       </form>
     </div>
   );
+}
+
+type SidebarBodyProps = {
+  onLogoClick: () => void;
+  children: ReactNode;
+};
+
+function SidebarBody({ onLogoClick, children }: SidebarBodyProps) {
+  return (
+    <div className="flex flex-col h-full">
+      {/* Logo */}
+      <div className="h-16 flex items-center px-5 shrink-0">
+        <Link href="/dashboard" className="flex items-center gap-2.5" onClick={onLogoClick}>
+          <div className="w-8 h-8 rounded-lg bg-[#4A8C1C] flex items-center justify-center shrink-0">
+            <span className="text-white font-bold text-sm">P</span>
+          </div>
+          <span className="font-bold text-gray-900 text-lg" style={{ fontFamily: "var(--font-lato)" }}>
+            Pangea Pay
+          </span>
+        </Link>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+export function Sidebar({ customers, userEmail, displayName }: Props) {
+  const pathname                      = usePathname();
+  const router                        = useRouter();
+  const [mobileOpen, setMobileOpen]   = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const activeCustomer                = customers.find((c) => c.isActive);
+
+  async function switchAccount(customerId: string) {
+    setAccountOpen(false);
+    await fetch("/api/context", {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ customerId }),
+    });
+    router.refresh();
+  }
 
   const sidebarContent = (
     <>
-      {customers.length > 0 && <AccountSwitcher />}
-      <NavLinks />
-      <UserFooter />
+      {customers.length > 0 && (
+        <AccountSwitcher
+          customers={customers}
+          activeCustomer={activeCustomer}
+          accountOpen={accountOpen}
+          setAccountOpen={setAccountOpen}
+          switchAccount={switchAccount}
+          setMobileOpen={setMobileOpen}
+        />
+      )}
+      <NavLinks pathname={pathname} activeCustomerType={activeCustomer?.type} setMobileOpen={setMobileOpen} />
+      <UserFooter displayName={displayName} userEmail={userEmail} setMobileOpen={setMobileOpen} />
     </>
   );
 

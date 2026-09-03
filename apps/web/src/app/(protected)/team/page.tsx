@@ -76,7 +76,9 @@ export default function TeamPage() {
   const [updating, setUpdating]         = useState(false);
   const [updateError, setUpdateError]   = useState("");
 
-  async function fetchTeamData() {
+  async function load() {
+    setLoading(true);
+    setError("");
     const res  = await fetch("/api/team");
     const json = await res.json();
     if (!res.ok) {
@@ -96,13 +98,11 @@ export default function TeamPage() {
     setLoading(false);
   }
 
-  async function load() {
-    setLoading(true);
-    setError("");
-    await fetchTeamData();
-  }
-
-  useEffect(() => { fetchTeamData(); }, []);
+  // Fetch-on-mount: state is intentionally set after the awaited response,
+  // not synchronously — the standard React data-fetching-in-an-effect
+  // pattern (react.dev/learn/synchronizing-with-effects#fetching-data).
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { load(); }, []);
 
   async function sendInvite() {
     setInviteError("");
