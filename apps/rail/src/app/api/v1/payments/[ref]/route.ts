@@ -3,6 +3,14 @@ import { db, transactions, transactionStatusHistory, customers, beneficiaries } 
 import { eq, and, desc } from "drizzle-orm";
 import { requireAuth } from "@/lib/auth";
 
+// Pangea-native vocabulary, mirroring what POST /v1/payments accepts —
+// translated from the provider-specific remitType stored internally
+// (e.g. MTB's WE01/SR02/UR03/GR04) so provider codes never leak onto the
+// public API surface.
+const REMIT_TYPE_TO_PURPOSE: Record<string, string> = {
+  WE01: "wage_earner", SR02: "service_export", UR03: "utility_bill", GR04: "goods_export",
+};
+
 // GET /api/v1/payments/:ref — retrieve payment status by TXN reference
 export async function GET(
   req: NextRequest,
@@ -31,6 +39,8 @@ export async function GET(
       customerRef:     transactions.customerRef,
       providerRef:     transactions.providerRef,
       providerName:    transactions.providerName,
+      remitType:       transactions.remitType,
+      beneficiaryRelationship: transactions.beneficiaryRelationship,
       holdReason:      transactions.holdReason,
       failureReason:   transactions.failureReason,
       completedAt:     transactions.completedAt,
@@ -85,9 +95,12 @@ export async function GET(
     .where(eq(transactionStatusHistory.transactionId, txn.id))
     .orderBy(desc(transactionStatusHistory.createdAt));
 
+  const { remitType, ...txnRest } = txn;
+
   return NextResponse.json({
     data: {
-      ...txn,
+      ...txnRest,
+      remitPurpose: remitType ? (REMIT_TYPE_TO_PURPOSE[remitType] ?? null) : null,
       customerRef:  customer?.customerRef ?? null,
       beneficiary:  beneficiary ?? null,
       statusHistory: history,
