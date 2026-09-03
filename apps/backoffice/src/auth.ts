@@ -119,6 +119,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
 
         await db.insert(loginAttempts).values({ email, ipAddress, success: true });
+        await db.update(users).set({ lastLoginAt: new Date() }).where(eq(users.id, user.id));
         await writeAuditLog({ actorId: user.id, actorEmail: email, tenantId: user.tenantId, action: "auth.login.success", resource: "session", resourceId: user.id, ipAddress, userAgent });
 
         return {

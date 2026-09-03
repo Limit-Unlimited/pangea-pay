@@ -3,6 +3,7 @@
 import { useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +17,8 @@ function ResetPasswordForm() {
 
   const [password, setPassword]   = useState("");
   const [confirm,  setConfirm]    = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm,  setShowConfirm]  = useState(false);
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState("");
   const [done,    setDone]    = useState(false);
@@ -72,16 +75,36 @@ function ResetPasswordForm() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
               <Label htmlFor="password">New password</Label>
-              <Input id="password" type="password" required minLength={12}
-                placeholder="At least 12 characters"
-                value={password} onChange={(e) => setPassword(e.target.value)} />
+              <div className="relative">
+                <Input id="password" type={showPassword ? "text" : "password"} required minLength={12}
+                  placeholder="At least 12 characters"
+                  value={password} onChange={(e) => setPassword(e.target.value)} />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#64748B] hover:text-[#1A2332]"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
               <p className="text-xs text-[#64748B]">Min. 12 characters, uppercase, lowercase, number and special character.</p>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="confirm">Confirm password</Label>
-              <Input id="confirm" type="password" required
-                placeholder="Repeat your password"
-                value={confirm} onChange={(e) => setConfirm(e.target.value)} />
+              <div className="relative">
+                <Input id="confirm" type={showConfirm ? "text" : "password"} required
+                  placeholder="Repeat your password"
+                  value={confirm} onChange={(e) => setConfirm(e.target.value)} />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirm((v) => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#64748B] hover:text-[#1A2332]"
+                  aria-label={showConfirm ? "Hide password" : "Show password"}
+                >
+                  {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
             </div>
             <Button type="submit" disabled={loading || !token}
               className="w-full bg-[#4A8C1C] hover:bg-[#3a7016] text-white">

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,6 +10,7 @@ import { Alert } from "@/components/ui/alert";
 export function ChangePasswordForm() {
   const [open, setOpen]   = useState(false);
   const [form, setForm]   = useState({ current: "", next: "", confirm: "" });
+  const [show, setShow]   = useState({ current: false, next: false, confirm: false });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -72,36 +74,66 @@ export function ChangePasswordForm() {
 
       <div className="space-y-1.5">
         <Label htmlFor="cp-current">Current password</Label>
-        <Input
-          id="cp-current"
-          type="password"
-          autoComplete="current-password"
-          value={form.current}
-          onChange={(e) => f("current", e.target.value)}
-        />
+        <div className="relative">
+          <Input
+            id="cp-current"
+            type={show.current ? "text" : "password"}
+            autoComplete="current-password"
+            value={form.current}
+            onChange={(e) => f("current", e.target.value)}
+          />
+          <button
+            type="button"
+            onClick={() => setShow((s) => ({ ...s, current: !s.current }))}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#64748B] hover:text-[#1A2332]"
+            aria-label={show.current ? "Hide password" : "Show password"}
+          >
+            {show.current ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
+        </div>
       </div>
 
       <div className="space-y-1.5">
         <Label htmlFor="cp-new">New password</Label>
-        <Input
-          id="cp-new"
-          type="password"
-          autoComplete="new-password"
-          value={form.next}
-          onChange={(e) => f("next", e.target.value)}
-        />
+        <div className="relative">
+          <Input
+            id="cp-new"
+            type={show.next ? "text" : "password"}
+            autoComplete="new-password"
+            value={form.next}
+            onChange={(e) => f("next", e.target.value)}
+          />
+          <button
+            type="button"
+            onClick={() => setShow((s) => ({ ...s, next: !s.next }))}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#64748B] hover:text-[#1A2332]"
+            aria-label={show.next ? "Hide password" : "Show password"}
+          >
+            {show.next ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
+        </div>
         <p className="text-xs text-[#64748B]">Minimum 12 characters — uppercase, lowercase, number, and symbol.</p>
       </div>
 
       <div className="space-y-1.5">
         <Label htmlFor="cp-confirm">Confirm new password</Label>
-        <Input
-          id="cp-confirm"
-          type="password"
-          autoComplete="new-password"
-          value={form.confirm}
-          onChange={(e) => f("confirm", e.target.value)}
-        />
+        <div className="relative">
+          <Input
+            id="cp-confirm"
+            type={show.confirm ? "text" : "password"}
+            autoComplete="new-password"
+            value={form.confirm}
+            onChange={(e) => f("confirm", e.target.value)}
+          />
+          <button
+            type="button"
+            onClick={() => setShow((s) => ({ ...s, confirm: !s.confirm }))}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#64748B] hover:text-[#1A2332]"
+            aria-label={show.confirm ? "Hide password" : "Show password"}
+          >
+            {show.confirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
+        </div>
       </div>
 
       <div className="flex gap-3 pt-1">

@@ -2,7 +2,7 @@ import nodemailer from "nodemailer";
 
 function createTransport() {
   return nodemailer.createTransport({
-    host: process.env.SMTP_HOST ?? "localhost",
+    host: process.env.SMTP_HOST ?? "127.0.0.1",
     port: Number(process.env.SMTP_PORT ?? 1025),
     secure: false,
     auth:

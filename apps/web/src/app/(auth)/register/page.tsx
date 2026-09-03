@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { User, Building2, ArrowRight } from "lucide-react";
+import { User, Building2, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,6 +23,8 @@ export default function RegisterPage() {
     phoneNumber: "",
     tcAccepted:  false,
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm,  setShowConfirm]  = useState(false);
   const [error, setError]     = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -186,29 +188,49 @@ export default function RegisterPage() {
 
         <div className="space-y-1.5">
           <Label htmlFor="password">Password <span className="text-red-500">*</span></Label>
-          <Input
-            id="password"
-            type="password"
-            autoComplete="new-password"
-            required
-            placeholder="Minimum 12 characters"
-            value={form.password}
-            onChange={(e) => f("password", e.target.value)}
-          />
+          <div className="relative">
+            <Input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              autoComplete="new-password"
+              required
+              placeholder="Minimum 12 characters"
+              value={form.password}
+              onChange={(e) => f("password", e.target.value)}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#64748B] hover:text-[#1A2332]"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
           <p className="text-xs text-[#64748B]">Minimum 12 characters, including uppercase, lowercase, number, and symbol.</p>
         </div>
 
         <div className="space-y-1.5">
           <Label htmlFor="confirm">Confirm password <span className="text-red-500">*</span></Label>
-          <Input
-            id="confirm"
-            type="password"
-            autoComplete="new-password"
-            required
-            placeholder="Re-enter your password"
-            value={form.confirm}
-            onChange={(e) => f("confirm", e.target.value)}
-          />
+          <div className="relative">
+            <Input
+              id="confirm"
+              type={showConfirm ? "text" : "password"}
+              autoComplete="new-password"
+              required
+              placeholder="Re-enter your password"
+              value={form.confirm}
+              onChange={(e) => f("confirm", e.target.value)}
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirm((v) => !v)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#64748B] hover:text-[#1A2332]"
+              aria-label={showConfirm ? "Hide password" : "Show password"}
+            >
+              {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
         </div>
 
         <div className="flex items-start gap-2.5 pt-1">

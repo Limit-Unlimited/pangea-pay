@@ -1034,6 +1034,56 @@ The post-commit hook (installed in `.git/hooks/post-commit`) prints a push remin
 
 ---
 
+## MVP Remaining Work (Consolidated Backlog)
+
+*Compiled 2026-08-22.* Sprints 2, 3, 5, 6, and 7 each deferred items forward to a later sprint — most commonly "Sprint 7" — but the sprints that actually shipped (7, 9–13) never picked most of them back up. This section consolidates every still-open MVP-scoped item into one list so it stops getting silently lost between sprint write-ups. Items explicitly routed to Phase 2 (see below) are not repeated here. Sprint 8 remains the umbrella for go-live readiness; rows 1–11 below are its critical path.
+
+| # | Task | Originating Sprint(s) | Blocked by | Priority |
+|---|---|---|---|---|
+| 1 | Penetration test / external security review | 8 | Vendor | Critical |
+| 2 | Resolve high/critical security findings | 8 | Dev (after #1/#3) | Critical |
+| 3 | OWASP Top 10 review completion | 8 | Dev — in progress | Critical |
+| 4 | Session invalidation on logout — confirm | 8 | Dev — in progress locally | Critical |
+| 5 | Live sanctions/PEP screening provider | 3, 6, 7 | Vendor | Critical |
+| 6 | Document binary upload (KYC docs, real storage) | 3, 4 | Vendor (storage provider) | Critical |
+| 7 | UAT environment provisioned + test cases executed | 8 | Dev/Ops | Critical |
+| 8 | Critical path / Backoffice / Payment Rail UAT sign-off | 8 | Product Owner | Critical |
+| 9 | Production integration hardening (KYC, screening, payout, email, SMS, secrets vault) | 7 | Vendor/Ops | Critical |
+| 10 | Production environment, DNS/SSL, HTTPS enforcement | 8 | Ops | Critical |
+| 11 | Monitoring/alerting, on-call runbook, first tenant live, sign-off | 8 | Ops/Product Owner | Critical |
+| 12 | DB backup/restore test, RTO/RPO validation | 8 | Ops | High |
+| 13 | Load/performance testing vs NFR targets | 8 | Ops (infra) | High |
+| 14 | Automatic journal posting on transaction completion | 6, 7 | Dev | High |
+| 15 | Business rules/threshold config (transaction & daily/monthly limits) | 2, 5 | Dev | High |
+| 16 | UBO/director/shareholder fields for business KYC | 3 | Dev | High |
+| 17 | Payout method configuration | 2, 5 | Dev + Vendor (payout partner) | High |
+| 18 | Funding method configuration | 2, 5 | Dev + Vendor | High |
+| 19 | FX rate feed failover behaviour | 7, 8 | Dev | Medium |
+| 20 | SAR record management UI (draft/submitted/filed) | 6, 7 | Dev | Medium |
+| 21 | Transaction monitoring thresholds UI | 6, 7 | Dev | Medium |
+| 22 | Account statement download (PDF/CSV) | 6 | Dev | Medium |
+| 23 | Document centre (web app upload/view) | 6 | Dev | Medium |
+| 24 | Refund initiation UI | 5 | Dev | Medium |
+| 25 | Duplicate transaction warning | 5, 7 | Dev | Medium |
+| 26 | Integration registry + health check dashboard | 7, 8 | Dev | Medium |
+| 27 | Notification template management UI | 2, 6, 7 | Dev | Medium |
+| 28 | SMS notifications (OTP, alerts) | 6, 7 | Vendor (SMS provider) | Medium |
+| 29 | Beneficiary verification confirmation before save | 5 | Vendor | Low–Medium |
+| 30 | Transaction query creation (link customer query to txn) | 5, 7 | Dev | Low–Medium |
+| 31 | Account transaction history (backoffice) | 4, 5 | Dev | Low–Medium |
+| 32 | Conversion history page (web app) | 5, 7 | Dev | Low |
+| 33 | Receipt download (PDF) | 5, 7 | Dev (needs PDF gen) | Low |
+| 34 | Recent transactions (last 5) on account detail | 4, 5 | Dev | Low |
+| 35 | Reference data config (doc types, risk categories, etc.) | 2, 6 | Dev | Low |
+| 36 | Core Setup display panel (tenant/currency/timezone) | 2, 6 | Dev | Low |
+| 37 | SMS OTP for web app MFA | 1, 6 | Vendor (SMS provider) | Low |
+
+**Explicitly out of MVP v1 scope (not tracked above):** bulk payment files (Sprint 5 notes state "not in scope for MVP v1"), remember-device login option.
+
+**Routed to Phase 2 (see table below, not tracked above):** virtual accounts, full AML case tooling, balance sheet/P&L automation, reporting suite, settlement automation, white-label/branding, commercial portal completion, open banking, cash pickup, GDPR tooling, mobile app.
+
+---
+
 ## Deferred to Phase 2 (Post-MVP)
 
 | Feature | Target Sprint | Notes |

@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
     resetTokens.set(token, { email: email.toLowerCase(), expiresAt });
 
-    const baseUrl  = process.env.WEB_URL ?? "http://localhost:3000";
+    const baseUrl  = process.env.WEB_URL ?? process.env.NEXTAUTH_URL ?? "http://localhost:3001";
     const resetUrl = `${baseUrl}/reset-password?token=${token}`;
 
     sendPasswordResetEmail(email, resetUrl).catch(console.error);
