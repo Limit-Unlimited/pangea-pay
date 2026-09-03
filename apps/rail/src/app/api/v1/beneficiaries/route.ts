@@ -11,17 +11,46 @@ const createSchema = z.object({
   displayName:   z.string().min(1).max(255),
   firstName:     z.string().max(100).optional().nullable(),
   lastName:      z.string().max(100).optional().nullable(),
+  phone:         z.string().max(30).optional().nullable(),
+  gender:        z.enum(["M", "F", "N"]).optional().nullable(),
+  occupation:    z.string().max(150).optional().nullable(),
+
+  // Payout rail — defaults to a plain bank transfer for backward
+  // compatibility with existing callers that don't send payoutType.
+  payoutType:    z.enum(["bank_account", "cash_pickup", "wallet", "utility_biller"]).default("bank_account"),
+
   bankName:      z.string().max(255).optional().nullable(),
   accountNumber: z.string().max(50).optional().nullable(),
   iban:          z.string().max(34).optional().nullable(),
   sortCode:      z.string().max(10).optional().nullable(),
   swiftBic:      z.string().max(11).optional().nullable(),
+  bankTransferChannel: z.enum(["internal", "beftn", "rtgs", "npsb"]).optional(),
+  bankRoutingNumber:   z.string().max(20).optional().nullable(),
+
+  walletProvider: z.string().max(30).optional().nullable(),
+  walletMsisdn:   z.string().max(20).optional().nullable(),
+
+  utilityBillerCode: z.string().max(50).optional().nullable(),
+
   currency:      z.string().length(3),
   country:       z.string().length(2),
-}).refine(
-  (d) => d.iban || d.accountNumber,
-  { message: "Either iban or account_number is required" },
-);
+}).superRefine((d, ctx) => {
+  if (d.payoutType === "bank_account") {
+    if (!d.iban && !d.accountNumber) {
+      ctx.addIssue({ code: "custom", message: "Either iban or accountNumber is required for a bank_account beneficiary" });
+    }
+    if (d.bankTransferChannel && d.bankTransferChannel !== "internal" && !d.bankRoutingNumber) {
+      ctx.addIssue({ code: "custom", message: "bankRoutingNumber is required for BEFTN/RTGS/NPSB transfers" });
+    }
+  }
+  if (d.payoutType === "wallet" && (!d.walletProvider || !d.walletMsisdn)) {
+    ctx.addIssue({ code: "custom", message: "walletProvider and walletMsisdn are required for a wallet beneficiary" });
+  }
+  if (d.payoutType === "utility_biller" && (!d.utilityBillerCode || !d.accountNumber)) {
+    ctx.addIssue({ code: "custom", message: "utilityBillerCode and accountNumber (the customer's reference at the biller) are required for a utility_biller beneficiary" });
+  }
+  // cash_pickup requires no rail-specific fields beyond the base ones.
+});
 
 // GET /api/v1/beneficiaries?customerRef=CUST-000001
 export async function GET(req: NextRequest) {
@@ -101,11 +130,20 @@ export async function POST(req: NextRequest) {
     displayName:   d.displayName,
     firstName:     d.firstName  ?? null,
     lastName:      d.lastName   ?? null,
+    phone:         d.phone      ?? null,
+    beneficiaryGender:     d.gender     ?? null,
+    beneficiaryOccupation: d.occupation ?? null,
+    payoutType:    d.payoutType,
     bankName:      d.bankName   ?? null,
     accountNumber: d.accountNumber ?? null,
     iban:          d.iban       ?? null,
     sortCode:      d.sortCode   ?? null,
     swiftBic:      d.swiftBic   ?? null,
+    bankTransferChannel: d.bankTransferChannel ?? null,
+    bankRoutingNumber:   d.bankRoutingNumber   ?? null,
+    walletProvider: d.walletProvider ?? null,
+    walletMsisdn:   d.walletMsisdn   ?? null,
+    utilityBillerCode: d.utilityBillerCode ?? null,
     currency:      d.currency.toUpperCase(),
     country:       d.country.toUpperCase(),
     status:        "active",

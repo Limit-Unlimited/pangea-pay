@@ -1227,7 +1227,28 @@ type BeneficiaryRecord = {
   iban: string | null; currency: string; country: string;
   status: string; flagReason: string | null; flaggedAt: string | null;
   createdAt: string;
+  payoutType: string | null;
+  walletProvider: string | null;
+  walletMsisdn: string | null;
+  utilityBillerCode: string | null;
+  bankTransferChannel: string | null;
 };
+
+const PAYOUT_TYPE_LABELS: Record<string, string> = {
+  bank_account:   "Bank",
+  cash_pickup:    "Cash pickup",
+  wallet:         "Wallet",
+  utility_biller: "Utility biller",
+};
+
+function payoutDestination(b: BeneficiaryRecord): string {
+  switch (b.payoutType) {
+    case "wallet":         return `${b.walletProvider ?? "Wallet"} · ${b.walletMsisdn ?? "—"}`;
+    case "utility_biller":  return b.utilityBillerCode ?? "—";
+    case "cash_pickup":     return "—";
+    default:                return b.iban ?? b.accountNumber ?? "—";
+  }
+}
 
 const BENE_STATUS_COLOURS: Record<string, string> = {
   active:  "bg-green-100 text-green-800",
@@ -1282,8 +1303,8 @@ function BeneficiariesTab({ customer }: { customer: Customer }) {
             <TableHeader>
               <TableRow className="bg-[#F8FBEF] hover:bg-[#F8FBEF]">
                 <TableHead className="text-[#64748B] font-medium">Name</TableHead>
-                <TableHead className="text-[#64748B] font-medium">Bank</TableHead>
-                <TableHead className="text-[#64748B] font-medium">Account / IBAN</TableHead>
+                <TableHead className="text-[#64748B] font-medium">Payout rail</TableHead>
+                <TableHead className="text-[#64748B] font-medium">Destination</TableHead>
                 <TableHead className="text-[#64748B] font-medium">Currency</TableHead>
                 <TableHead className="text-[#64748B] font-medium">Country</TableHead>
                 <TableHead className="text-[#64748B] font-medium">Status</TableHead>
@@ -1295,8 +1316,13 @@ function BeneficiariesTab({ customer }: { customer: Customer }) {
               {records.map((b) => (
                 <TableRow key={b.id}>
                   <TableCell className="font-medium text-[#1A2332]">{b.displayName}</TableCell>
-                  <TableCell className="text-[#64748B]">{b.bankName ?? "—"}</TableCell>
-                  <TableCell className="font-mono text-sm text-[#64748B]">{b.iban ?? b.accountNumber ?? "—"}</TableCell>
+                  <TableCell className="text-[#64748B]">
+                    {PAYOUT_TYPE_LABELS[b.payoutType ?? "bank_account"] ?? b.payoutType}
+                    {b.payoutType === "bank_account" && b.bankTransferChannel && b.bankTransferChannel !== "internal" && (
+                      <span className="text-xs text-[#94A3B8] uppercase"> · {b.bankTransferChannel}</span>
+                    )}
+                  </TableCell>
+                  <TableCell className="font-mono text-sm text-[#64748B]">{payoutDestination(b)}</TableCell>
                   <TableCell className="uppercase font-medium text-[#1A2332]">{b.currency}</TableCell>
                   <TableCell className="uppercase text-[#64748B]">{b.country}</TableCell>
                   <TableCell>

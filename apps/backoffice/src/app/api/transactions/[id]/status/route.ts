@@ -81,11 +81,28 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     updateFields.failureReason = reason;
   }
   if (action === "cancel") {
+    if (txn.providerRef) {
+      // Some providers (e.g. MTB) have no cancellation API and always
+      // return { success: false } — surface that to ops rather than
+      // silently marking the transaction cancelled in Pangea while it's
+      // still live at the provider. Ops should use "hold" instead and
+      // follow up with the provider directly.
+      let cancelResult: { success: boolean; message?: string };
+      try {
+        cancelResult = await getPayoutAdapter().cancel(txn.providerRef, reason);
+      } catch (e) {
+        cancelResult = { success: false, message: e instanceof Error ? e.message : "Provider cancel request failed" };
+      }
+      if (!cancelResult.success) {
+        return err(
+          cancelResult.message ??
+          "The payment provider could not confirm cancellation. Place the transaction on hold instead and follow up with the provider directly.",
+          422,
+        );
+      }
+    }
     updateFields.cancelledAt         = now;
     updateFields.cancellationReason  = reason;
-    if (txn.providerRef) {
-      getPayoutAdapter().cancel(txn.providerRef, reason).catch(() => null);
-    }
   }
 
   await db.update(transactions).set(updateFields).where(eq(transactions.id, id));

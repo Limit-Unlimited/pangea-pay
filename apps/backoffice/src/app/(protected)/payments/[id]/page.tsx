@@ -31,6 +31,9 @@ type Transaction = {
   customerRef:         string | null;
   providerRef:         string | null;
   providerName:        string;
+  remitType:           string | null;
+  beneficiaryRelationship: string | null;
+  providerMetadata:    string | null;
   holdReason:          string | null;
   heldAt:              string | null;
   failureReason:       string | null;
@@ -76,6 +79,8 @@ const AVAILABLE_ACTIONS: Record<string, Action[]> = {
   refunded:   [],
 };
 
+const TERMINAL_STATUSES = new Set(["completed", "failed", "cancelled", "refunded"]);
+
 function fmt(n: string | null, currency?: string | null) {
   if (!n) return "—";
   return `${currency ?? ""} ${parseFloat(n).toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`.trim();
@@ -84,6 +89,22 @@ function fmt(n: string | null, currency?: string | null) {
 function formatDate(iso: string | null) {
   if (!iso) return "—";
   return new Date(iso).toLocaleString("en-GB", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" });
+}
+
+const REMIT_TYPE_LABELS: Record<string, string> = {
+  WE01: "Wage earner",
+  SR02: "Service export",
+  UR03: "Utility",
+  GR04: "Goods export",
+};
+
+function formatProviderMetadata(raw: string | null): string | null {
+  if (!raw) return null;
+  try {
+    return JSON.stringify(JSON.parse(raw), null, 2);
+  } catch {
+    return raw;
+  }
 }
 
 function DetailRow({ label, value, mono }: { label: string; value: React.ReactNode; mono?: boolean }) {
@@ -109,6 +130,9 @@ export default function TransactionDetailPage({ params }: { params: Promise<{ id
   const [reason, setReason]             = useState("");
   const [submitting, setSubmitting]     = useState(false);
   const [actionError, setActionError]   = useState("");
+
+  const [processingMtb, setProcessingMtb] = useState(false);
+  const [processMtbError, setProcessMtbError] = useState("");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -146,6 +170,19 @@ export default function TransactionDetailPage({ params }: { params: Promise<{ id
     load();
   }
 
+  async function handleProcessMtb() {
+    setProcessingMtb(true);
+    setProcessMtbError("");
+
+    const res  = await fetch("/api/payments/mtb/process", { method: "POST" });
+    const json = await res.json().catch(() => null);
+    setProcessingMtb(false);
+
+    if (!res.ok) { setProcessMtbError(json?.error ?? "Failed to process with MTB"); return; }
+
+    load();
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-24">
@@ -176,6 +213,18 @@ export default function TransactionDetailPage({ params }: { params: Promise<{ id
               <Button variant="outline" size="sm" onClick={() => router.push("/payments")}>
                 <ArrowLeft className="w-4 h-4 mr-1" /> Back
               </Button>
+              {txn.providerName === "mtb" && !TERMINAL_STATUSES.has(txn.status) && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={processingMtb}
+                  onClick={handleProcessMtb}
+                  title="Submits/polls all pending MTB payments for this tenant, not just this one"
+                >
+                  {processingMtb ? <Loader2 className="w-4 h-4 animate-spin" /> : <PlayCircle className="w-4 h-4 text-blue-600" />}
+                  <span className="ml-1.5">Process MTB queue now</span>
+                </Button>
+              )}
               {availableActions.map((action) => {
                 const cfg = ACTION_CONFIG[action];
                 return (
@@ -194,6 +243,10 @@ export default function TransactionDetailPage({ params }: { params: Promise<{ id
           }
         />
 
+        {processMtbError && (
+          <p className="text-sm text-red-600 -mt-4">{processMtbError}</p>
+        )}
+
         <div className="grid gap-6 lg:grid-cols-3">
           {/* Transaction summary */}
           <div className="lg:col-span-2 space-y-4">
@@ -204,6 +257,12 @@ export default function TransactionDetailPage({ params }: { params: Promise<{ id
               <DetailRow label="Reference"    value={txn.referenceNumber} mono />
               <DetailRow label="Provider ref" value={txn.providerRef ?? "—"} mono />
               <DetailRow label="Provider"     value={txn.providerName} />
+              {txn.providerName === "mtb" && txn.remitType && (
+                <DetailRow label="Remit type" value={`${REMIT_TYPE_LABELS[txn.remitType] ?? txn.remitType} (${txn.remitType})`} />
+              )}
+              {txn.providerName === "mtb" && txn.beneficiaryRelationship && (
+                <DetailRow label="Beneficiary relationship" value={txn.beneficiaryRelationship} />
+              )}
               <DetailRow label="Send amount"  value={fmt(txn.sendAmount, txn.sendCurrency)} mono />
               {txn.receiveAmount && (
                 <DetailRow label="Receive amount" value={fmt(txn.receiveAmount, txn.receiveCurrency)} mono />
@@ -230,6 +289,15 @@ export default function TransactionDetailPage({ params }: { params: Promise<{ id
               )}
               {txn.notes && <DetailRow label="Notes" value={txn.notes} />}
             </Card>
+
+            {txn.providerName === "mtb" && txn.providerMetadata && (
+              <Card className="p-5 border-border bg-card">
+                <h2 className="text-sm font-semibold text-foreground mb-3">Provider metadata</h2>
+                <pre className="text-xs font-mono bg-muted rounded-md p-3 overflow-x-auto whitespace-pre-wrap">
+                  {formatProviderMetadata(txn.providerMetadata)}
+                </pre>
+              </Card>
+            )}
 
             {/* Status history */}
             <Card className="p-5 border-border bg-card">
