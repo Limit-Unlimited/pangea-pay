@@ -33,6 +33,7 @@ export const customers = mysqlTable("customers", {
   firstName:           varchar("first_name", { length: 100 }),
   lastName:            varchar("last_name", { length: 100 }),
   dateOfBirth:         date("date_of_birth"),
+  gender:              mysqlEnum("gender", ["M", "F", "N"]),           // nullable — required by some payout providers (e.g. MTB), not all tenants
   nationality:         varchar("nationality", { length: 2 }),          // ISO 3166-1 alpha-2
   countryOfResidence:  varchar("country_of_residence", { length: 2 }),
   occupation:          varchar("occupation", { length: 150 }),

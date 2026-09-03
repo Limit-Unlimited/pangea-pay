@@ -68,6 +68,14 @@ export const transactions = mysqlTable("transactions", {
   purposeCode:     varchar("purpose_code", { length: 50 }),
   customerRef:     varchar("customer_ref", { length: 100 }),   // customer's own reference
 
+  // Per-transaction facts that vary payment-to-payment and don't belong on
+  // the stable beneficiary profile (e.g. relationship differs per remittance
+  // even to the same beneficiary; remitType depends on the underlying
+  // trade/service, not the beneficiary or customer).
+  remitType:       mysqlEnum("remit_type", ["WE01", "SR02", "UR03", "GR04"]), // wage earner / service export / utility / goods export — only meaningful for providers that require it (e.g. MTB)
+  beneficiaryRelationship: varchar("beneficiary_relationship", { length: 50 }),
+  providerMetadata: text("provider_metadata"),  // JSON string — full mode-specific payload actually submitted to the provider, frozen at submission time as an audit trail independent of later beneficiary edits
+
   // Provider
   providerRef:     varchar("provider_ref", { length: 100 }),   // mock or real provider reference
   providerName:    varchar("provider_name", { length: 50 }).notNull().default("mock"),

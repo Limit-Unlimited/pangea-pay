@@ -69,12 +69,31 @@ export const beneficiaries = mysqlTable("beneficiaries", {
   displayName:      varchar("display_name", { length: 255 }).notNull(),
   firstName:        varchar("first_name", { length: 100 }),
   lastName:         varchar("last_name", { length: 100 }),
+  phone:            varchar("phone", { length: 30 }),
+  beneficiaryGender: mysqlEnum("beneficiary_gender", ["M", "F", "N"]),
+  beneficiaryOccupation: varchar("beneficiary_occupation", { length: 150 }),
 
+  // Payout rail — which method this beneficiary is set up to receive by.
+  // One rail per beneficiary record: a bank beneficiary and a wallet
+  // beneficiary are different customer-added records, not one entity with
+  // multiple payout options.
+  payoutType:       mysqlEnum("payout_type", ["bank_account", "cash_pickup", "wallet", "utility_biller"]).notNull().default("bank_account"),
+
+  // ── bank_account fields ────────────────────────────────────────────────
   bankName:         varchar("bank_name", { length: 255 }),
   accountNumber:    varchar("account_number", { length: 50 }),
   iban:             varchar("iban", { length: 34 }),
   sortCode:         varchar("sort_code", { length: 10 }),
   swiftBic:         varchar("swift_bic", { length: 11 }),
+  bankRoutingNumber: varchar("bank_routing_number", { length: 20 }),   // e.g. BEFTN/RTGS/NPSB routing number — distinct from sortCode/swiftBic
+  bankTransferChannel: mysqlEnum("bank_transfer_channel", ["internal", "beftn", "rtgs", "npsb"]),
+
+  // ── wallet fields ──────────────────────────────────────────────────────
+  walletProvider:   varchar("wallet_provider", { length: 30 }),        // e.g. bkash, nagad, upay — free text, corridor-specific and provider list grows over time
+  walletMsisdn:     varchar("wallet_msisdn", { length: 20 }),
+
+  // ── utility_biller fields ──────────────────────────────────────────────
+  utilityBillerCode: varchar("utility_biller_code", { length: 50 }),
 
   currency:         varchar("currency", { length: 3 }).notNull(),
   country:          varchar("country", { length: 2 }).notNull(),

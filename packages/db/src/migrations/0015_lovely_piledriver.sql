@@ -1,0 +1,15 @@
+-- Migration 0015: snapshot-metadata backfill, not a real schema change.
+--
+-- packages/db/src/migrations/meta/ only had snapshot JSON files for
+-- migrations 0000-0009 — migrations 0010-0014 were applied via raw SQL but
+-- never got a corresponding snapshot committed. This left drizzle-kit's
+-- "last known schema state" stuck at 0009, so `drizzle-kit generate` treated
+-- everything added since (team_invitations, web_user_customer_links,
+-- beneficiaries.pangea_account_id, web_users.active_customer_id) as new
+-- and tried to regenerate it here — all of it already exists in any database
+-- that has run migrations through 0014.
+--
+-- This migration exists only so drizzle-kit has a snapshot file that matches
+-- the database's real current state before the next migration (0016+) is
+-- generated against it. It is a no-op.
+SELECT 1;
