@@ -15,6 +15,18 @@ const schema = z.object({
   quoteId:       z.string().uuid().optional(),
   purposeCode:   z.string().max(50).optional(),
   externalRef:   z.string().max(100).optional(), // consumer's own reference / reconciliation key
+
+  // Pangea-native vocabulary — provider adapters translate this to their own
+  // internal classification (e.g. MTB's WE01/SR02/UR03/GR04). Only required
+  // when the resolved beneficiary routes through a provider that needs it.
+  remitPurpose: z.enum(["wage_earner", "service_export", "utility_bill", "goods_export"]).optional(),
+  beneficiaryRelationship: z.string().max(50).optional(),
+  // Per-payment sender demographic overrides — falls back to the customer's
+  // own profile (customers.gender/occupation) when omitted; kept here
+  // rather than mutating the customer record, since these can legitimately
+  // vary payment-to-payment (e.g. occupation at time of sending).
+  senderGender:     z.enum(["M", "F", "N"]).optional(),
+  senderOccupation: z.string().max(150).optional(),
 });
 
 async function generateTxnRef(tenantId: string): Promise<string> {
@@ -114,8 +126,23 @@ export async function POST(req: NextRequest) {
   }
 
   const referenceNumber = await generateTxnRef(ctx.tenantId);
-  const providerRef     = `MOCK-${referenceNumber.replace("TXN-", "")}`;
   const txnId           = randomUUID();
+
+  // The provider actually configured for this deployment. "mock" keeps its
+  // existing immediate-fake-ref behaviour (unchanged, zero regression risk);
+  // any real provider (e.g. "mtb") leaves providerRef null — it's populated
+  // once the provider's own submission step actually runs asynchronously
+  // (for MTB: apps/backoffice's /api/payments/mtb/process route), since
+  // fabricating a fake ref up front would be actively misleading.
+  const providerName = process.env.PAYOUT_PROVIDER ?? "mock";
+  const providerRef  = providerName === "mock" ? `MOCK-${referenceNumber.replace("TXN-", "")}` : null;
+
+  const remitTypeByPurpose: Record<string, string> = {
+    wage_earner: "WE01", service_export: "SR02", utility_bill: "UR03", goods_export: "GR04",
+  };
+  const senderOverride = (d.senderGender || d.senderOccupation)
+    ? { senderOverride: { gender: d.senderGender, occupation: d.senderOccupation } }
+    : null;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   await (db.insert(transactions) as any).values({
@@ -137,8 +164,11 @@ export async function POST(req: NextRequest) {
     payoutMethod:    "bank_transfer",
     purposeCode:     d.purposeCode ?? null,
     customerRef:     d.externalRef ?? null,
+    remitType:       d.remitPurpose ? remitTypeByPurpose[d.remitPurpose] : null,
+    beneficiaryRelationship: d.beneficiaryRelationship ?? null,
+    providerMetadata: senderOverride ? JSON.stringify(senderOverride) : null,
     providerRef,
-    providerName:    "mock",
+    providerName,
   });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
