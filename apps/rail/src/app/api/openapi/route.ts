@@ -117,6 +117,17 @@ export async function GET() {
           },
         },
       },
+      responses: {
+        Unauthorized: {
+          description: "Missing or invalid bearer token",
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/Error" },
+              example: { error: "Unauthorized" },
+            },
+          },
+        },
+      },
     },
 
     paths: {
@@ -175,8 +186,14 @@ export async function GET() {
                 },
               },
             },
-            "400": { description: "Invalid request or unsupported grant type" },
-            "401": { description: "Invalid client credentials" },
+            "400": {
+              description: "Invalid request or unsupported grant type",
+              content: { "application/json": { schema: { $ref: "#/components/schemas/Error" }, example: { error: "unsupported_grant_type" } } },
+            },
+            "401": {
+              description: "Invalid client credentials",
+              content: { "application/json": { schema: { $ref: "#/components/schemas/Error" }, example: { error: "invalid_client" } } },
+            },
           },
         },
       },
@@ -205,7 +222,10 @@ export async function GET() {
               },
             },
             "401": { $ref: "#/components/responses/Unauthorized" },
-            "404": { description: "Customer not found" },
+            "404": {
+              description: "Customer not found",
+              content: { "application/json": { schema: { $ref: "#/components/schemas/Error" }, example: { error: "Customer not found" } } },
+            },
           },
         },
       },
@@ -345,9 +365,15 @@ export async function GET() {
                 },
               },
             },
-            "400": { description: "Validation error" },
+            "400": {
+              description: "Validation error",
+              content: { "application/json": { schema: { $ref: "#/components/schemas/Error" }, example: { error: "walletProvider and walletMsisdn are required for a wallet beneficiary" } } },
+            },
             "401": { $ref: "#/components/responses/Unauthorized" },
-            "404": { description: "Customer not found" },
+            "404": {
+              description: "Customer not found",
+              content: { "application/json": { schema: { $ref: "#/components/schemas/Error" }, example: { error: "Customer not found" } } },
+            },
           },
         },
       },
@@ -376,7 +402,10 @@ export async function GET() {
               },
             },
             "401": { $ref: "#/components/responses/Unauthorized" },
-            "404": { description: "Beneficiary not found" },
+            "404": {
+              description: "Beneficiary not found",
+              content: { "application/json": { schema: { $ref: "#/components/schemas/Error" }, example: { error: "Beneficiary not found" } } },
+            },
           },
         },
         delete: {
@@ -386,7 +415,10 @@ export async function GET() {
           responses: {
             "204": { description: "Deleted" },
             "401": { $ref: "#/components/responses/Unauthorized" },
-            "404": { description: "Beneficiary not found" },
+            "404": {
+              description: "Beneficiary not found",
+              content: { "application/json": { schema: { $ref: "#/components/schemas/Error" }, example: { error: "Beneficiary not found" } } },
+            },
           },
         },
       },
@@ -428,9 +460,15 @@ export async function GET() {
                 },
               },
             },
-            "400": { description: "Validation error" },
+            "400": {
+              description: "Validation error",
+              content: { "application/json": { schema: { $ref: "#/components/schemas/Error" }, example: { error: "from and to currencies must differ" } } },
+            },
             "401": { $ref: "#/components/responses/Unauthorized" },
-            "503": { description: "FX service unavailable" },
+            "503": {
+              description: "FX service unavailable",
+              content: { "application/json": { schema: { $ref: "#/components/schemas/Error" }, example: { error: "Exchange rate service unavailable. Please try again." } } },
+            },
           },
         },
       },
@@ -522,10 +560,19 @@ export async function GET() {
                 },
               },
             },
-            "400": { description: "Validation error" },
+            "400": {
+              description: "Validation error",
+              content: { "application/json": { schema: { $ref: "#/components/schemas/Error" }, example: { error: "Invalid request" } } },
+            },
             "401": { $ref: "#/components/responses/Unauthorized" },
-            "404": { description: "Customer or beneficiary not found" },
-            "422": { description: "Business rule violation" },
+            "404": {
+              description: "Customer or beneficiary not found",
+              content: { "application/json": { schema: { $ref: "#/components/schemas/Error" }, example: { error: "Beneficiary not found" } } },
+            },
+            "422": {
+              description: "Business rule violation",
+              content: { "application/json": { schema: { $ref: "#/components/schemas/Error" }, example: { error: "Customer account is not approved" } } },
+            },
           },
         },
       },
@@ -564,7 +611,10 @@ export async function GET() {
               },
             },
             "401": { $ref: "#/components/responses/Unauthorized" },
-            "404": { description: "Payment not found" },
+            "404": {
+              description: "Payment not found",
+              content: { "application/json": { schema: { $ref: "#/components/schemas/Error" }, example: { error: "Payment not found" } } },
+            },
           },
         },
       },
@@ -588,13 +638,6 @@ export async function GET() {
             "401": { $ref: "#/components/responses/Unauthorized" },
           },
         },
-      },
-    },
-
-    responses: {
-      Unauthorized: {
-        description: "Missing or invalid bearer token",
-        content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
       },
     },
 
