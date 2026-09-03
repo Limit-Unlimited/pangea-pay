@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { User, Building2, ArrowRight } from "lucide-react";
 import { IndividualForm } from "./individual-form";
@@ -8,16 +8,18 @@ import { BusinessForm } from "./business-form";
 
 type CustomerType = "individual" | "business" | null;
 
-export default function OnboardingPage() {
-  const [customerType, setCustomerType] = useState<CustomerType>(null);
+function readPendingAccountType(): CustomerType {
+  if (typeof window === "undefined") return null;
+  const pending = sessionStorage.getItem("pendingAccountType");
+  if (pending === "individual" || pending === "business") {
+    sessionStorage.removeItem("pendingAccountType");
+    return pending;
+  }
+  return null;
+}
 
-  useEffect(() => {
-    const pending = sessionStorage.getItem("pendingAccountType");
-    if (pending === "individual" || pending === "business") {
-      sessionStorage.removeItem("pendingAccountType");
-      setCustomerType(pending);
-    }
-  }, []);
+export default function OnboardingPage() {
+  const [customerType, setCustomerType] = useState<CustomerType>(readPendingAccountType);
 
   if (customerType === "individual") return <IndividualForm onBack={() => setCustomerType(null)} />;
   if (customerType === "business")   return <BusinessForm  onBack={() => setCustomerType(null)} />;

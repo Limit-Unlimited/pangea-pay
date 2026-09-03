@@ -21,7 +21,8 @@ export default async function JoinPage({ params }: Params) {
     .where(and(eq(teamInvitations.token, token), eq(teamInvitations.status, "pending")))
     .limit(1);
 
-  const expired = !invitation || new Date() > new Date(invitation.expiresAt);
+  const now = new Date();
+  const expired = !invitation || now > new Date(invitation.expiresAt);
 
   if (expired) {
     return (
@@ -84,7 +85,7 @@ export default async function JoinPage({ params }: Params) {
 
       <p className="text-xs text-[#64748B] text-center mt-4">
         This invitation expires in{" "}
-        {Math.max(0, Math.ceil((new Date(invitation.expiresAt).getTime() - Date.now()) / 86400000))} days.
+        {Math.max(0, Math.ceil((new Date(invitation.expiresAt).getTime() - now.getTime()) / 86400000))} days.
       </p>
     </Card>
   );

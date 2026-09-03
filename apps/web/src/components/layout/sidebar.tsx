@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -33,6 +33,30 @@ type Props = {
   userEmail: string;
   displayName: string;
 };
+
+type SidebarBodyProps = {
+  onLogoClick: () => void;
+  children: ReactNode;
+};
+
+function SidebarBody({ onLogoClick, children }: SidebarBodyProps) {
+  return (
+    <div className="flex flex-col h-full">
+      {/* Logo */}
+      <div className="h-16 flex items-center px-5 shrink-0">
+        <Link href="/dashboard" className="flex items-center gap-2.5" onClick={onLogoClick}>
+          <div className="w-8 h-8 rounded-lg bg-[#4A8C1C] flex items-center justify-center shrink-0">
+            <span className="text-white font-bold text-sm">P</span>
+          </div>
+          <span className="font-bold text-gray-900 text-lg" style={{ fontFamily: "var(--font-lato)" }}>
+            Pangea Pay
+          </span>
+        </Link>
+      </div>
+      {children}
+    </div>
+  );
+}
 
 export function Sidebar({ customers, userEmail, displayName }: Props) {
   const pathname                      = usePathname();
@@ -170,31 +194,19 @@ export function Sidebar({ customers, userEmail, displayName }: Props) {
     </div>
   );
 
-  const SidebarBody = () => (
-    <div className="flex flex-col h-full">
-      {/* Logo */}
-      <div className="h-16 flex items-center px-5 shrink-0">
-        <Link href="/dashboard" className="flex items-center gap-2.5" onClick={() => setMobileOpen(false)}>
-          <div className="w-8 h-8 rounded-lg bg-[#4A8C1C] flex items-center justify-center shrink-0">
-            <span className="text-white font-bold text-sm">P</span>
-          </div>
-          <span className="font-bold text-gray-900 text-lg" style={{ fontFamily: "var(--font-lato)" }}>
-            Pangea Pay
-          </span>
-        </Link>
-      </div>
-
+  const sidebarContent = (
+    <>
       {customers.length > 0 && <AccountSwitcher />}
       <NavLinks />
       <UserFooter />
-    </div>
+    </>
   );
 
   return (
     <>
       {/* ── Desktop sidebar ─────────────────────────────────── */}
       <aside className="hidden lg:flex w-60 shrink-0 bg-white border-r border-gray-200 flex-col fixed inset-y-0 left-0 z-20 overflow-y-auto">
-        <SidebarBody />
+        <SidebarBody onLogoClick={() => setMobileOpen(false)}>{sidebarContent}</SidebarBody>
       </aside>
 
       {/* ── Mobile top bar ──────────────────────────────────── */}
@@ -219,7 +231,7 @@ export function Sidebar({ customers, userEmail, displayName }: Props) {
             className="w-64 bg-white border-r border-gray-200 flex flex-col pt-14 overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <SidebarBody />
+            <SidebarBody onLogoClick={() => setMobileOpen(false)}>{sidebarContent}</SidebarBody>
           </aside>
           <div className="flex-1 bg-black/30" />
         </div>

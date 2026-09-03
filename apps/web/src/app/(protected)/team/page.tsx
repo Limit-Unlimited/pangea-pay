@@ -76,9 +76,7 @@ export default function TeamPage() {
   const [updating, setUpdating]         = useState(false);
   const [updateError, setUpdateError]   = useState("");
 
-  async function load() {
-    setLoading(true);
-    setError("");
+  async function fetchTeamData() {
     const res  = await fetch("/api/team");
     const json = await res.json();
     if (!res.ok) {
@@ -98,7 +96,13 @@ export default function TeamPage() {
     setLoading(false);
   }
 
-  useEffect(() => { load(); }, []);
+  async function load() {
+    setLoading(true);
+    setError("");
+    await fetchTeamData();
+  }
+
+  useEffect(() => { fetchTeamData(); }, []);
 
   async function sendInvite() {
     setInviteError("");
