@@ -7,12 +7,15 @@
  * Interface contract: every real adapter must implement PayoutAdapter.
  */
 
+import { mtbPayoutAdapter } from "./mtb.adapter";
+
 export interface SubmitPaymentInput {
   referenceNumber: string;
   sendAmount:      number;
   sendCurrency:    string;
   receiveAmount:   number;
   receiveCurrency: string;
+  fxRate?:         number;
   beneficiary: {
     name:          string;
     accountNumber: string;
@@ -21,7 +24,36 @@ export interface SubmitPaymentInput {
     sortCode?:     string;
     swiftBic?:     string;
     country:       string;
+    // Optional, provider-specific fields — ignored by the mock adapter,
+    // consumed by richer adapters (e.g. mtb.adapter.ts) that support
+    // payout rails beyond a plain bank transfer.
+    phone?:                string;
+    gender?:                "M" | "F" | "N";
+    occupation?:            string;
+    payoutType?:            "bank_account" | "cash_pickup" | "wallet" | "utility_biller";
+    bankTransferChannel?:   "internal" | "beftn" | "rtgs" | "npsb";
+    bankRoutingNumber?:     string;
+    walletProvider?:        string;
+    walletMsisdn?:          string;
+    utilityBillerCode?:     string;
   };
+  sender?: {
+    name:           string;
+    phone:          string;
+    gender?:        "M" | "F" | "N";
+    occupation?:    string;
+    nationality?:   string; // ISO alpha-2
+    sendingCountry?: string; // ISO alpha-2
+    address?:       string;
+    district?:      string;
+  };
+  // Pangea-native remit purpose vocabulary — provider adapters translate
+  // this to their own internal classification (e.g. MTB's WE01/SR02/UR03/GR04).
+  remitPurpose?: "wage_earner" | "service_export" | "utility_bill" | "goods_export";
+  beneficiaryRelationship?: string;
+  sourceOfFund?: string;
+  utilityBillerAccountNo?: string;
+  utilityBillConversationId?: string; // from a prior bill-validation call
   purposeCode?: string;
   customerRef?: string;
 }
@@ -74,5 +106,6 @@ export const mockPayoutAdapter: PayoutAdapter = {
 export function getPayoutAdapter(): PayoutAdapter {
   const provider = process.env.PAYOUT_PROVIDER ?? "mock";
   if (provider === "mock") return mockPayoutAdapter;
-  throw new Error(`Payout provider "${provider}" is not yet configured. Set PAYOUT_PROVIDER=mock for development.`);
+  if (provider === "mtb") return mtbPayoutAdapter;
+  throw new Error(`Payout provider "${provider}" is not yet configured. Set PAYOUT_PROVIDER=mock or PAYOUT_PROVIDER=mtb.`);
 }
