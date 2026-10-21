@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   AlertTriangle, ChevronLeft, FileText, RefreshCw, ShieldAlert,
-  ShieldCheck, Users, Activity, DollarSign, Search,
+  ShieldCheck, Users, Activity, DollarSign,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { ScreeningTab } from "./screening-tab";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -40,7 +41,6 @@ type Customer = {
 };
 type Document   = Record<string, any>;
 type Assessment = Record<string, any>;
-type Screening  = Record<string, any>;
 type LinkedUser = Record<string, any>;
 type SarRecord  = Record<string, any>;
 type Commission = Record<string, any>;
@@ -439,94 +439,6 @@ function RiskTab({ customer, onRefresh }: { customer: Customer; onRefresh: () =>
                   <TableCell className="text-[#64748B]">{formatDate(a.nextReviewDue)}</TableCell>
                   <TableCell className="text-[#64748B] max-w-xs truncate">{a.notes ?? "—"}</TableCell>
                   <TableCell className="text-[#64748B]">{formatDateTime(a.createdAt)}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </Card>
-      )}
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Screening tab
-// ---------------------------------------------------------------------------
-function ScreeningTab({ customer, onRefresh }: { customer: Customer; onRefresh: () => void }) {
-  const [results, setResults] = useState<Screening[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [running, setRunning] = useState(false);
-
-  const load = useCallback(async () => {
-    setLoading(true);
-    const res = await fetch(`/api/customers/${customer.id}/screening`);
-    const json = await res.json();
-    setResults(json);
-    setLoading(false);
-  }, [customer.id]);
-
-  useEffect(() => { load(); }, [load]);
-
-  async function runScreening() {
-    setRunning(true);
-    await fetch(`/api/customers/${customer.id}/screening`, { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
-    setRunning(false);
-    load();
-    onRefresh();
-  }
-
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <span className="text-sm text-[#64748B]">Overall status:</span>
-          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${SCREENING_COLOURS[customer.screeningStatus] ?? ""}`}>
-            {customer.screeningStatus.replace(/_/g, " ")}
-          </span>
-        </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={runScreening}
-          disabled={running}
-        >
-          <Search className="h-3.5 w-3.5 mr-1.5" />
-          {running ? "Screening…" : "Run screening"}
-        </Button>
-      </div>
-
-      <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
-        Mock screening adapter active. Connect a live provider in Sprint 7.
-      </p>
-
-      {loading ? (
-        <p className="text-sm text-[#64748B] py-8 text-center">Loading…</p>
-      ) : !results.length ? (
-        <p className="text-sm text-[#64748B] py-8 text-center">No screening results. Run a screening to begin.</p>
-      ) : (
-        <Card className="overflow-hidden border-[#E2E8F0]">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-[#F8FBEF] hover:bg-[#F8FBEF]">
-                <TableHead className="text-[#64748B] font-medium">Type</TableHead>
-                <TableHead className="text-[#64748B] font-medium">Provider</TableHead>
-                <TableHead className="text-[#64748B] font-medium">Status</TableHead>
-                <TableHead className="text-[#64748B] font-medium">Match details</TableHead>
-                <TableHead className="text-[#64748B] font-medium">Screened at</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {results.map((r) => (
-                <TableRow key={r.id}>
-                  <TableCell className="capitalize text-[#1A2332]">{r.screeningType?.replace(/_/g, " ")}</TableCell>
-                  <TableCell className="text-[#64748B] uppercase text-xs">{r.provider}</TableCell>
-                  <TableCell>
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium capitalize ${SCREENING_COLOURS[r.status] ?? ""}`}>
-                      {r.status}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-[#64748B] max-w-xs truncate">{r.matchDetails ?? "—"}</TableCell>
-                  <TableCell className="text-[#64748B]">{formatDateTime(r.screenedAt)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

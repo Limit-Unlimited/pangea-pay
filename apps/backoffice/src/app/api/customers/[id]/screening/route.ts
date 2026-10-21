@@ -1,27 +1,15 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
-import { eq, and, desc } from "drizzle-orm";
-import { randomUUID } from "crypto";
+import { eq, and, desc, inArray } from "drizzle-orm";
 import { auth } from "@/auth";
-import { db, customers, customerScreeningResults } from "@pangea/db";
+import { db, customers, customerScreeningResults, sanctionScreeningHits, sanctionLists, users } from "@pangea/db";
+import { screenCustomer, ScreeningError } from "@pangea/sanctions";
 import { writeAuditLog } from "@/lib/audit/audit.service";
 import { ok, err, unauthorized } from "@/lib/api/response";
 
-/**
- * Mock screening adapter.
- * Real provider (ComplyAdvantage / similar) will be integrated in Sprint 7
- * once sandbox credentials are available.
- */
-function mockScreen(name: string): { status: "clear" | "match" | "review"; matchDetails: null | string } {
-  // Deterministic mock: names containing "test-match" return a match for demo purposes
-  if (name.toLowerCase().includes("test-match")) {
-    return { status: "match", matchDetails: JSON.stringify({ reason: "Watchlist name similarity — mock result" }) };
-  }
-  if (name.toLowerCase().includes("test-review")) {
-    return { status: "review", matchDetails: JSON.stringify({ reason: "PEP indicator — mock result" }) };
-  }
-  return { status: "clear", matchDetails: null };
-}
+// Only sanctions screening runs against real data so far. PEP screening is
+// phase 2; adverse media and internal watchlist have no source yet.
+const AVAILABLE_TYPES = ["sanctions"] as const;
 
 const triggerSchema = z.object({
   screeningType: z.enum(["sanctions", "pep", "adverse_media", "internal_watchlist"]).optional(),
@@ -29,7 +17,13 @@ const triggerSchema = z.object({
 
 type Params = { params: Promise<{ id: string }> };
 
-// GET /api/customers/[id]/screening — list all screening results
+function parseJson(value: string | null) {
+  if (!value) return null;
+  try { return JSON.parse(value); } catch { return null; }
+}
+
+// GET /api/customers/[id]/screening: every screening result, newest first,
+// each with its sanctions hits and the decisions made on them
 export async function GET(_req: NextRequest, { params }: Params) {
   const session = await auth();
   if (!session?.user) return unauthorized();
@@ -48,70 +42,62 @@ export async function GET(_req: NextRequest, { params }: Params) {
     .select()
     .from(customerScreeningResults)
     .where(eq(customerScreeningResults.customerId, id))
-    .orderBy(desc(customerScreeningResults.screenedAt));
+    .orderBy(desc(customerScreeningResults.screenedAt), desc(customerScreeningResults.createdAt));
 
-  return ok(results);
+  const hits = results.length
+    ? await db
+        .select({
+          hit:            sanctionScreeningHits,
+          listName:       sanctionLists.name,
+          deciderFirst:   users.firstName,
+          deciderLast:    users.lastName,
+        })
+        .from(sanctionScreeningHits)
+        .leftJoin(sanctionLists, eq(sanctionLists.code, sanctionScreeningHits.listCode))
+        .leftJoin(users, eq(users.id, sanctionScreeningHits.decidedBy))
+        .where(and(
+          eq(sanctionScreeningHits.tenantId, session.user.tenantId),
+          inArray(sanctionScreeningHits.screeningResultId, results.map((r) => r.id)),
+        ))
+        .orderBy(desc(sanctionScreeningHits.score))
+    : [];
+
+  return ok(results.map((r) => ({
+    ...r,
+    details: parseJson(r.matchDetails),
+    hits: hits
+      .filter((h) => h.hit.screeningResultId === r.id)
+      .map((h) => ({
+        ...h.hit,
+        listName:  h.listName ?? h.hit.listCode,
+        decidedByName: h.deciderFirst ? `${h.deciderFirst} ${h.deciderLast ?? ""}`.trim() : null,
+      })),
+  })));
 }
 
-// POST /api/customers/[id]/screening — trigger a screening run
+// POST /api/customers/[id]/screening: screen the customer against the sanctions lists
 export async function POST(req: NextRequest, { params }: Params) {
   const session = await auth();
   if (!session?.user) return unauthorized();
 
   const { id } = await params;
 
-  const [customer] = await db
-    .select({
-      id:             customers.id,
-      firstName:      customers.firstName,
-      lastName:       customers.lastName,
-      legalEntityName: customers.legalEntityName,
-      type:           customers.type,
-    })
-    .from(customers)
-    .where(and(eq(customers.id, id), eq(customers.tenantId, session.user.tenantId)))
-    .limit(1);
-
-  if (!customer) return err("Customer not found", 404);
-
   const body = await req.json().catch(() => null);
   const parsed = triggerSchema.safeParse(body ?? {});
   if (!parsed.success) return err(parsed.error.issues[0]?.message ?? "Invalid request");
 
-  const screeningTypes: Array<"sanctions" | "pep" | "adverse_media" | "internal_watchlist"> = parsed.data.screeningType
-    ? [parsed.data.screeningType]
-    : ["sanctions", "pep", "adverse_media", "internal_watchlist"];
-
-  const name = customer.type === "individual"
-    ? `${customer.firstName ?? ""} ${customer.lastName ?? ""}`.trim()
-    : (customer.legalEntityName ?? "");
-
-  const results: Array<{ id: string; screeningType: string; status: string }> = [];
-
-  for (const screeningType of screeningTypes) {
-    const { status, matchDetails } = mockScreen(name);
-    const resultId = randomUUID();
-
-    await (db.insert(customerScreeningResults) as any).values({
-      id:            resultId,
-      customerId:    id,
-      tenantId:      session.user.tenantId,
-      provider:      "mock",
-      screeningType,
-      status,
-      matchDetails:  matchDetails ?? null,
-      screenedBy:    null, // automated
-    });
-
-    results.push({ id: resultId, screeningType, status });
+  const requested = parsed.data.screeningType ?? "sanctions";
+  if (!(AVAILABLE_TYPES as readonly string[]).includes(requested)) {
+    return err(`${requested.replace(/_/g, " ")} screening is not available yet. Only sanctions screening runs at present.`);
   }
 
-  // Roll up overall screening status: match > review > pending > clear
-  const overallStatus =
-    results.some((r) => r.status === "match")  ? "match"  :
-    results.some((r) => r.status === "review") ? "review" : "clear";
-
-  await db.update(customers).set({ screeningStatus: overallStatus as any }).where(eq(customers.id, id));
+  let result;
+  try {
+    result = await screenCustomer({ customerId: id, tenantId: session.user.tenantId, userId: session.user.id });
+  } catch (e) {
+    if (e instanceof ScreeningError) return err(e.message, e.message === "Customer not found" ? 404 : 400);
+    throw e;
+  }
 
   await writeAuditLog({
     actorId:    session.user.id,
@@ -120,10 +106,19 @@ export async function POST(req: NextRequest, { params }: Params) {
     action:     "customer.screened",
     resource:   "customer",
     resourceId: id,
-    newValue:   { provider: "mock", overallStatus, results },
+    newValue:   {
+      provider:           "pangea_sanctions",
+      screeningType:      "sanctions",
+      resultId:           result.resultId,
+      overallStatus:      result.status,
+      hitCount:           result.hitCount,
+      pendingCount:       result.pendingCount,
+      carriedCount:       result.carriedCount,
+      listsNeedingReview: result.listsNeedingReview.map((l) => l.code),
+    },
     ipAddress:  req.headers.get("x-forwarded-for") ?? "unknown",
     userAgent:  req.headers.get("user-agent") ?? "",
   });
 
-  return ok({ overallStatus, results }, 201);
+  return ok({ overallStatus: result.status, ...result }, 201);
 }

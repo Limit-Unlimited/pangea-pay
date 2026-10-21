@@ -146,7 +146,8 @@ export const customerScreeningResults = mysqlTable("customer_screening_results",
   notes:          text("notes"),
 
   screenedBy:     varchar("screened_by", { length: 36 }).references(() => users.id), // null = automated
-  screenedAt:     timestamp("screened_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  // Millisecond precision so the latest of several screenings is unambiguous.
+  screenedAt:     timestamp("screened_at", { fsp: 3 }).notNull().default(sql`CURRENT_TIMESTAMP(3)`),
   createdAt:      timestamp("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 });
 

@@ -27,6 +27,7 @@ export type AuditAction =
   | "customer.document_rejected"
   | "customer.risk_assessed"
   | "customer.screened"
+  | "customer.screening_hit_decided"
   | "customer.linked_user_added"
   | "customer.sar_created"
   | "customer.commission_added"

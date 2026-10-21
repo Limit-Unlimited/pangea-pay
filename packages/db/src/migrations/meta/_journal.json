@@ -134,6 +134,20 @@
       "when": 1792596110838,
       "tag": "0018_quiet_radioactive_man",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "5",
+      "when": 1792601520884,
+      "tag": "0019_premium_la_nuit",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "5",
+      "when": 1792601625940,
+      "tag": "0020_fearless_morph",
+      "breakpoints": true
     }
   ]
 }

@@ -10,10 +10,13 @@ import {
   char,
   index,
   uniqueIndex,
+  foreignKey,
 } from "drizzle-orm/mysql-core";
 import { sql } from "drizzle-orm";
 import { randomUUID } from "crypto";
 import { users } from "./users";
+import { tenants } from "./tenants";
+import { customers, customerScreeningResults } from "./customers";
 
 // ---------------------------------------------------------------------------
 // Sanctions lists: official government sanctions lists, downloaded and
@@ -159,8 +162,54 @@ export const sanctionEntryChanges = mysqlTable("sanction_entry_changes", {
   entryIdx: index("sanction_entry_changes_entry_idx").on(t.entryId),
 }));
 
+// ---------------------------------------------------------------------------
+// Screening hits: each sanctions entry a screening run found similar to the
+// customer, with the compliance decision on it. Tenant-scoped, unlike the
+// lists themselves. Entry details are copied so the hit still reads
+// correctly after the entry changes or leaves the list.
+// ---------------------------------------------------------------------------
+export const sanctionScreeningHits = mysqlTable("sanction_screening_hits", {
+  id:                varchar("id", { length: 36 }).$defaultFn(() => randomUUID()).primaryKey(),
+  tenantId:          varchar("tenant_id", { length: 36 }).notNull(),
+  screeningResultId: varchar("screening_result_id", { length: 36 }).notNull(),
+  customerId:        varchar("customer_id", { length: 36 }).notNull(),
+  entryId:           varchar("entry_id", { length: 36 }).notNull(),
+
+  listCode:          varchar("list_code", { length: 50 }).notNull(),
+  sourceId:          varchar("source_id", { length: 191 }).notNull(),
+  entryName:         varchar("entry_name", { length: 500 }).notNull(),     // the entry's primary name
+  matchedName:       varchar("matched_name", { length: 500 }).notNull(),   // the listed name or alias that matched
+  queryName:         varchar("query_name", { length: 500 }).notNull(),     // the customer's name as screened
+  entryContentHash:  char("entry_content_hash", { length: 64 }).notNull(), // entry as it stood when screened
+
+  score:             int("score").notNull(),       // 0-100, after date of birth and country adjustments
+  nameScore:         int("name_score").notNull(),  // 0-100, name similarity alone
+  dobComparison:     mysqlEnum("dob_comparison", ["match", "same_year", "close", "differs", "unknown"]).notNull(),
+  countryComparison: mysqlEnum("country_comparison", ["match", "differs", "unknown"]).notNull(),
+
+  decision:          mysqlEnum("decision", ["pending", "false_positive", "true_match"]).notNull().default("pending"),
+  decisionNote:      text("decision_note"),
+  decidedBy:         varchar("decided_by", { length: 36 }),
+  decidedAt:         timestamp("decided_at"),
+  // Set when the decision was carried over from an earlier screening of the
+  // same name against the same, unchanged entry.
+  carriedFromHitId:  varchar("carried_from_hit_id", { length: 36 }),
+
+  createdAt:         timestamp("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+}, (t) => ({
+  // Named explicitly: the generated names exceed MySQL's 64-character limit.
+  tenantFk:    foreignKey({ name: "ssh_tenant_fk", columns: [t.tenantId], foreignColumns: [tenants.id] }),
+  resultFk:    foreignKey({ name: "ssh_result_fk", columns: [t.screeningResultId], foreignColumns: [customerScreeningResults.id] }).onDelete("cascade"),
+  customerFk:  foreignKey({ name: "ssh_customer_fk", columns: [t.customerId], foreignColumns: [customers.id] }).onDelete("cascade"),
+  entryFk:     foreignKey({ name: "ssh_entry_fk", columns: [t.entryId], foreignColumns: [sanctionEntries.id] }),
+  decidedByFk: foreignKey({ name: "ssh_decided_by_fk", columns: [t.decidedBy], foreignColumns: [users.id] }),
+  resultIdx:        index("sanction_screening_hits_result_idx").on(t.screeningResultId),
+  customerEntryIdx: index("sanction_screening_hits_customer_entry_idx").on(t.customerId, t.entryId),
+}));
+
 export type SanctionList         = typeof sanctionLists.$inferSelect;
 export type NewSanctionList      = typeof sanctionLists.$inferInsert;
 export type SanctionListRun      = typeof sanctionListRuns.$inferSelect;
 export type SanctionEntry        = typeof sanctionEntries.$inferSelect;
 export type SanctionEntryChange  = typeof sanctionEntryChanges.$inferSelect;
+export type SanctionScreeningHit = typeof sanctionScreeningHits.$inferSelect;
