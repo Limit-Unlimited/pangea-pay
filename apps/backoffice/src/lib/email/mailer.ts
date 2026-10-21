@@ -94,6 +94,31 @@ export async function sendOnboardingStatusEmail(
   await transport.sendMail({ from: `Pangea Pay <${FROM}>`, to, subject, text });
 }
 
+export async function sendSanctionsReviewEmail(
+  to: string,
+  lists: { name: string; reason: string }[],
+  reviewUrl: string,
+): Promise<void> {
+  const transport = createTransport();
+  const lines = lists.map((l) => `- ${l.name}: ${l.reason}`).join("\n");
+  await transport.sendMail({
+    from:    `Pangea Pay <${FROM}>`,
+    to,
+    subject: `Pangea Pay: sanctions lists need manual review (${lists.length})`,
+    text: `The daily sanctions list update could not confirm the following list${lists.length === 1 ? "" : "s"} as current:\n\n${lines}\n\nScreening continues against the last version successfully loaded. Review and update the list${lists.length === 1 ? "" : "s"} here:\n${reviewUrl}`,
+    html: `
+      <p>The daily sanctions list update could not confirm the following list${lists.length === 1 ? "" : "s"} as current:</p>
+      <ul>${lists.map((l) => `<li><strong>${escapeHtml(l.name)}</strong>: ${escapeHtml(l.reason)}</li>`).join("")}</ul>
+      <p>Screening continues against the last version successfully loaded.</p>
+      <p><a href="${reviewUrl}">Review sanctions lists</a></p>
+    `,
+  });
+}
+
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+}
+
 export async function sendUserInvitationEmail(to: string, activationUrl: string, tempPassword: string): Promise<void> {
   const transport = createTransport();
   await transport.sendMail({

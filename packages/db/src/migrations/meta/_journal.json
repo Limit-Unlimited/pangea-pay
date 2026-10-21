@@ -120,6 +120,20 @@
       "when": 1788461601698,
       "tag": "0016_striped_charles_xavier",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "5",
+      "when": 1792594717440,
+      "tag": "0017_volatile_skaar",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "5",
+      "when": 1792596110838,
+      "tag": "0018_quiet_radioactive_man",
+      "breakpoints": true
     }
   ]
 }

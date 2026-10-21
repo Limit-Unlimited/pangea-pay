@@ -62,7 +62,9 @@ export type AuditAction =
   | "api_consumer.active"
   | "api_consumer.suspended"
   | "api_consumer.revoked"
-  | "reconciliation.uploaded";
+  | "reconciliation.uploaded"
+  | "sanctions.list.update_requested"
+  | "sanctions.list.file_uploaded";
 
 interface AuditParams {
   tenantId?: string;

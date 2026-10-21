@@ -1,0 +1,2 @@
+ALTER TABLE `sanction_list_runs` MODIFY COLUMN `started_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3);--> statement-breakpoint
+ALTER TABLE `sanction_list_runs` MODIFY COLUMN `finished_at` timestamp(3);

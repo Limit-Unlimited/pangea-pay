@@ -30,6 +30,7 @@ import {
   Landmark,
   ShieldAlert,
   FolderOpen,
+  ListChecks,
   BookMarked,
   ReceiptText,
   Plug,
@@ -74,6 +75,7 @@ const NAV: NavItem[] = [
     children: [
       { label: "Alert queue",    href: "/compliance/alerts", icon: ShieldAlert },
       { label: "Cases",          href: "/compliance/cases",  icon: FolderOpen },
+      { label: "Sanctions lists", href: "/compliance/sanctions", icon: ListChecks },
     ],
   },
   { label: "Treasury",           href: "/treasury",         icon: Landmark },
