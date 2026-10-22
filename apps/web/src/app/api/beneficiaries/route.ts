@@ -1,7 +1,9 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
 import { eq, and, desc } from "drizzle-orm";
+import { randomUUID } from "crypto";
 import { db, webUsers, customers, beneficiaries, accounts } from "@pangea/db";
+import { screenAutomatically } from "@pangea/sanctions";
 import { auth } from "@/auth";
 import { ok, err, unauthorized } from "@/lib/api/response";
 import { resolveCustomerId } from "@/lib/auth/context";
@@ -44,7 +46,10 @@ export async function GET() {
     )
     .orderBy(desc(beneficiaries.createdAt));
 
-  return ok(rows.filter((b) => b.status !== "blocked"));
+  // Screening status is for compliance only and is never shown to the customer.
+  return ok(rows
+    .filter((b) => b.status !== "blocked")
+    .map(({ screeningStatus: _screening, ...b }) => b));
 }
 
 // POST /api/beneficiaries — add a new beneficiary
@@ -103,8 +108,10 @@ export async function POST(req: NextRequest) {
     pangeaAccountId = target.id;
   }
 
+  const beneficiaryId = randomUUID();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   await (db.insert(beneficiaries) as any).values({
+    id:               beneficiaryId,
     tenantId:         webUser.tenantId,
     customerId,
     displayName:      d.displayName,
@@ -120,6 +127,9 @@ export async function POST(req: NextRequest) {
     pangeaAccountId,
     status:           "active",
   });
+
+  // Internal only: the customer is not told the outcome.
+  await screenAutomatically({ beneficiaryId }, webUser.tenantId, "beneficiary_created");
 
   return ok({ message: "Beneficiary added", isPangea: !!pangeaAccountId }, 201);
 }

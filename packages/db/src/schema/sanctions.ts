@@ -173,6 +173,7 @@ export const sanctionScreeningHits = mysqlTable("sanction_screening_hits", {
   tenantId:          varchar("tenant_id", { length: 36 }).notNull(),
   screeningResultId: varchar("screening_result_id", { length: 36 }).notNull(),
   customerId:        varchar("customer_id", { length: 36 }).notNull(),
+  beneficiaryId:     varchar("beneficiary_id", { length: 36 }),   // set for a beneficiary's screening
   entryId:           varchar("entry_id", { length: 36 }).notNull(),
 
   listCode:          varchar("list_code", { length: 50 }).notNull(),

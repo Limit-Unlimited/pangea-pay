@@ -76,6 +76,12 @@ describe("compareTokens", () => {
     expect(compareTokens(t("Jon Smith"), t("John Smith"))).toBeGreaterThanOrEqual(0.92);
   });
 
+  it("needs one-word names to be very close", () => {
+    expect(compareTokens(t("Hamas"), t("Hamza"))).toBe(0);
+    expect(compareTokens(nameTokens("Hamas", "entity"), nameTokens("Tamas Company", "entity"))).toBe(0);
+    expect(compareTokens(t("Hamas"), t("HAMAS"))).toBe(1);
+  });
+
   it("never matches on initials alone", () => {
     expect(compareTokens(t("I O"), t("Igor Osipov"))).toBe(0);
   });

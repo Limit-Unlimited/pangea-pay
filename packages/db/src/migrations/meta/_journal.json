@@ -148,6 +148,13 @@
       "when": 1792601625940,
       "tag": "0020_fearless_morph",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "5",
+      "when": 1792602587433,
+      "tag": "0021_nifty_zodiak",
+      "breakpoints": true
     }
   ]
 }

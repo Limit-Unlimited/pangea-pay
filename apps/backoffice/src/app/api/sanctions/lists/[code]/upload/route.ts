@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { auth } from "@/auth";
-import { ensureLists, getListDefinition, updateList } from "@pangea/sanctions";
+import { ensureLists, getListDefinition, updateList, rescreenAfterListChanges, runsWithChanges } from "@pangea/sanctions";
 import { ok, err, unauthorized, forbidden, notFound } from "@/lib/api/response";
 import { writeAuditLog } from "@/lib/audit/audit.service";
 import { canManageSanctions } from "@/lib/sanctions/access";
@@ -56,6 +56,7 @@ export async function POST(req: NextRequest, { params }: Params) {
   } catch (e) {
     return err(e instanceof Error ? e.message : "Upload could not be processed", 409);
   }
+  const rescreen = await rescreenAfterListChanges(runsWithChanges([result]));
 
   await writeAuditLog({
     actorId:    session.user.id,
@@ -64,11 +65,11 @@ export async function POST(req: NextRequest, { params }: Params) {
     action:     "sanctions.list.file_uploaded",
     resource:   "sanction_list",
     resourceId: code,
-    newValue:   { ...result, fileName: file.name, fileBytes: file.size, force },
+    newValue:   { ...result, fileName: file.name, fileBytes: file.size, force, rescreen },
     reason:     note,
     ipAddress:  req.headers.get("x-forwarded-for") ?? "unknown",
     userAgent:  req.headers.get("user-agent") ?? "",
   });
 
-  return ok(result);
+  return ok({ ...result, rescreen });
 }

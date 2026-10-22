@@ -18,7 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { ScreeningTab } from "./screening-tab";
+import { ScreeningTab, SCREENING_STATUS_LABELS } from "./screening-tab";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -1137,7 +1137,7 @@ function AccountsTab({ customer }: { customer: Customer }) {
 type BeneficiaryRecord = {
   id: string; displayName: string; bankName: string | null; accountNumber: string | null;
   iban: string | null; currency: string; country: string;
-  status: string; flagReason: string | null; flaggedAt: string | null;
+  status: string; screeningStatus: string; flagReason: string | null; flaggedAt: string | null;
   createdAt: string;
   payoutType: string | null;
   walletProvider: string | null;
@@ -1220,6 +1220,7 @@ function BeneficiariesTab({ customer }: { customer: Customer }) {
                 <TableHead className="text-[#64748B] font-medium">Currency</TableHead>
                 <TableHead className="text-[#64748B] font-medium">Country</TableHead>
                 <TableHead className="text-[#64748B] font-medium">Status</TableHead>
+                <TableHead className="text-[#64748B] font-medium">Sanctions</TableHead>
                 <TableHead className="text-[#64748B] font-medium">Added</TableHead>
                 <TableHead className="text-[#64748B] font-medium w-8" />
               </TableRow>
@@ -1240,6 +1241,11 @@ function BeneficiariesTab({ customer }: { customer: Customer }) {
                   <TableCell>
                     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium capitalize ${BENE_STATUS_COLOURS[b.status] ?? "bg-slate-100 text-slate-600"}`}>
                       {b.status}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${SCREENING_COLOURS[b.screeningStatus] ?? "bg-slate-100 text-slate-600"}`}>
+                      {SCREENING_STATUS_LABELS[b.screeningStatus] ?? b.screeningStatus}
                     </span>
                   </TableCell>
                   <TableCell className="text-[#64748B]">{formatDate(b.createdAt)}</TableCell>

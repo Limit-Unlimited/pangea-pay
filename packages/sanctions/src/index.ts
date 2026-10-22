@@ -16,5 +16,9 @@ export type {
 } from "./matcher";
 export { getSanctionsIndex, listCoverage } from "./matcher/load";
 export type { ListCoverage } from "./matcher/load";
-export { screenCustomer, decideHit, statusFromHits, subjectFor, ScreeningError, SCREENING_PROVIDER } from "./screening";
-export type { ScreenCustomerResult, HitDecision } from "./screening";
+export {
+  screenCustomer, screenBeneficiary, screenAutomatically, decideHit, statusFromHits,
+  subjectsForCustomer, subjectsForBeneficiary, rescreenAfterListChanges, sweepUnscreened, runsWithChanges,
+  ScreeningError, SCREENING_PROVIDER, SANCTIONS_ALERT_RULE, SCREENED_CUSTOMER_FIELDS,
+} from "./screening";
+export type { ScreenResult, HitDecision, ScreeningTrigger, RescreenSummary, SweepSummary } from "./screening";

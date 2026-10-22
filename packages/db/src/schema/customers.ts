@@ -8,6 +8,7 @@ import {
   int,
   decimal,
   date,
+  index,
 } from "drizzle-orm/mysql-core";
 import { sql } from "drizzle-orm";
 import { randomUUID } from "crypto";
@@ -138,6 +139,13 @@ export const customerScreeningResults = mysqlTable("customer_screening_results",
   id:             varchar("id", { length: 36 }).$defaultFn(() => randomUUID()).primaryKey(),
   customerId:     varchar("customer_id", { length: 36 }).notNull().references(() => customers.id, { onDelete: "cascade" }),
   tenantId:       varchar("tenant_id", { length: 36 }).notNull().references(() => tenants.id),
+  // Set when the subject screened is one of the customer's beneficiaries
+  // rather than the customer. No FK: beneficiaries are defined after this
+  // table and reference customers themselves; rows go with the customer.
+  beneficiaryId:  varchar("beneficiary_id", { length: 36 }),
+  // What started the screening: manual, onboarding, customer_created,
+  // customer_updated, beneficiary_created, list_change, sweep
+  trigger:        varchar("screening_trigger", { length: 30 }).notNull().default("manual"),
 
   provider:       varchar("provider", { length: 100 }).notNull().default("mock"),
   screeningType:  mysqlEnum("screening_type", ["sanctions", "pep", "adverse_media", "internal_watchlist"]).notNull(),
@@ -149,7 +157,9 @@ export const customerScreeningResults = mysqlTable("customer_screening_results",
   // Millisecond precision so the latest of several screenings is unambiguous.
   screenedAt:     timestamp("screened_at", { fsp: 3 }).notNull().default(sql`CURRENT_TIMESTAMP(3)`),
   createdAt:      timestamp("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
-});
+}, (t) => ({
+  subjectIdx: index("customer_screening_results_subject_idx").on(t.customerId, t.beneficiaryId, t.screeningType, t.screenedAt),
+}));
 
 // ---------------------------------------------------------------------------
 // Customer linked users (users authorised to act on behalf of a business)

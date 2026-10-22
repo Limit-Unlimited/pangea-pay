@@ -26,7 +26,9 @@ export async function GET(
     return NextResponse.json({ error: "Beneficiary not found" }, { status: 404 });
   }
 
-  return NextResponse.json({ data: beneficiary });
+  // Screening status is internal to compliance and not part of the API.
+  const { screeningStatus: _screening, ...data } = beneficiary;
+  return NextResponse.json({ data });
 }
 
 // DELETE /api/v1/beneficiaries/:id — soft-block

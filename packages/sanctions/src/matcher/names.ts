@@ -163,6 +163,9 @@ function sharedParticle(a: string, b: string): string | null {
   return null;
 }
 
+/** One-word names ("Hamas" against "Hamza") need this similarity to count. */
+const SINGLE_WORD_MATCH_MIN = 0.92;
+
 /** Names run together must be this close to count; long shared prefixes inflate Jaro-Winkler. */
 const JOINED_MATCH_MIN = 0.97;
 
@@ -193,6 +196,9 @@ export function compareTokens(query: string[], candidate: string[]): number {
   if (!fullWords) return 0;
 
   const score = (sum / query.length + sum / candidate.length) / 2;
+
+  // Two one-word names have nothing else to agree on, so they must be closer.
+  if (query.length === 1 && candidate.length === 1 && score < SINGLE_WORD_MATCH_MIN) return 0;
 
   // Spacing differences ("Petro Chem" against "Petrochem"): when the word
   // counts differ, also compare the names run together.

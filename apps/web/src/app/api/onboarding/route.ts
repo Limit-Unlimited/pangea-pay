@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { db, webUsers, customers, customerDocuments, webUserCustomerLinks } from "@pangea/db";
+import { screenAutomatically } from "@pangea/sanctions";
 import { auth } from "@/auth";
 import { ok, err, unauthorized } from "@/lib/api/response";
 import { checkVpn, getClientIp, vpnBlockMessage } from "@/lib/vpn/detect";
@@ -214,6 +215,9 @@ async function handleIndividual(
   const isPrimary = !webUser.customerId;
   await linkCustomer(webUser.id, customerId, isPrimary);
 
+  // The result stays internal: it goes to compliance, never back to the applicant.
+  await screenAutomatically({ customerId }, webUser.tenantId, "onboarding");
+
   return ok({ message: "Application submitted successfully", customerId });
 }
 
@@ -289,6 +293,9 @@ async function handleBusiness(
   const isPrimary = !webUser.customerId;
   await linkCustomer(webUser.id, customerId, isPrimary);
 
+  // The result stays internal: it goes to compliance, never back to the applicant.
+  await screenAutomatically({ customerId }, webUser.tenantId, "onboarding");
+
   return ok({ message: "Business application submitted successfully", customerId });
 }
 
@@ -306,6 +313,8 @@ export async function GET() {
   const customerId = resolveCustomerId(webUser);
   if (!customerId) return ok({ status: "not_started", customer: null });
 
-  const [customer] = await db.select().from(customers).where(eq(customers.id, customerId)).limit(1);
+  const [row] = await db.select().from(customers).where(eq(customers.id, customerId)).limit(1);
+  // Screening status is for compliance only and is never shown to the customer.
+  const customer = row ? (({ screeningStatus: _screening, ...rest }) => rest)(row) : row;
   return ok({ status: customer?.onboardingStatus ?? "not_started", customer });
 }

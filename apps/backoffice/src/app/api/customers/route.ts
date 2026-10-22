@@ -4,6 +4,7 @@ import { eq, and, like, desc, count, sql, or } from "drizzle-orm";
 import { randomUUID } from "crypto";
 import { auth } from "@/auth";
 import { db, customers, tenants } from "@pangea/db";
+import { screenAutomatically } from "@pangea/sanctions";
 import { writeAuditLog } from "@/lib/audit/audit.service";
 import { ok, err, unauthorized } from "@/lib/api/response";
 
@@ -182,5 +183,7 @@ export async function POST(req: NextRequest) {
     userAgent:  req.headers.get("user-agent") ?? "",
   });
 
-  return ok({ id: customerId, customerRef }, 201);
+  const screening = await screenAutomatically({ customerId }, session.user.tenantId, "customer_created");
+
+  return ok({ id: customerId, customerRef, screeningStatus: screening?.status ?? "pending" }, 201);
 }

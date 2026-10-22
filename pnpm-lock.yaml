@@ -135,6 +135,9 @@ importers:
       '@pangea/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@pangea/sanctions':
+        specifier: workspace:*
+        version: link:../../packages/sanctions
       bcryptjs:
         specifier: ^3.0.3
         version: 3.0.3
@@ -193,6 +196,9 @@ importers:
       '@pangea/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@pangea/sanctions':
+        specifier: workspace:*
+        version: link:../../packages/sanctions
       '@types/nodemailer':
         specifier: ^8.0.0
         version: 8.0.0

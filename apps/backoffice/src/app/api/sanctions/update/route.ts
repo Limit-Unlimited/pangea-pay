@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/auth";
 import { db, sanctionLists } from "@pangea/db";
-import { ensureLists, listHealth, updateAllLists, updateList } from "@pangea/sanctions";
+import {
+  ensureLists, listHealth, updateAllLists, updateList,
+  rescreenAfterListChanges, runsWithChanges, sweepUnscreened,
+} from "@pangea/sanctions";
 import { ok, err, unauthorized, forbidden } from "@/lib/api/response";
 import { writeAuditLog } from "@/lib/audit/audit.service";
 import { sendSanctionsReviewEmail } from "@/lib/email/mailer";
@@ -41,12 +44,14 @@ async function notifyIfNeeded() {
 /**
  * POST /api/sanctions/update
  *
- * Cron (X-Cron-Secret, no tenant header): updates every active list, then
- * emails SANCTIONS_ALERT_EMAIL if any list needs manual review. Schedule
- * this daily.
+ * Cron (X-Cron-Secret, no tenant header): updates every active list,
+ * screens again every customer and beneficiary the changes could affect,
+ * screens anyone not yet screened, then emails SANCTIONS_ALERT_EMAIL if any
+ * list needs manual review. Schedule this daily.
  *
- * Signed-in user: { listCode, force?, note? } re-downloads one list now.
- * `force` applies a file the safety check rejected, and needs a note.
+ * Signed-in user: { listCode, force?, note? } re-downloads one list now,
+ * and re-screens as above if it changed. `force` applies a file the safety
+ * check rejected, and needs a note.
  */
 export async function POST(req: NextRequest) {
   const cronSecret     = req.headers.get("x-cron-secret");
@@ -54,8 +59,10 @@ export async function POST(req: NextRequest) {
 
   if (cronSecret && expectedSecret && cronSecret === expectedSecret) {
     const results = await updateAllLists();
+    const rescreen = await rescreenAfterListChanges(runsWithChanges(results));
+    const sweep = await sweepUnscreened();
     const needsReview = await notifyIfNeeded();
-    return NextResponse.json({ results, needsReview });
+    return NextResponse.json({ results, rescreen, sweep, needsReview });
   }
 
   const session = await auth();
@@ -76,6 +83,7 @@ export async function POST(req: NextRequest) {
   } catch (e) {
     return err(e instanceof Error ? e.message : "Update could not start", 409);
   }
+  const rescreen = await rescreenAfterListChanges(runsWithChanges([result]));
 
   await writeAuditLog({
     actorId:    session.user.id,
@@ -84,11 +92,11 @@ export async function POST(req: NextRequest) {
     action:     "sanctions.list.update_requested",
     resource:   "sanction_list",
     resourceId: listCode,
-    newValue:   { ...result, force: Boolean(force) },
+    newValue:   { ...result, force: Boolean(force), rescreen },
     reason:     note,
     ipAddress:  req.headers.get("x-forwarded-for") ?? "unknown",
     userAgent:  req.headers.get("user-agent") ?? "",
   });
 
-  return ok(result);
+  return ok({ ...result, rescreen });
 }

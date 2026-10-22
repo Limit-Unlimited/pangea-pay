@@ -3,6 +3,7 @@ import { z } from "zod";
 import { eq, and } from "drizzle-orm";
 import { auth } from "@/auth";
 import { db, customers } from "@pangea/db";
+import { screenAutomatically, SCREENED_CUSTOMER_FIELDS } from "@pangea/sanctions";
 import { writeAuditLog } from "@/lib/audit/audit.service";
 import { ok, err, unauthorized } from "@/lib/api/response";
 
@@ -98,5 +99,14 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     userAgent:  req.headers.get("user-agent") ?? "",
   });
 
-  return ok({ id });
+  // A change to anything screened (names, date of birth, nationality or
+  // country of incorporation) needs a fresh sanctions screening.
+  const norm = (v: unknown) => (v instanceof Date ? v.toISOString().slice(0, 10) : String(v ?? "").trim().toUpperCase());
+  const screenedFieldChanged = SCREENED_CUSTOMER_FIELDS.some((k) =>
+    k in updates && norm((updates as Record<string, unknown>)[k]) !== norm((existing as Record<string, unknown>)[k]));
+  if (screenedFieldChanged) {
+    await screenAutomatically({ customerId: id }, session.user.tenantId, "customer_updated");
+  }
+
+  return ok({ id, rescreened: screenedFieldChanged });
 }

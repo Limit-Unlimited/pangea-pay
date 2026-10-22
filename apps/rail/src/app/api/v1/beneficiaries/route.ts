@@ -5,6 +5,7 @@ import { eq, and, desc } from "drizzle-orm";
 import { requireAuth } from "@/lib/auth";
 import { checkIdempotency, saveIdempotency } from "@/lib/idempotency";
 import { randomUUID } from "crypto";
+import { screenAutomatically } from "@pangea/sanctions";
 
 const createSchema = z.object({
   customerRef:   z.string().min(1),
@@ -84,7 +85,10 @@ export async function GET(req: NextRequest) {
     ))
     .orderBy(desc(beneficiaries.createdAt));
 
-  return NextResponse.json({ data: rows.filter((b) => b.status !== "blocked") });
+  // Screening status is internal to compliance and not part of the API.
+  return NextResponse.json({
+    data: rows.filter((b) => b.status !== "blocked").map(({ screeningStatus: _screening, ...b }) => b),
+  });
 }
 
 // POST /api/v1/beneficiaries
@@ -148,6 +152,9 @@ export async function POST(req: NextRequest) {
     country:       d.country.toUpperCase(),
     status:        "active",
   });
+
+  // The outcome is not returned to the API consumer.
+  await screenAutomatically({ beneficiaryId: id }, ctx.tenantId, "beneficiary_created");
 
   const responseBody = JSON.stringify({ data: { id } });
   await saveIdempotency(ctx.consumerId, ctx.tenantId, "POST /api/v1/beneficiaries", req.headers.get("idempotency-key") ?? id, 201, responseBody);

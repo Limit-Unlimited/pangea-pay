@@ -102,6 +102,9 @@ export const beneficiaries = mysqlTable("beneficiaries", {
   pangeaAccountId:  varchar("pangea_account_id", { length: 36 }).references(() => accounts.id),
 
   status:           mysqlEnum("status", ["active", "flagged", "blocked"]).notNull().default("active"),
+  // Sanctions screening outcome, kept in step with the latest screening
+  // result. Internal only: never return it to the customer or API consumer.
+  screeningStatus:  mysqlEnum("screening_status", ["not_screened", "pending", "clear", "match", "review"]).notNull().default("not_screened"),
   flagReason:       text("flag_reason"),
   flaggedBy:        varchar("flagged_by", { length: 36 }).references(() => users.id),
   flaggedAt:        timestamp("flagged_at"),

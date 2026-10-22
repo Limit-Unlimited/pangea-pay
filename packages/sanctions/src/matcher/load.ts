@@ -1,4 +1,4 @@
-import { eq, sql } from "drizzle-orm";
+import { and, eq, inArray, sql, type SQL } from "drizzle-orm";
 import { db, sanctionLists, sanctionEntries } from "@pangea/db";
 import { listHealth } from "../health";
 import { SanctionsIndex, type MatcherEntry } from "./index";
@@ -33,7 +33,19 @@ async function entriesVersion(): Promise<string> {
   return `${row?.total ?? 0}:${row?.active ?? 0}:${row?.changed ?? ""}`;
 }
 
-async function buildIndex(): Promise<SanctionsIndex> {
+const ID_CHUNK = 1_000;
+
+/** Active entries on active lists, optionally limited to the given entry IDs. */
+export async function loadEntries(ids?: string[]): Promise<MatcherEntry[]> {
+  if (ids && !ids.length) return [];
+  if (ids && ids.length > ID_CHUNK) {
+    const out: MatcherEntry[] = [];
+    for (let i = 0; i < ids.length; i += ID_CHUNK) out.push(...await loadEntries(ids.slice(i, i + ID_CHUNK)));
+    return out;
+  }
+  const filters: SQL[] = [sql`${sanctionEntries.isActive} = true and ${sanctionLists.isActive} = true`];
+  if (ids) filters.push(inArray(sanctionEntries.id, ids));
+
   const rows = await db
     .select({
       id:            sanctionEntries.id,
@@ -49,9 +61,9 @@ async function buildIndex(): Promise<SanctionsIndex> {
     })
     .from(sanctionEntries)
     .innerJoin(sanctionLists, eq(sanctionLists.id, sanctionEntries.listId))
-    .where(sql`${sanctionEntries.isActive} = true and ${sanctionLists.isActive} = true`);
+    .where(and(...filters));
 
-  const entries: MatcherEntry[] = rows.map((r) => ({
+  return rows.map((r) => ({
     id:            r.id,
     listCode:      r.listCode,
     listName:      r.listName,
@@ -63,7 +75,10 @@ async function buildIndex(): Promise<SanctionsIndex> {
     nationalities: parseArray(r.nationalities),
     contentHash:   r.contentHash,
   }));
-  return new SanctionsIndex(entries);
+}
+
+async function buildIndex(): Promise<SanctionsIndex> {
+  return new SanctionsIndex(await loadEntries());
 }
 
 /** The current screening index, rebuilt only when the stored entries have changed. */
