@@ -3,6 +3,7 @@ import { z } from "zod";
 import { eq, and } from "drizzle-orm";
 import { auth } from "@/auth";
 import { db, customers, webUsers } from "@pangea/db";
+import { checkApprovalScreening } from "@pangea/sanctions";
 import { writeAuditLog } from "@/lib/audit/audit.service";
 import { ok, err, unauthorized } from "@/lib/api/response";
 import { sendOnboardingStatusEmail } from "@/lib/email/mailer";
@@ -66,6 +67,15 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     if (!allowed.includes(onboardingStatus)) {
       return err(`Cannot transition onboarding from '${existing.onboardingStatus}' to '${onboardingStatus}'`, 422);
     }
+  }
+
+  // Approval and activation need a clear sanctions screening. A customer not
+  // yet screened is screened now; hits must all be decided, with none a match.
+  const approving  = onboardingStatus === "approved" && existing.onboardingStatus !== "approved";
+  const activating = status === "active" && existing.status !== "active";
+  if (approving || activating) {
+    const screening = await checkApprovalScreening({ tenantId: session.user.tenantId, customerId: id });
+    if (!screening.clear) return err(screening.message!, 422);
   }
 
   const update: Record<string, any> = {};

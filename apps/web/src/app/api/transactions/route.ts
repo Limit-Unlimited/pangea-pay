@@ -1,5 +1,6 @@
 import { eq, and, desc } from "drizzle-orm";
 import { db, webUsers, customers, transactions } from "@pangea/db";
+import { publicReason } from "@pangea/sanctions";
 import { auth } from "@/auth";
 import { ok, unauthorized } from "@/lib/api/response";
 import { resolveCustomerId } from "@/lib/auth/context";
@@ -31,5 +32,6 @@ export async function GET() {
     .orderBy(desc(transactions.createdAt))
     .limit(100);
 
-  return ok(rows);
+  // Screening reasons are internal; the customer sees a neutral one.
+  return ok(rows.map((r) => ({ ...r, holdReason: publicReason(r.holdReason) })));
 }

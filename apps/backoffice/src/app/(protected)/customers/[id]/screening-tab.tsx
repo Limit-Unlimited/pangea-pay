@@ -66,6 +66,8 @@ const TRIGGER_LABELS: Record<string, string> = {
   beneficiary_created: "Beneficiary added",
   list_change:         "Sanctions list changed",
   sweep:               "Catch-up screening",
+  payment:             "Payment submitted",
+  approval:            "Onboarding approval",
 };
 
 const DECISION_LABELS: Record<Decision, string> = {

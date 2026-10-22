@@ -1,7 +1,9 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
 import { eq, and } from "drizzle-orm";
+import { randomUUID } from "crypto";
 import { db, webUsers, customers, accounts, beneficiaries, transactions, transactionStatusHistory, fxQuotes } from "@pangea/db";
+import { checkPaymentScreening } from "@pangea/sanctions";
 import { auth } from "@/auth";
 import { ok, err, unauthorized } from "@/lib/api/response";
 import { sendPaymentSubmittedEmail } from "@/lib/email/mailer";
@@ -29,6 +31,24 @@ async function generateTxnRef(tenantId: string): Promise<string> {
 }
 
 // POST /api/payments — initiate a payment
+/** Records a payment created on hold for sanctions screening, with its first status entry. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function recordHeldPayment(values: Record<string, any>, holdReason: string): Promise<string> {
+  const id = randomUUID();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (db.insert(transactions) as any).values({ ...values, id, status: "on_hold", holdReason, heldAt: new Date() });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (db.insert(transactionStatusHistory) as any).values({
+    transactionId: id,
+    tenantId:      values.tenantId,
+    fromStatus:    null,
+    toStatus:      "on_hold",
+    reason:        `Payment initiated by customer. ${holdReason}`,
+    performedBy:   null,
+  });
+  return id;
+}
+
 export async function POST(req: NextRequest) {
   const session = await auth();
   if (!session?.user) return unauthorized();
@@ -85,6 +105,12 @@ export async function POST(req: NextRequest) {
   const available = parseFloat(fromAccount.availableBalance ?? "0");
   if (d.sendAmount > available) return err("Insufficient available balance", 422);
 
+  // Sanctions screening: a payment goes ahead only when both the customer and
+  // the beneficiary are clear; otherwise it is created on hold for compliance.
+  // The reason is internal and never returned to the customer.
+  const screening = await checkPaymentScreening({ tenantId: webUser.tenantId, customerId, beneficiaryId: beneficiary.id });
+  const held = !screening.clear;
+
   // ── Internal Pangea-to-Pangea transfer ──────────────────────────────────
   if (beneficiary.pangeaAccountId) {
     const [toAccount] = await db
@@ -101,6 +127,32 @@ export async function POST(req: NextRequest) {
 
     const referenceNumber = await generateTxnRef(webUser.tenantId);
     const providerRef     = `INT-${referenceNumber.replace("TXN-", "")}`;
+
+    // Held: record the transfer without moving money. Releasing it in the
+    // Backoffice settles it then.
+    if (held) {
+      const heldId = await recordHeldPayment({
+        tenantId:        webUser.tenantId,
+        customerId,
+        referenceNumber,
+        type:            "send",
+        fromAccountId:   d.fromAccountId,
+        beneficiaryId:   d.beneficiaryId,
+        sendAmount:      String(d.sendAmount),
+        sendCurrency:    d.sendCurrency.toUpperCase(),
+        receiveAmount:   String(d.sendAmount),
+        receiveCurrency: d.sendCurrency.toUpperCase(),
+        fxRate:          "1",
+        fee:             "0",
+        feeCurrency:     d.sendCurrency.toUpperCase(),
+        payoutMethod:    "internal",
+        purposeCode:     d.purposeCode ?? null,
+        customerRef:     d.customerRef ?? null,
+        providerRef,
+        providerName:    "pangea_internal",
+      }, screening.holdReason!);
+      return ok({ referenceNumber, transactionId: heldId, providerRef }, 201);
+    }
 
     // Debit sender
     const senderCurrent   = parseFloat(fromAccount.currentBalance ?? "0");
@@ -204,7 +256,9 @@ export async function POST(req: NextRequest) {
     customerId,
     referenceNumber,
     type:            "send",
-    status:          "pending",
+    status:          held ? "on_hold" : "pending",
+    holdReason:      screening.holdReason,
+    heldAt:          held ? new Date() : null,
     fromAccountId:   d.fromAccountId,
     beneficiaryId:   d.beneficiaryId,
     sendAmount:      String(d.sendAmount),
@@ -235,8 +289,8 @@ export async function POST(req: NextRequest) {
     transactionId: created.id,
     tenantId:      webUser.tenantId,
     fromStatus:    null,
-    toStatus:      "pending",
-    reason:        "Payment initiated by customer",
+    toStatus:      held ? "on_hold" : "pending",
+    reason:        held ? `Payment initiated by customer. ${screening.holdReason}` : "Payment initiated by customer",
     performedBy:   null,
   });
 

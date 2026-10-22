@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
-import { db, transactions, transactionStatusHistory, customers, webUsers } from "@pangea/db";
+import { db, transactions, transactionStatusHistory, customers, webUsers, accounts, beneficiaries } from "@pangea/db";
+import { checkPaymentScreening, isSanctionsHold } from "@pangea/sanctions";
 import { eq, and } from "drizzle-orm";
 import { auth } from "@/auth";
 import { ok, err, unauthorized } from "@/lib/api/response";
@@ -33,6 +34,49 @@ const ACTION_STATUS: Record<string, string> = {
   process: "processing",
 };
 
+/**
+ * Moves the money for a held internal transfer. Returns an error message
+ * if it cannot be settled, or null once both balances are updated.
+ */
+async function settleHeldInternalTransfer(txn: typeof transactions.$inferSelect): Promise<string | null> {
+  if (!txn.fromAccountId || !txn.beneficiaryId) return "The transfer has no source account or beneficiary.";
+  const [beneficiary] = await db.select({ pangeaAccountId: beneficiaries.pangeaAccountId })
+    .from(beneficiaries).where(eq(beneficiaries.id, txn.beneficiaryId)).limit(1);
+  if (!beneficiary?.pangeaAccountId) return "The beneficiary is no longer linked to a Pangea account.";
+
+  const amount = parseFloat(txn.sendAmount);
+  class Abort extends Error {}
+  try {
+    return await db.transaction(async (tx) => {
+      // Claim the transfer first, so two releases at once cannot settle it twice.
+      const [claim] = await tx.update(transactions)
+        .set({ status: "completed" })
+        .where(and(eq(transactions.id, txn.id), eq(transactions.status, "on_hold")));
+      if (claim.affectedRows !== 1) throw new Abort("The transfer is no longer on hold.");
+
+      const [from] = await tx.select().from(accounts).where(eq(accounts.id, txn.fromAccountId!)).limit(1);
+      const [to]   = await tx.select().from(accounts).where(eq(accounts.id, beneficiary.pangeaAccountId!)).limit(1);
+      // Throwing rolls back the claim, leaving the transfer on hold.
+      if (!from || !to) throw new Abort("One of the accounts no longer exists.");
+      if (from.status !== "active" || to.status !== "active") throw new Abort("One of the accounts is not active.");
+      if (parseFloat(from.availableBalance ?? "0") < amount) throw new Abort("The customer's account no longer has enough available balance.");
+
+      await tx.update(accounts).set({
+        currentBalance:   (parseFloat(from.currentBalance ?? "0") - amount).toFixed(4),
+        availableBalance: (parseFloat(from.availableBalance ?? "0") - amount).toFixed(4),
+      }).where(eq(accounts.id, from.id));
+      await tx.update(accounts).set({
+        currentBalance:   (parseFloat(to.currentBalance ?? "0") + amount).toFixed(4),
+        availableBalance: (parseFloat(to.availableBalance ?? "0") + amount).toFixed(4),
+      }).where(eq(accounts.id, to.id));
+      return null;
+    });
+  } catch (e) {
+    if (e instanceof Abort) return e.message;
+    throw e;
+  }
+}
+
 // PATCH /api/transactions/[id]/status
 export async function PATCH(req: NextRequest, { params }: Params) {
   const session = await auth();
@@ -58,7 +102,32 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     return err(`Cannot ${action} a transaction in "${txn.status}" status`, 422);
   }
 
-  const newStatus = ACTION_STATUS[action];
+  // A payment held for sanctions screening can only be released once the
+  // customer and beneficiary are both clear. Until then it can only be cancelled.
+  if (action === "release" && isSanctionsHold(txn.holdReason)) {
+    const screening = await checkPaymentScreening({
+      tenantId:      session.user.tenantId,
+      customerId:    txn.customerId,
+      beneficiaryId: txn.beneficiaryId,
+    });
+    if (!screening.clear) {
+      return err(
+        "This payment is held for sanctions screening. Decide the screening hits for the customer and beneficiary first; " +
+        "it can be released once both are clear, or cancelled.",
+        422,
+      );
+    }
+  }
+
+  // A held Pangea-to-Pangea transfer moved no money when it was created, so
+  // releasing it settles it now.
+  const settleInternal = action === "release" && txn.payoutMethod === "internal" && txn.providerName === "pangea_internal";
+  if (settleInternal) {
+    const settled = await settleHeldInternalTransfer(txn);
+    if (settled) return err(settled, 422);
+  }
+
+  const newStatus = settleInternal ? "completed" : ACTION_STATUS[action];
   const now = new Date();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -72,6 +141,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   if (action === "release") {
     updateFields.releasedAt  = now;
     updateFields.releasedBy  = session.user.id;
+    if (settleInternal) updateFields.completedAt = now;
   }
   if (action === "complete") {
     updateFields.completedAt = now;

@@ -1,5 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { subjectsForCustomer, subjectsForBeneficiary, statusFromHits, runsWithChanges } from "./screening";
+import {
+  subjectsForCustomer, subjectsForBeneficiary, statusFromHits, runsWithChanges,
+  isSanctionsHold, publicReason, SANCTIONS_HOLD_REASON, PUBLIC_HOLD_REASON,
+} from "./screening";
 
 const base = {
   id: "c1", tenantId: "t1", customerRef: "CUST-000001", firstName: null, lastName: null,
@@ -57,5 +60,20 @@ describe("runsWithChanges", () => {
     const r = (runId: string, status: "success" | "unchanged" | "failed" | "rejected", added = 0) =>
       ({ listCode: "x", runId, status, added, removed: 0, modified: 0, restored: 0, entryCount: 1 });
     expect(runsWithChanges([r("a", "success", 2), r("b", "success"), r("c", "unchanged"), r("d", "rejected", 5)])).toEqual(["a"]);
+  });
+});
+
+describe("publicReason", () => {
+  it("never shows a screening reason outside compliance", () => {
+    const held = `${SANCTIONS_HOLD_REASON}: beneficiary likely or confirmed match`;
+    expect(isSanctionsHold(held)).toBe(true);
+    expect(publicReason(held)).toBe(PUBLIC_HOLD_REASON);
+    expect(publicReason(`Payment initiated by customer. ${held}`)).toBe(`Payment initiated by customer. ${PUBLIC_HOLD_REASON}.`);
+  });
+
+  it("leaves other reasons alone", () => {
+    expect(isSanctionsHold("Manual hold: confirm source of funds")).toBe(false);
+    expect(publicReason("Manual hold: confirm source of funds")).toBe("Manual hold: confirm source of funds");
+    expect(publicReason(null)).toBeNull();
   });
 });

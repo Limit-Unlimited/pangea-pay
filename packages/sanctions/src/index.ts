@@ -19,6 +19,7 @@ export type { ListCoverage } from "./matcher/load";
 export {
   screenCustomer, screenBeneficiary, screenAutomatically, decideHit, statusFromHits,
   subjectsForCustomer, subjectsForBeneficiary, rescreenAfterListChanges, sweepUnscreened, runsWithChanges,
-  ScreeningError, SCREENING_PROVIDER, SANCTIONS_ALERT_RULE, SCREENED_CUSTOMER_FIELDS,
+  checkPaymentScreening, checkApprovalScreening, isSanctionsHold, publicReason, PUBLIC_HOLD_REASON,
+  ScreeningError, SCREENING_PROVIDER, SANCTIONS_ALERT_RULE, SCREENED_CUSTOMER_FIELDS, SANCTIONS_HOLD_REASON,
 } from "./screening";
-export type { ScreenResult, HitDecision, ScreeningTrigger, RescreenSummary, SweepSummary } from "./screening";
+export type { ScreenResult, HitDecision, ScreeningTrigger, RescreenSummary, SweepSummary, ScreeningClearance } from "./screening";

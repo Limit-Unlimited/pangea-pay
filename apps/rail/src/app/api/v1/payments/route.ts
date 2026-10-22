@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { db, customers, beneficiaries, fxQuotes, transactions, transactionStatusHistory } from "@pangea/db";
 import { eq, and } from "drizzle-orm";
+import { checkPaymentScreening } from "@pangea/sanctions";
 import { requireAuth } from "@/lib/auth";
 import { checkIdempotency, saveIdempotency } from "@/lib/idempotency";
 import { queueWebhookForAll } from "@/lib/webhook";
@@ -144,6 +145,12 @@ export async function POST(req: NextRequest) {
     ? { senderOverride: { gender: d.senderGender, occupation: d.senderOccupation } }
     : null;
 
+  // Sanctions screening: the payment goes ahead only when the customer and
+  // beneficiary are both clear; otherwise it is created on hold for
+  // compliance. The consumer sees the on_hold status, never the reason.
+  const screening = await checkPaymentScreening({ tenantId: ctx.tenantId, customerId: customer.id, beneficiaryId: d.beneficiaryId });
+  const initialStatus = screening.clear ? "pending" : "on_hold";
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   await (db.insert(transactions) as any).values({
     id:              txnId,
@@ -151,7 +158,9 @@ export async function POST(req: NextRequest) {
     customerId:      customer.id,
     referenceNumber,
     type:            "send",
-    status:          "pending",
+    status:          initialStatus,
+    holdReason:      screening.holdReason,
+    heldAt:          screening.clear ? null : new Date(),
     beneficiaryId:   d.beneficiaryId,
     sendAmount:      String(d.sendAmount),
     sendCurrency:    d.sendCurrency.toUpperCase(),
@@ -176,8 +185,8 @@ export async function POST(req: NextRequest) {
     transactionId: txnId,
     tenantId:      ctx.tenantId,
     fromStatus:    null,
-    toStatus:      "pending",
-    reason:        "Payment submitted via Rail API",
+    toStatus:      initialStatus,
+    reason:        screening.clear ? "Payment submitted via Rail API" : `Payment submitted via Rail API. ${screening.holdReason}`,
     performedBy:   null,
   });
 
@@ -187,7 +196,7 @@ export async function POST(req: NextRequest) {
     customerRef: d.customerRef.toUpperCase(),
     sendAmount: d.sendAmount,
     sendCurrency: d.sendCurrency.toUpperCase(),
-    status: "pending",
+    status: initialStatus,
   }).catch(() => null);
 
   const responseBody = JSON.stringify({
@@ -195,7 +204,7 @@ export async function POST(req: NextRequest) {
       referenceNumber,
       transactionId: txnId,
       providerRef,
-      status: "pending",
+      status: initialStatus,
     },
   });
 

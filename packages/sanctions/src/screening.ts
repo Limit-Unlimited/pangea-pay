@@ -8,6 +8,8 @@ import {
   complianceAlerts,
   sanctionScreeningHits,
   sanctionEntryChanges,
+  transactions,
+  transactionStatusHistory,
   type SanctionScreeningHit,
 } from "@pangea/db";
 import {
@@ -42,7 +44,9 @@ export type ScreeningTrigger =
   | "customer_updated"
   | "beneficiary_created"
   | "list_change"
-  | "sweep";
+  | "sweep"
+  | "payment"
+  | "approval";
 
 export interface ScreenResult {
   resultId:           string;
@@ -52,6 +56,7 @@ export interface ScreenResult {
   carriedCount:       number;
   listsNeedingReview: ListCoverage[];
   alertRef:           string | null;
+  heldPayments:       number;   // payments put on hold because of this result
 }
 export class ScreeningError extends Error {}
 
@@ -385,6 +390,10 @@ async function runScreening(target: Target, opts: { userId?: string | null; trig
     await setSubjectStatus(tx, target, status);
   });
 
+  // Payments not yet sent to a provider wait for compliance while the
+  // subject is not clear.
+  const heldPayments = status === "clear" ? 0 : await holdOpenPayments(target, status);
+
   // A person screening by hand is already looking at the result; automatic
   // screenings put new, undecided hits in front of compliance as an alert.
   const pendingCount = rows.filter((r) => r.decision === "pending").length;
@@ -402,6 +411,7 @@ async function runScreening(target: Target, opts: { userId?: string | null; trig
     carriedCount: rows.filter((r) => r.carriedFromHitId).length,
     listsNeedingReview,
     alertRef,
+    heldPayments,
   };
 }
 
@@ -466,6 +476,156 @@ export const SCREENED_CUSTOMER_FIELDS = [
   "firstName", "lastName", "dateOfBirth", "nationality",
   "legalEntityName", "tradingName", "incorporationCountry",
 ] as const;
+
+// ---------------------------------------------------------------------------
+// Payments and approval
+// ---------------------------------------------------------------------------
+
+/**
+ * Hold reason on every payment held because of screening. Release checks
+ * for this prefix, so it must not change without migrating existing holds.
+ */
+export const SANCTIONS_HOLD_REASON = "Held for sanctions screening review";
+
+const STATUS_WORDS: Record<string, string> = {
+  review:       "needs review",
+  match:        "likely or confirmed match",
+  pending:      "not yet screened",
+  not_screened: "not yet screened",
+};
+
+export function isSanctionsHold(holdReason: string | null | undefined): boolean {
+  return !!holdReason?.startsWith(SANCTIONS_HOLD_REASON);
+}
+
+/** What a customer or API consumer is shown instead of a screening hold reason. */
+export const PUBLIC_HOLD_REASON = "Held for review";
+
+/**
+ * A hold or status-history reason made safe to show outside compliance:
+ * anything mentioning sanctions screening is replaced, so the customer is
+ * never told why (tipping off).
+ */
+export function publicReason(reason: string | null | undefined): string | null {
+  if (!reason) return reason ?? null;
+  const at = reason.indexOf(SANCTIONS_HOLD_REASON);
+  if (at === -1) return reason;
+  const before = reason.slice(0, at).trim();
+  return before ? `${before} ${PUBLIC_HOLD_REASON}.` : PUBLIC_HOLD_REASON;
+}
+
+function holdReasonFor(parts: Array<[string, string]>): string {
+  const detail = parts.map(([who, status]) => `${who} ${STATUS_WORDS[status] ?? status}`).join("; ");
+  return `${SANCTIONS_HOLD_REASON}: ${detail}`;
+}
+
+/**
+ * Hold the subject's payments that have not yet gone to a payout provider.
+ * Called on any screening that is not clear, including manual ones.
+ */
+async function holdOpenPayments(target: Target, status: ScreeningOutcome): Promise<number> {
+  const open = await db
+    .select({ id: transactions.id, status: transactions.status })
+    .from(transactions)
+    .where(and(
+      eq(transactions.tenantId, target.tenantId),
+      eq(transactions.customerId, target.customerId),
+      target.beneficiaryId ? eq(transactions.beneficiaryId, target.beneficiaryId) : sql`true`,
+      inArray(transactions.status, ["initiated", "pending"]),
+      // Not yet with a real payout provider: holding those here would not
+      // stop the provider, so they are left to the alert.
+      or(isNull(transactions.providerRef), inArray(transactions.providerName, ["mock", "pangea_internal"])),
+    ));
+  if (!open.length) return 0;
+
+  const reason = holdReasonFor([[target.beneficiaryId ? "beneficiary" : "customer", status]]);
+  const now = new Date();
+  await db.transaction(async (tx) => {
+    for (const t of open) {
+      await tx.update(transactions)
+        .set({ status: "on_hold", holdReason: reason, heldAt: now, heldBy: null })
+        .where(and(eq(transactions.id, t.id), inArray(transactions.status, ["initiated", "pending"])));
+      await tx.insert(transactionStatusHistory).values({
+        transactionId: t.id,
+        tenantId:      target.tenantId,
+        fromStatus:    t.status,
+        toStatus:      "on_hold",
+        reason,
+        performedBy:   null,
+      });
+    }
+  });
+  return open.length;
+}
+
+export interface ScreeningClearance {
+  clear:             boolean;
+  customerStatus:    string;
+  beneficiaryStatus: string | null;
+  /** Internal reason for a hold; never shown to the customer or API consumer. */
+  holdReason:        string | null;
+}
+
+async function currentStatus(subject: { customerId: string } | { beneficiaryId: string }, tenantId: string): Promise<string | null> {
+  if ("beneficiaryId" in subject) {
+    const [b] = await db.select({ s: beneficiaries.screeningStatus }).from(beneficiaries)
+      .where(and(eq(beneficiaries.id, subject.beneficiaryId), eq(beneficiaries.tenantId, tenantId))).limit(1);
+    return b?.s ?? null;
+  }
+  const [c] = await db.select({ s: customers.screeningStatus }).from(customers)
+    .where(and(eq(customers.id, subject.customerId), eq(customers.tenantId, tenantId))).limit(1);
+  return c?.s ?? null;
+}
+
+/** The subject's screening status, screening it first if it has not been screened yet. */
+async function screenedStatus(
+  subject: { customerId: string } | { beneficiaryId: string },
+  tenantId: string,
+  trigger: "payment" | "approval",
+): Promise<string> {
+  let status = await currentStatus(subject, tenantId);
+  if (status === "not_screened" || status === "pending") {
+    const result = await screenAutomatically(subject, tenantId, trigger);
+    status = result?.status ?? await currentStatus(subject, tenantId);
+  }
+  return status ?? "not_screened";
+}
+
+/**
+ * Whether a payment from this customer to this beneficiary may go ahead.
+ * Anyone not yet screened is screened now. Only "clear" on both counts
+ * passes; anything else means the payment is held for compliance.
+ */
+export async function checkPaymentScreening(opts: {
+  tenantId: string; customerId: string; beneficiaryId: string | null;
+}): Promise<ScreeningClearance> {
+  const customerStatus = await screenedStatus({ customerId: opts.customerId }, opts.tenantId, "payment");
+  const beneficiaryStatus = opts.beneficiaryId
+    ? await screenedStatus({ beneficiaryId: opts.beneficiaryId }, opts.tenantId, "payment")
+    : null;
+
+  const failing: Array<[string, string]> = [];
+  if (customerStatus !== "clear") failing.push(["customer", customerStatus]);
+  if (beneficiaryStatus !== null && beneficiaryStatus !== "clear") failing.push(["beneficiary", beneficiaryStatus]);
+
+  return {
+    clear: failing.length === 0,
+    customerStatus,
+    beneficiaryStatus,
+    holdReason: failing.length ? holdReasonFor(failing) : null,
+  };
+}
+
+/** Whether the customer's screening allows onboarding approval or activation. */
+export async function checkApprovalScreening(opts: { tenantId: string; customerId: string }): Promise<{ clear: boolean; status: string; message: string | null }> {
+  const status = await screenedStatus({ customerId: opts.customerId }, opts.tenantId, "approval");
+  if (status === "clear") return { clear: true, status, message: null };
+  const message =
+    status === "match"   ? "This customer has a likely or confirmed sanctions match. Resolve it in the Screening tab before approving." :
+    status === "review"  ? "This customer has sanctions screening hits awaiting a decision. Decide them in the Screening tab before approving." :
+                           "This customer could not be screened against the sanctions lists. Run screening from the Screening tab before approving.";
+  return { clear: false, status, message };
+}
 
 // ---------------------------------------------------------------------------
 // Decisions

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db, transactions, transactionStatusHistory, customers, beneficiaries } from "@pangea/db";
 import { eq, and, desc } from "drizzle-orm";
+import { publicReason } from "@pangea/sanctions";
 import { requireAuth } from "@/lib/auth";
 
 // Pangea-native vocabulary, mirroring what POST /v1/payments accepts —
@@ -100,10 +101,12 @@ export async function GET(
   return NextResponse.json({
     data: {
       ...txnRest,
+      // Screening reasons are internal; the consumer sees a neutral one.
+      holdReason:   publicReason(txnRest.holdReason),
       remitPurpose: remitType ? (REMIT_TYPE_TO_PURPOSE[remitType] ?? null) : null,
       customerRef:  customer?.customerRef ?? null,
       beneficiary:  beneficiary ?? null,
-      statusHistory: history,
+      statusHistory: history.map((h) => ({ ...h, reason: publicReason(h.reason) })),
     },
   });
 }

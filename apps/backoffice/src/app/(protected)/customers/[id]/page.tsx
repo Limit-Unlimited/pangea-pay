@@ -1397,6 +1397,7 @@ export default function CustomerDetailPage() {
   const [statusDialog, setStatusDialog] = useState(false);
   const [blacklistDialog, setBlacklistDialog] = useState(false);
   const [statusForm, setStatusForm] = useState({ status: "", onboardingStatus: "", reason: "" });
+  const [statusError, setStatusError] = useState("");
   const [blacklistForm, setBlacklistForm] = useState({ blacklisted: false, reason: "" });
   const [saving, setSaving]         = useState(false);
 
@@ -1412,15 +1413,29 @@ export default function CustomerDetailPage() {
   async function changeStatus() {
     setSaving(true);
     const payload: Record<string, string> = {};
-    if (statusForm.status)          payload.status = statusForm.status;
-    if (statusForm.onboardingStatus) payload.onboardingStatus = statusForm.onboardingStatus;
+    // The form starts on the current values; send only what actually changes.
+    if (statusForm.status && statusForm.status !== customer?.status) payload.status = statusForm.status;
+    if (statusForm.onboardingStatus && statusForm.onboardingStatus !== customer?.onboardingStatus) {
+      payload.onboardingStatus = statusForm.onboardingStatus;
+    }
+    if (!payload.status && !payload.onboardingStatus) {
+      setSaving(false);
+      setStatusError("Choose a status different from the current one.");
+      return;
+    }
     if (statusForm.reason)           payload.reason = statusForm.reason;
-    await fetch(`/api/customers/${id}/status`, {
+    setStatusError("");
+    const res = await fetch(`/api/customers/${id}/status`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
     setSaving(false);
+    if (!res.ok) {
+      const json = await res.json().catch(() => ({}));
+      setStatusError(json.error ?? "The status could not be changed.");
+      return;
+    }
     setStatusDialog(false);
     setStatusForm({ status: "", onboardingStatus: "", reason: "" });
     load();
@@ -1500,6 +1515,7 @@ export default function CustomerDetailPage() {
             size="sm"
             onClick={() => {
               setStatusForm({ status: customer.status ?? "", onboardingStatus: customer.onboardingStatus ?? "", reason: "" });
+              setStatusError("");
               setStatusDialog(true);
             }}
           >
@@ -1604,6 +1620,7 @@ export default function CustomerDetailPage() {
                 placeholder="Reason for this status change…"
               />
             </div>
+            {statusError && <p className="text-sm text-red-600">{statusError}</p>}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setStatusDialog(false)}>Cancel</Button>

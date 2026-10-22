@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { eq, and, desc } from "drizzle-orm";
 import { db, webUsers, transactions, transactionStatusHistory, beneficiaries, accounts } from "@pangea/db";
+import { publicReason } from "@pangea/sanctions";
 import { auth } from "@/auth";
 import { ok, err, unauthorized, notFound } from "@/lib/api/response";
 import { resolveCustomerId } from "@/lib/auth/context";
@@ -55,5 +56,11 @@ export async function GET(_req: NextRequest, { params }: Params) {
     .where(eq(transactionStatusHistory.transactionId, id))
     .orderBy(desc(transactionStatusHistory.createdAt));
 
-  return ok({ txn, beneficiary, fromAccount, history });
+  // Screening reasons are internal; the customer sees a neutral one.
+  return ok({
+    txn:     { ...txn, holdReason: publicReason(txn.holdReason) },
+    beneficiary,
+    fromAccount,
+    history: history.map((h) => ({ ...h, reason: publicReason(h.reason) })),
+  });
 }
