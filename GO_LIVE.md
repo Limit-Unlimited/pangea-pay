@@ -44,10 +44,13 @@
 | # | Item | Owner | Status |
 |---|---|---|---|
 | 3.1 | KYC / identity verification provider: production credentials configured | Engineering | |
-| 3.2 | Sanctions / PEP screening provider: production credentials configured | Engineering | Sanctions: replaced by in-house lists (3.2a–3.2c). PEP: phase 2 |
+| 3.2 | Sanctions / PEP screening provider: production credentials configured | Engineering | Sanctions: replaced by in-house lists (3.2a–3.2c). PEP: in-house database (3.2d–3.2f) |
 | 3.2a | Sanctions lists: first load completed in production (`pnpm --filter @pangea/sanctions sanctions:update`), all 7 lists show "Current" | Engineering | |
 | 3.2b | Sanctions lists: daily `POST /api/sanctions/update` scheduled with `X-Cron-Secret`; one scheduled run confirmed in the update log | DevOps | |
 | 3.2c | Sanctions lists: `SANCTIONS_ALERT_EMAIL` and `SANCTIONS_ADMIN_TENANT_ID` set; review email test-sent | Engineering + Compliance | |
+| 3.2d | PEP database: first load completed in production (`pnpm --filter @pangea/pep pep:update --full`, about two hours), Wikidata source shows "Current" | Engineering | |
+| 3.2e | PEP database: daily `pep:update` and weekly `pep:update --full` scheduled on the server (not over HTTP: a run outlasts any request); one scheduled run confirmed in the update log | DevOps | |
+| 3.2f | PEP database: `PEP_SOURCE_CONTACT` set to a team address; data protection impact assessment and lawful basis for holding PEP data signed off | Engineering + Compliance + Legal | |
 | 3.3 | Banking / payout partner: production connectivity confirmed | Engineering | |
 | 3.4 | FX rate feed (Frankfurter or replacement): production URL confirmed, failover tested | Engineering | |
 | 3.5 | Email provider (SMTP/SES/SendGrid): production credentials, test send confirmed | Engineering | |

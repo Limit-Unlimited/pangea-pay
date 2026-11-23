@@ -23,3 +23,4 @@ export {
   ScreeningError, SCREENING_PROVIDER, SANCTIONS_ALERT_RULE, SCREENED_CUSTOMER_FIELDS, SANCTIONS_HOLD_REASON,
 } from "./screening";
 export type { ScreenResult, HitDecision, ScreeningTrigger, RescreenSummary, SweepSummary, ScreeningClearance } from "./screening";
+export { sha256, stableStringify } from "./normalise";

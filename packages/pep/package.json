@@ -1,0 +1,26 @@
+{
+  "name": "@pangea/pep",
+  "version": "0.1.0",
+  "private": true,
+  "description": "PEP database: politically exposed persons and their relatives and close associates from open sources, kept current by a scheduled updater",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "pep:update": "tsx src/cli.ts",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@pangea/db": "workspace:*",
+    "@pangea/sanctions": "workspace:*",
+    "dotenv": "^16.5.0",
+    "drizzle-orm": "^0.44.7"
+  },
+  "devDependencies": {
+    "@pangea/config": "workspace:*",
+    "@types/node": "^20",
+    "tsx": "^4.19.4",
+    "typescript": "^5.9.3",
+    "vitest": "^5.0.0"
+  }
+}

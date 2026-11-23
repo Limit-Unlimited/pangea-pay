@@ -34,7 +34,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  transpilePackages: ["@pangea/db", "@pangea/ui", "@pangea/config", "@pangea/sanctions"],
+  transpilePackages: ["@pangea/db", "@pangea/ui", "@pangea/config", "@pangea/sanctions", "@pangea/pep"],
   serverExternalPackages: ["bcryptjs", "mysql2"],
   async headers() {
     return [

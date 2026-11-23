@@ -15,6 +15,7 @@
     "@hookform/resolvers": "^5.2.2",
     "@pangea/config": "workspace:*",
     "@pangea/db": "workspace:*",
+    "@pangea/pep": "workspace:*",
     "@pangea/sanctions": "workspace:*",
     "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",
